@@ -1,0 +1,27 @@
+.cam-add-listener {
+  > button {
+    position: relative;
+    margin-left: 10px;
+  }
+}
+
+[data-list-entry-container] > .bpp-listener-area {
+  border: 1px solid @bpp-color-gray-light;
+  margin: 10px 1px;
+  padding: 10px;
+}
+
+.bpp-listener-area {
+  position: relative;
+  > button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: none;
+    background: none;
+  }
+}
+
+.bpp-listener-area + .bpp-listener-area {
+  margin-top: 20px;
+}
