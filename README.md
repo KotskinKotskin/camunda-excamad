@@ -5,6 +5,19 @@ License : GNU GPLv3.
 
 DEMO: https://cadmin.bpmn2.ru (dont forget about CORS)
 
+# 0. How to run
+
+a) ---make excamad---
+- git clone
+- npm install
+- fill src/config/settings.js with own value
+- npm run serve (start dev server) OR
+- npm run build (produce html,js,css in to /dist/)
+
+b) --prepair camunda--
+- For stand-alone camunda : http://beninkster.com/tomcat-7-and-disabling-cors
+- For embedded camunda: https://forum.camunda.org/t/camunda-cors-filter-in-spring-boot-application/5494
+
 # 1. Features
 
 ## Processes
