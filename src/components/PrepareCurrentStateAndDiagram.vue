@@ -28,6 +28,8 @@
         v-if="readyToShowDiagram"
         :processActivityToShowArray="currentProcessActivityToShowArray"
         :processDefinitionId="processDefinition"
+        :loadHistory="true"
+        :processInstanceIdForLoadHistory="processInstanceId"
       ></diagram>
     </b-card>
   </div>

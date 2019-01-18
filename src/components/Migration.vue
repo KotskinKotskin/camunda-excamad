@@ -3,6 +3,26 @@
     <div class="row">
       <div class="col-11">
         <h2>Versions</h2>
+        <b-form inline class="mt-2 mb-2">
+          <b-input
+            class="mb-2 mr-sm-2 mb-sm-0"
+            id="inlineFormInputName2"
+            placeholder="Definition name"
+            size="sm"
+            v-model="nameOfProcessDefinition"
+          />
+          <b-form-checkbox size="sm" id="checkbox1" v-model="latestVersion">Latest Version</b-form-checkbox>
+          <b-button size="sm" @click="findDefinitionByName" variant="outline-success">Search</b-button>
+          <b-button
+            size="sm"
+            class="ml-2"
+            @click="searchProcessDefinitions"
+            variant="outline-secondary"
+          >Clear</b-button>
+          <b-button variant="link" size="sm" @click="sliceItem = 15">15</b-button>
+          <b-button variant="link" size="sm" @click="sliceItem = 30">30</b-button>
+          <b-button variant="link" size="sm" @click="sliceItem = 50">50</b-button>
+        </b-form>
       </div>
     </div>
 
@@ -20,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr :key="item.id" v-for="item in processDefinitions.slice(0,15)">
+        <tr :key="item.id" v-for="item in processDefinitions.slice(0,sliceItem)">
           <td>
             <input
               type="checkbox"
@@ -37,7 +57,9 @@
               v-on:click="onClickCheck(item)"
             >
           </td>
-          <td>{{ item.version }}</td>
+          <td>
+            <small>{{ item.version }}, {{item.deployTimeString}}</small>
+          </td>
           <td>
             <router-link :to="{name:'diagram', params:{ diagramKey: item.key}}">{{ item.id }}</router-link>
           </td>
@@ -87,6 +109,7 @@
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+var _ = require("lodash");
 import * as api from "@/api/api";
 library.add(faSearch);
 export default {
@@ -94,14 +117,17 @@ export default {
     return {
       query: "",
       routes: [],
+      latestVersion: true,
       processDefinitions: [],
       updateEventTriggers: true,
       processDefinitionFrom: null,
       processDefinitionTo: null,
       processDefinitionsStringArray: [],
       arrayOfIncidents: [],
+      sliceItem: 15,
       processDefinitionId: null,
       processActivityCount: [],
+      nameOfProcessDefinition: null,
       finalPropsArray: [],
       processActivityCountToShow: [],
       processMigrationInstructions: {}
@@ -122,15 +148,40 @@ export default {
     }
   },
   methods: {
+    findDefinitionByName() {
+      this.processDefinitions = [];
+      this.processDefinitionsStringArray = [];
+      var keyLike = "";
+      if (this.nameOfProcessDefinition.length != 0) {
+        keyLike = "&keyLike=" + this.nameOfProcessDefinition;
+      }
+
+      this.$api()
+        .get(
+          "/process-definition?sortBy=deploymentId&sortOrder=desc&latestVersion=" +
+            this.latestVersion +
+            keyLike
+        )
+        .then(response => {
+          this.processDefinitions = response.data;
+
+          this.updateCountForeach();
+        })
+        .catch();
+    },
     onHide(item) {
       item.showModal = false;
     },
     searchProcessDefinitions() {
+      this.nameOfProcessDefinition = "";
       this.processDefinitions = [];
       this.processDefinitionsStringArray = [];
 
       this.$api()
-        .get("/process-definition?sortBy=version&sortOrder=desc")
+        .get(
+          "/process-definition?sortBy=deploymentId&sortOrder=desc&latestVersion=" +
+            this.latestVersion
+        )
         .then(response => {
           this.processDefinitions = response.data;
 
@@ -175,7 +226,24 @@ export default {
       });
       this.finalPropsArray = finalPropsArray;
     },
+    convertDateToHumanStyle: function(date) {
+      var rel = this.$momenttrue(date)
+        .startOf("second")
+        .fromNow();
 
+      var cal = this.$momenttrue(date).format("MMMM Do YYYY, H:mm:ss");
+
+      var output = rel + " (" + cal + ") ";
+      return output;
+    },
+
+    getDeploymentTime(deploymentId) {
+      this.$api()
+        .get("/deployment/" + deploymentId)
+        .then(response => {
+          return this.convertDateToHumanStyle(response.data.deploymentTime);
+        });
+    },
     getActivityByProcessDefinition: async function(item) {
       var vm = this;
       return new Promise(function(resolve, reject) {
@@ -200,6 +268,9 @@ export default {
         this.$set(this.processDefinitions[index], "isSelectedTo", false);
         this.$set(this.processDefinitions[index], "showModal", false);
         this.$set(this.processDefinitions[index], "incidentCount", 0);
+        this.$set(this.processDefinitions[index], "deployTimeString", null);
+        this.$set(this.processDefinitions[index], "deployTime", null);
+
         this.$api()
           .get(
             "/history/process-instance/count?unfinished=true&&processDefinitionId=" +
@@ -233,6 +304,18 @@ export default {
           )
           .then(response => {
             this.processDefinitions[index].endedCount = response.data.count;
+          });
+
+        this.$api()
+          .get("/deployment/" + this.processDefinitions[index].deploymentId)
+          .then(response => {
+            this.processDefinitions[
+              index
+            ].deployTimeString = this.convertDateToHumanStyle(
+              response.data.deploymentTime
+            );
+            this.processDefinitions[index].deployTime =
+              response.data.deploymentTime;
           });
       }
     },

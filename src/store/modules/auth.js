@@ -40,17 +40,15 @@ const actions = {
         .then(resp => {
           const token = btoa(user.userName + ":" + user.password);
 
-          localStorage.setItem("user-token", token);
-          // Here set the header of your ajax library to the token value.
-          // example with axios
-          // axios.defaults.headers.common['Authorization'] = resp.token
+          localStorage.setItem("usertoken", token);
+
           commit(AUTH_SUCCESS, token);
           commit(USER_SUCCESS, resp.data);
           resolve(resp);
         })
         .catch(err => {
           commit(AUTH_ERROR, err);
-          localStorage.removeItem("user-token"); // if the request fails, remove any possible user token if possible
+          localStorage.removeItem("usertoken"); // if the request fails, remove any possible user token if possible
           reject(err);
         });
     });
@@ -58,7 +56,7 @@ const actions = {
   [AUTH_LOGOUT]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_LOGOUT);
-      localStorage.removeItem("user-token"); // clear your user's token from localstorage
+      localStorage.removeItem("usertoken"); // clear your user's token from localstorage
       resolve();
     });
   }

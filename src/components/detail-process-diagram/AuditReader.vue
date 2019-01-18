@@ -57,7 +57,7 @@ export default {
 
       if (this.currentEnv == "PRODUCTION") {
         auditUrl =
-          PRODAUDITURL + "/audit-reader-prod/records/?maxAmount=100&entityId=";
+          PRODAUDITURL + "/audit-reader/records/?maxAmount=100&entityId=";
       } else {
         auditUrl =
           TESTAUDITURL + "/audit-reader/records/?maxAmount=100&entityId=";

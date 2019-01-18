@@ -12,7 +12,6 @@
           <a :href="calculateJiraUrl(item.key) " target="_blank">{{item.key}}</a>
           <b-badge
             class="ml-1"
-            v-if="processId != label "
             variant="secondary"
             :key="label"
             v-for="label in item.labels"

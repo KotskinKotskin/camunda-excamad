@@ -85,11 +85,7 @@ export default {
     },
     getAllProcessDefinitions() {
       api
-        .getEntity(
-          "process-definition",
-          "",
-          "latestVersion=true&sortBy=version&sortOrder=desc"
-        )
+        .getEntity("process-definition", "", "sortBy=version&sortOrder=desc")
         .then(value => {
           this.processDefinitions = value;
 

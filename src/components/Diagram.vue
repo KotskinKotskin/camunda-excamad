@@ -84,7 +84,9 @@ export default {
     "diagramKey",
     "editMode",
     "jiraMode",
-    "formMode"
+    "formMode",
+    "loadHistory",
+    "processInstanceIdForLoadHistory"
   ],
   watch: {
     fullscreen: function(val) {
@@ -107,6 +109,7 @@ export default {
       activityId: "",
       moddleElement: "",
       processId: "",
+      activityHistory: [],
       defaultstyle: "height: 600px",
       fullscreen: false,
       hrefAndDownload: {
@@ -192,7 +195,21 @@ export default {
             .get("/process-definition/" + vm.processDefinitionId + "/xml")
             .then(response => {
               vm.processDefinitionInXml = response.data.bpmn20Xml;
-              resolve();
+
+              if (
+                vm.loadHistory == true &&
+                vm.processInstanceIdForLoadHistory != null
+              ) {
+                vm.$api()
+                  .get(
+                    "/history/activity-instance?processInstanceId=" +
+                      vm.processInstanceIdForLoadHistory
+                  )
+                  .then(activityResponse => {
+                    vm.activityHistory = activityResponse.data;
+                    resolve();
+                  });
+              } else resolve();
             });
         }
         if (vm.diagramKey != null) {
@@ -200,7 +217,20 @@ export default {
             .get("/process-definition/key/" + vm.diagramKey + "/xml")
             .then(response => {
               vm.processDefinitionInXml = response.data.bpmn20Xml;
-              resolve();
+              if (
+                vm.loadHistory == true &&
+                vm.processInstanceIdForLoadHistory != null
+              ) {
+                vm.$api()
+                  .get(
+                    "/history/activity-instance?processInstanceId=" +
+                      vm.processInstanceIdForLoadHistory
+                  )
+                  .then(activityResponse => {
+                    vm.activityHistory = activityResponse.data;
+                    resolve();
+                  });
+              } else resolve();
             });
         }
       });
@@ -291,7 +321,45 @@ export default {
     drawOverlays: function(bpmnViewer) {
       var canvas = bpmnViewer.get("canvas"),
         overlays = bpmnViewer.get("overlays");
+      var elementRegistry = bpmnViewer.get("elementRegistry");
       canvas.zoom("fit-viewport");
+
+      this.activityHistory.forEach(activity => {
+        var shape = elementRegistry.get(activity.activityId);
+        var $overlayHtml = $('<div class="highlight-overlay">').css({
+          width: shape.width,
+          height: shape.height
+        });
+
+        overlays.add(activity.activityId, {
+          position: {
+            top: 0,
+            left: 0
+          },
+          html: $overlayHtml
+        });
+
+        if (activity.activityType == "callActivity") {
+          var baseurl =
+            process.env.NODE_ENV === "production" ? "/camunda-excamad/" : "/";
+          var url =
+            baseurl + "#/processdetail/" + activity.calledProcessInstanceId;
+          var htmllink =
+            '<a  href="' +
+            url +
+            '">' +
+            activity.calledProcessInstanceId +
+            "</a";
+          overlays.add(activity.activityId, {
+            position: {
+              bottom: -5,
+              left: 0
+            },
+            html: htmllink
+          });
+        }
+      });
+
       this.processActivityToShowArray.forEach(item => {
         if (item.activityHimanaizedCreateDate) {
           overlays.add(item.processActivityToShow, {
@@ -434,5 +502,11 @@ body,
 
 .buttons a.active {
   opacity: 1;
+}
+.highlight-overlay {
+  background-color: #15b427; /* color elements as green */
+  opacity: 0.5;
+  border-radius: 13px;
+  pointer-events: none; /* no pointer events, allows clicking through onto the element */
 }
 </style>
