@@ -1,13 +1,33 @@
 <template>
   <div id="processStat">
     <b-card bg-variant="light" text-variant="dark">
-      <h3>
-        {{processHistoryDetail.id}}
-        <router-link
-          :to="{name:'diagram', params:{ diagramKey: processHistoryDetail.processDefinitionKey}}"
-        >{{processHistoryDetail.processDefinitionKey}}</router-link>
-      </h3>
-      <h4 v-if="processHistoryDetail.superProcessInstanceId">Вызван из процесса
+      <b-row>
+        <b-col>
+          <h3>
+            {{processHistoryDetail.id}}
+            <router-link
+              :to="{name:'definition', params:{ definitionId: processHistoryDetail.processDefinitionId}}"
+            >{{ processHistoryDetail.processDefinitionId }}</router-link>
+          </h3>
+        </b-col>
+        <b-col v-if="processInstanceRuntimeData" col lg="2" class="text-right">
+          <b-btn
+            v-b-tooltip.hover
+            :disabled="!expertMode()"
+            title="Suspending a process instance means that the execution is stopped, so the token state will not change. However, actions that do not change token state, like setting or removing variables, etc. will still succeed.
+
+Tasks belonging to this process instance will also be suspended. This means that any actions influencing the tasks' lifecycles will fail"
+            @click="suspendCurrentId()"
+            size="lg"
+            class="mb-3"
+            :variant="getVariantForSuspend()"
+          >
+            <font-awesome-icon :icon="getIcon()"/>
+            {{getText()}}
+          </b-btn>
+        </b-col>
+      </b-row>
+      <h4 v-if="processHistoryDetail.superProcessInstanceId">Called from
         <router-link
           :to="{name:'processdetail', params:{ processInstanceId: processHistoryDetail.superProcessInstanceId}}"
         >
@@ -46,20 +66,67 @@
 </template>
 
 <script>
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlay, faPause);
 export default {
   name: "DetailProcessStat",
   props: ["processInstanceId"],
   data() {
     return {
-      processHistoryDetail: ""
+      processHistoryDetail: "",
+      processInstanceRuntimeData: null
     };
   },
   methods: {
+    suspendCurrentId() {
+      this.$api()
+        .put(
+          "/process-instance/" +
+            this.processInstanceRuntimeData.id +
+            "/suspended",
+          {
+            suspended: !this.processInstanceRuntimeData.suspended
+          }
+        )
+        .then(response => {
+          this.$notify({
+            group: "foo",
+            title: this.processInstanceRuntimeData.suspended
+              ? "Unsuspended!"
+              : "Suspended",
+            type: "success"
+          });
+          this.getProcessDetail();
+        })
+        .catch(error => {
+          this.$notify({
+            group: "foo",
+            title: "Some problem!",
+            text: error.data,
+            type: "error"
+          });
+          this.getProcessDetail();
+        });
+    },
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
     getProcessDetail() {
       this.$api()
         .get("/history/process-instance/" + this.processInstanceId)
         .then(response => {
           this.processHistoryDetail = response.data;
+          if (this.processHistoryDetail.state != "COMPLETED") {
+            this.getProcessRuntimeDetail();
+          }
+        });
+    },
+    getProcessRuntimeDetail() {
+      this.$api()
+        .get("/process-instance/" + this.processInstanceId)
+        .then(response => {
+          this.processInstanceRuntimeData = response.data;
         });
     },
     durationInHour: function(duration) {
@@ -84,6 +151,21 @@ export default {
       ) {
         return "danger";
       }
+    },
+    getVariantForSuspend() {
+      if (this.processInstanceRuntimeData.suspended) {
+        return "warning";
+      } else return "primary";
+    },
+    getIcon() {
+      if (this.processInstanceRuntimeData.suspended) {
+        return "play";
+      } else return "pause";
+    },
+    getText() {
+      if (this.processInstanceRuntimeData.suspended) {
+        return "Unsuspend";
+      } else return "Suspend";
     },
 
     convertDateToHumanStyle: function(date) {

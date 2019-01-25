@@ -1,115 +1,122 @@
 <template>
   <div>
-    <b-navbar toggleable="md" type="light">
-      <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+    <div class="allNavbars">
+      <div class="FirstNavBar">
+        <b-navbar toggleable="md" type="light">
+          <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-      <router-link to="/">
-        <b-navbar-brand>TCE</b-navbar-brand>
-      </router-link>
+          <router-link to="/migration">
+            <b-navbar-brand>TCE</b-navbar-brand>
+          </router-link>
 
-      <b-collapse is-nav id="nav_collapse">
-        <b-navbar-nav>
-          <b-nav-item-dropdown text="Processes">
-            <b-dropdown-item to="/migration">Stats and migration</b-dropdown-item>
-            <b-dropdown-item to="/history">History and search</b-dropdown-item>
-            <b-dropdown-item to="/oldactivity">Old processes</b-dropdown-item>
-            <b-dropdown-item to="/embedded">Definitions</b-dropdown-item>
-          </b-nav-item-dropdown>
-          <b-nav-item-dropdown text="Decisions">
-            <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
-            <b-dropdown-item disabled to="/migration">History and search</b-dropdown-item>
-          </b-nav-item-dropdown>
+          <b-collapse is-nav id="nav_collapse">
+            <b-navbar-nav>
+              <b-nav-item-dropdown text="Processes">
+                <b-dropdown-item to="/migration">Stats and migration</b-dropdown-item>
+                <b-dropdown-item to="/history">History and search</b-dropdown-item>
+                <b-dropdown-item to="/oldactivity">Old processes</b-dropdown-item>
+                <b-dropdown-item to="/embedded">Embed and share</b-dropdown-item>
+              </b-nav-item-dropdown>
+              <b-nav-item-dropdown text="Decisions">
+                <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
+                <b-dropdown-item disabled to="/migration">History and search</b-dropdown-item>
+              </b-nav-item-dropdown>
 
-          <b-nav-item to="/incident">Incidents</b-nav-item>
+              <b-nav-item to="/incident">Incidents</b-nav-item>
 
-          <b-nav-item to="/stream">Live</b-nav-item>
+              <b-nav-item to="/stream">Live</b-nav-item>
 
-          <b-nav-item to="/tasklist">Task list</b-nav-item>
-          <b-nav-item-dropdown text="BPMaS" right>
-            <b-dropdown-item to="/bpmasservice/wtf">What is this</b-dropdown-item>
-            <b-dropdown-item
-              :disabled="!workOnBpmAsSerivce"
-              to="/bpmasservice/newdiagram/StarterProcess"
-            >New process</b-dropdown-item>
-            <b-dropdown-item
-              :disabled="!workOnBpmAsSerivce"
-              to="/bpmasservice/deploytable"
-            >My process</b-dropdown-item>
-          </b-nav-item-dropdown>
-        </b-navbar-nav>
+              <b-nav-item to="/tasklist">Task list</b-nav-item>
+              <b-nav-item-dropdown text="BPMaS" right>
+                <b-dropdown-item to="/bpmasservice/wtf">What is this</b-dropdown-item>
+                <b-dropdown-item
+                  :disabled="!workOnBpmAsSerivce"
+                  to="/bpmasservice/newdiagram/StarterProcess"
+                >New process</b-dropdown-item>
+                <b-dropdown-item
+                  :disabled="!workOnBpmAsSerivce"
+                  to="/bpmasservice/deploytable"
+                >My process</b-dropdown-item>
+              </b-nav-item-dropdown>
+              <b-nav-item-dropdown text="Misc" right>
+                <b-dropdown-item to="/deploytable">Deployments</b-dropdown-item>
+              </b-nav-item-dropdown>
+            </b-navbar-nav>
 
-        <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
-          <input
-            class="mt-1 routerinput"
-            size="sm"
-            placeholder="search"
-            type="text"
-            v-model="query"
-            v-smart-routes="routes"
-            v-on:keyup.enter="routes[0].handler"
-          >
-          <ul class="ulrouter" v-if="routes.length">
-            <b-list-group>
-              <b-list-group-item
-                @click="route.handler"
-                v-for="route in routes"
-                :key="route.name + Math.random()"
-                v-html="route.title"
-              ></b-list-group-item>
-            </b-list-group>
-          </ul>
-
-          <b-nav-item to="/settings">Settings</b-nav-item>
-          <b-nav-item-dropdown text="Systems" right>
-            <b-dropdown-item-button
-              @click="userSetBaserUrlFromBadge(item.name)"
-              :key="item.name"
-              v-for="item in list"
-            >
-              <b v-if="item.name == baseurl">></b>
-              <b-badge
-                pill
-                :variant="calculatePillColorForUrl(item.name)"
-              >{{calculateEnvormentForUrl(item.name)}}</b-badge>
-              {{substringUrl(item.name)}}
-            </b-dropdown-item-button>
-            <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-item-button @click="clear()">Clear</b-dropdown-item-button>
-            <b-nav-form>
-              <b-button
-                class="ml-3"
-                :pressed.sync="expertCurrent"
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto">
+              <input
+                class="mt-1 routerinput"
                 size="sm"
-                @click="commitExpertMode"
-                variant="outline-info"
-              >Expert Mode</b-button>
-            </b-nav-form>
-          
-          </b-nav-item-dropdown>
-        </b-navbar-nav>
+                placeholder="search"
+                type="text"
+                v-model="query"
+                v-smart-routes="routes"
+                v-on:keyup.enter="routes[0].handler"
+              >
+              <ul class="ulrouter" v-if="routes.length">
+                <b-list-group>
+                  <b-list-group-item
+                    @click="route.handler"
+                    v-for="route in routes"
+                    :key="route.name + Math.random()"
+                    v-html="route.title"
+                  ></b-list-group-item>
+                </b-list-group>
+              </ul>
 
-        <login></login>
-      </b-collapse>
-    </b-navbar>
-    <div class="secondNavBar">
-      <b-nav size="sm">
-        <small>
-          <b-nav-text>
-            <b-badge class="ml-3" pill :variant="pillColorStatus">{{pillColorStatus}}</b-badge>
-          </b-nav-text>
-        </small>
-        <small>
-          <b-nav-text>
-            <b-badge class="ml-2" pill :variant="pillColor">{{envortment}}</b-badge>
-          </b-nav-text>
-        </small>
-        <small>
-          <b-nav-text v-if="baseurl !=''" class="ml-2">{{baseurl}}</b-nav-text>
-        </small>
-        
-        <small></small>
-      </b-nav>
+              <b-nav-item to="/settings">Settings</b-nav-item>
+              <b-nav-item-dropdown text="Systems" right>
+                <b-dropdown-item-button
+                  @click="userSetBaserUrlFromBadge(item.name)"
+                  :key="item.name"
+                  v-for="item in list"
+                >
+                  <b v-if="item.name == baseurl">></b>
+                  <b-badge
+                    pill
+                    :variant="calculatePillColorForUrl(item.name)"
+                  >{{calculateEnvormentForUrl(item.name)}}</b-badge>
+                  {{substringUrl(item.name)}}
+                </b-dropdown-item-button>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item-button @click="clear()">Clear</b-dropdown-item-button>
+                <b-nav-form>
+                  <b-button
+                    v-show="secretButtonPressed"
+                    :pressed.sync="expertCurrent"
+                    size="sm"
+                    @click="commitExpertMode"
+                    variant="outline-info"
+                  >Expert Mode</b-button>
+                </b-nav-form>
+                <input class="hide" v-on:keyup.45="setVisible">
+              </b-nav-item-dropdown>
+            </b-navbar-nav>
+
+            <login></login>
+          </b-collapse>
+        </b-navbar>
+      </div>
+      <div class="secondNavBar">
+        <b-nav size="sm">
+          <small>
+            <b-nav-text>
+              <b-badge class="ml-3" pill :variant="pillColorStatus">{{pillColorStatus}}</b-badge>
+            </b-nav-text>
+          </small>
+          <small>
+            <b-nav-text>
+              <b-badge class="ml-2" pill :variant="pillColor">{{envortment}}</b-badge>
+            </b-nav-text>
+          </small>
+          <small>
+            <b-nav-text v-if="baseurl !=''" class="ml-2">{{baseurl}}</b-nav-text>
+          </small>
+          
+          <small></small>
+        </b-nav>
+      </div>
     </div>
   </div>
 </template>
@@ -163,11 +170,6 @@ export default {
       this.expertCurrent = localStorage.expertCurrent == "true";
     }
   },
-  watch: {
-    baseurl(newPrivateurl) {
-      this.getList();
-    }
-  },
   computed: {
     baseurl() {
       return this.$store.state.baseurl;
@@ -210,6 +212,9 @@ export default {
   watch: {
     expertCurrent(newExpertCurrent) {
       localStorage.expertCurrent = newExpertCurrent;
+    },
+    baseurl(newPrivateurl) {
+      this.getList();
     }
   },
   methods: {
@@ -326,6 +331,15 @@ export default {
 </script>
 
 <style>
+.allNavbars {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 800;
+  background-color: white;
+  border-bottom: solid 2px #cecece;
+}
+,
 .hide {
   border: solid 0px;
   height: 35px;

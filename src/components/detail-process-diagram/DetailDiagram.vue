@@ -43,7 +43,7 @@ library.add(faFileAlt);
 library.add(faPenSquare);
 
 export default {
-  props: ["diagramKey", "processDefinitionId"],
+  props: ["diagramKey", "processDefinitionId", "definitionId"],
   data() {
     return {
       editMode: false,

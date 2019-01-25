@@ -29,6 +29,9 @@ export default new Vuex.Store({
     setBaseUrl(state, url) {
       state.baseurl = url;
     },
+    setBpmasserviceUrl(state, url) {
+      state.bpmasserviceUrl = url;
+    },
     changeServerStatus(state, status) {
       state.serverStatus = status;
     },

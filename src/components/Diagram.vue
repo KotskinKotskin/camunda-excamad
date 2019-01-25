@@ -10,6 +10,13 @@
         <b-btn class="incanvas" @click="toggle" size="sm" variant="outline-success">
           <font-awesome-icon icon="arrows-alt"/>
         </b-btn>
+        <atom-spinner
+          v-if="!ready"
+          class="spinner"
+          :animation-duration="1000"
+          :size="60"
+          :color="'#007bff'"
+        />
         <div id="canvas" :style="defaultstyle"></div>
 
         <div v-if="editMode" class="properties-panel-parent" id="js-properties-panel"></div>
@@ -58,6 +65,7 @@
 <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
 
 <script>
+import { AtomSpinner } from "epic-spinners";
 import BpmnModdle from "bpmn-moddle";
 import camundaModdle from "camunda-bpmn-moddle/resources/camunda";
 import camundaExtensionModule from "camunda-bpmn-moddle/lib";
@@ -78,12 +86,17 @@ Vue.use(fullscreen);
 
 export default {
   name: "Diagram",
+  components: {
+    AtomSpinner
+  },
   props: [
     "processDefinitionId",
     "processActivityToShowArray",
     "diagramKey",
     "editMode",
     "jiraMode",
+    "statistics",
+    "suspendedJobs",
     "formMode",
     "loadHistory",
     "processInstanceIdForLoadHistory"
@@ -98,7 +111,7 @@ export default {
 
   data() {
     return {
-      // processDefinitionId: "SMEPOST.LeasePosTerminal:36:380214",
+      ready: false,
       formEditorKey: 0,
       processDefinitionInXml: "",
       globalViewer: "",
@@ -180,7 +193,7 @@ export default {
           var viewer = this.buildViewer();
           this.globalViewer = viewer;
           this.wasBuiled = true;
-
+          this.ready = true;
           this.importXML(viewer);
           this.eventBusDispatcher(viewer);
         });
@@ -195,7 +208,6 @@ export default {
             .get("/process-definition/" + vm.processDefinitionId + "/xml")
             .then(response => {
               vm.processDefinitionInXml = response.data.bpmn20Xml;
-
               if (
                 vm.loadHistory == true &&
                 vm.processInstanceIdForLoadHistory != null
@@ -261,7 +273,7 @@ export default {
     },
 
     eventBusDispatcher: function(viewer) {
-      if (this.jiraMode == true || this.editMode == true) {
+      if (true) {
         vm = this;
         var eventBus = viewer.get("eventBus");
 
@@ -286,6 +298,7 @@ export default {
               stringXml = xml;
             });
             vm.$emit("digaramInXml", stringXml);
+            vm.$emit("clickedOnDiagram", e.element.businessObject);
             var moddle = new BpmnModdle({ camunda: camundaModdle });
 
             if (vm.moddleElement.$type == "bpmn:UserTask") {
@@ -322,7 +335,7 @@ export default {
       var canvas = bpmnViewer.get("canvas"),
         overlays = bpmnViewer.get("overlays");
       var elementRegistry = bpmnViewer.get("elementRegistry");
-      canvas.zoom("fit-viewport");
+      canvas.zoom("0.9");
 
       this.activityHistory.forEach(activity => {
         var shape = elementRegistry.get(activity.activityId);
@@ -360,55 +373,91 @@ export default {
         }
       });
 
-      this.processActivityToShowArray.forEach(item => {
-        if (item.activityHimanaizedCreateDate) {
-          overlays.add(item.processActivityToShow, {
+      if (this.processActivityToShowArray != null) {
+        this.processActivityToShowArray.forEach(item => {
+          if (item.activityHimanaizedCreateDate) {
+            overlays.add(item.processActivityToShow, {
+              position: {
+                bottom: 0,
+                left: 0
+              },
+              html:
+                '<div class="diagram-note">' +
+                item.activityHimanaizedCreateDate +
+                "</div"
+            });
+          }
+          if (item.count) {
+            overlays.add(item.processActivityToShow, {
+              position: {
+                top: -20,
+                left: 0
+              },
+              html: '<div class="count"> ' + item.count + "</div"
+            });
+          }
+          if (item.isIncident) {
+            overlays.add(item.processActivityToShow, {
+              position: {
+                bottom: -35,
+                left: 0
+              },
+              html: '<div class="problem"> Incident' + "</div"
+            });
+          }
+          if (item.isJob) {
+            overlays.add(item.processActivityToShow, {
+              position: {
+                top: -35,
+                left: 0
+              },
+              html: '<div class="job"> Job' + "</div"
+            });
+          }
+        });
+      }
+
+      this.statistics.forEach(stat => {
+        overlays.add(stat.id, {
+          position: {
+            top: -20,
+            left: 0
+          },
+          html: '<div class="count"> ' + stat.instances + "</div"
+        });
+
+        if (stat.incidents != null && stat.incidents.length > 0) {
+          overlays.add(stat.id, {
             position: {
-              bottom: 0,
-              left: 0
+              top: -20,
+              left: 50
             },
             html:
-              '<div class="diagram-note">' +
-              item.activityHimanaizedCreateDate +
+              '<div class="problem-count"> ' +
+              stat.incidents[0].incidentCount +
               "</div"
           });
         }
-        if (item.count) {
-          overlays.add(item.processActivityToShow, {
-            position: {
-              top: -20,
-              left: 0
-            },
-            html: '<div class="count"> ' + item.count + "</div"
-          });
-        }
-        if (item.isIncident) {
-          overlays.add(item.processActivityToShow, {
-            position: {
-              bottom: -35,
-              left: 0
-            },
-            html: '<div class="problem"> Incident' + "</div"
-          });
-        }
-        if (item.isJob) {
-          overlays.add(item.processActivityToShow, {
-            position: {
-              top: -35,
-              left: 0
-            },
-            html: '<div class="job"> Job' + "</div"
-          });
-        }
       });
+      if (this.suspendedJobs != null && this.suspendedJobs.length > 0) {
+        this.suspendedJobs.forEach(element => {
+          overlays.add(element.activityId, {
+            position: {
+              bottom: 15,
+              left: 90
+            },
+            html: '<div class="suspended"> ' + "||" + "</div"
+          });
+        });
+      }
     },
 
     importXML: function(bpmnViewer) {
       bpmnViewer.importXML(this.processDefinitionInXml);
-      if (this.processActivityToShowArray != null) {
+      if (this.processActivityToShowArray != null || this.statistics != null) {
         setTimeout(() => {
           this.drawOverlays(bpmnViewer);
-        }, 500);
+        }, 800);
       }
     }
   }
@@ -460,6 +509,21 @@ body,
   border-radius: 25px;
   padding-left: 5px;
 }
+.problem-count {
+  background-color: red;
+  color: white;
+  width: 45px;
+  border-radius: 25px;
+  padding-left: 5px;
+}
+.suspended {
+  background-color: yellow;
+  color: black;
+  width: 20px;
+  border-radius: 25px;
+  padding-left: 5px;
+}
+
 .buttons {
   position: fixed;
   bottom: 20px;
@@ -508,5 +572,9 @@ body,
   opacity: 0.5;
   border-radius: 13px;
   pointer-events: none; /* no pointer events, allows clicking through onto the element */
+}
+
+djs-element :hover {
+  background-color: black;
 }
 </style>

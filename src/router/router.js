@@ -14,6 +14,7 @@ import NewDiagramView from "@/views/NewDiagramView.vue";
 import Baseurl from "@/components/BaseUrl.vue";
 import DicisionDiagram from "@/components/decisions/DecisionDiagram.vue";
 import LoginView from "@/views/LoginView.vue";
+import DefinitionDetailView from "@/views/DefinitionDetailView.vue";
 import DeployView from "@/views/DeployView.vue";
 import DeployTableView from "@/views/DeployTableView.vue";
 import DeployHelpView from "@/views/DeployHelpView.vue";
@@ -49,6 +50,7 @@ export default new Router({
       path: "/tasklist",
       name: "tasklist",
       component: TaskListView,
+      beforeEnter: ifAuthenticated,
       smart: {
         matcher: {
           search: [/tas/],
@@ -106,6 +108,7 @@ export default new Router({
       name: "newdiagram",
       props: true,
       component: NewDiagramView,
+      beforeEnter: ifAuthenticated
     },
 
     {
@@ -117,17 +120,20 @@ export default new Router({
       path: "/bpmasservice/deploy/",
       name: "newdiagram",
       component: DeployView,
+      beforeEnter: ifAuthenticated
     },
     {
       path: "/bpmasservice/deployhelp/:diagramId",
       name: "deployhelp",
       props: true,
       component: DeployHelpView,
+      beforeEnter: ifAuthenticated
     },
     {
       path: "/bpmasservice/deploytable/",
       name: "deploytable",
       component: DeployTableView,
+      beforeEnter: ifAuthenticated
     },
     {
       path: "/history",
@@ -189,6 +195,17 @@ export default new Router({
       name: "diagram",
       props: true,
       component: DetailDiagramView
+    },
+    {
+      path: "/definition/:definitionId",
+      name: "definition",
+      props: true,
+      component: DefinitionDetailView
+    },
+    {
+      path: "/deploytable/",
+      name: "deploytable",
+      component: DeployTableView
     }
   ]
 });

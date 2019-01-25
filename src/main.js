@@ -29,9 +29,19 @@ import Notifications from "vue-notification";
 import AuditReader from "@/components/detail-process-diagram/AuditReader.vue";
 import DecisionGrid from "@/components/decisions/DecisionGrid.vue";
 import Tasklist from "@/components/TaskList.vue";
+import DefinitionMetadata from "@/components/detail-process-definition/DefinitionMetadata.vue";
 import VueFormGenerator from "vue-form-generator";
+
+import StartDefinition from "@/components/detail-process-definition/StartDefinition.vue";
+Vue.component("start-definition", StartDefinition);
+
 import TaskDetails from "@/components/TaskDetails.vue";
 import VueClipboard from "vue-clipboard2";
+
+import DefinitionDiagram from "@/components/detail-process-definition/DefinitionDiagram.vue";
+
+import DefinitionRunTimeInstances from "@/components/detail-process-definition/DefinitionRunTimeInstances.vue";
+
 import DeployTable from "@/components/bpmasservice/DeployTable.vue";
 import VueGoogleCharts from "vue-google-charts";
 import CommitFile from "@/components/bitbucket-integration/CommitFile.vue";
@@ -71,10 +81,11 @@ Vue.use(VueFormGenerator);
 Vue.config.productionTip = false;
 Vue.use(Notifications);
 Vue.component("vue2vis", vue2vis);
+Vue.component("definition-diagram", DefinitionDiagram);
 Vue.component("deploy-table", DeployTable);
 Vue.component("history-details", HistoryDetails);
 Vue.component("decision-details", DecisionDetails);
-
+Vue.component("definition-runtime-instances", DefinitionRunTimeInstances);
 Vue.component("decision-diagram", DecisionDiagram);
 Vue.component("decision-item", DecisionItem);
 Vue.component("commit-file", CommitFile);
@@ -82,6 +93,7 @@ Vue.component("audit-reader", AuditReader);
 Vue.component("vue-friendly-iframe", VueFriendlyIframe);
 Vue.component("decision-grid", DecisionGrid);
 Vue.component("what-is-this", WhatIsThis);
+Vue.component("definition-metadata", DefinitionMetadata);
 Vue.component("new-diagram", NewDiagram);
 Vue.component("deploy-help", DeployHelp);
 Vue.component("deploy", Deploy);

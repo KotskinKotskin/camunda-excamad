@@ -105,7 +105,7 @@ export default {
 
       return new Promise(function(resolve, reject) {
         vm.$api()
-          .get("/process-definition/" + vm.diagramId + "/xml")
+          .get("/process-definition" + vm.diagramId + "/xml")
           .then(response => {
             vm.diagramInXml = response.data.bpmn20Xml;
             resolve();

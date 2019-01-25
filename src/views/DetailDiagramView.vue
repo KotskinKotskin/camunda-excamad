@@ -1,7 +1,7 @@
 <template>
-<div>
-<detaildiagram :diagramKey="diagramKey"> </detaildiagram>
-</div>
+  <div>
+    <detaildiagram :diagramKey="diagramKey"></detaildiagram>
+  </div>
 </template>
 
 <script>

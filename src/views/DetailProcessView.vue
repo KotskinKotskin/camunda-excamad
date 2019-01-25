@@ -2,28 +2,31 @@
   <div class>
     <b-card bg-variant text-variant="dark">
       <b-nav vertical class="fixed">
-        <small>
-          <b-nav-item href="#processStat" v-scroll-to="'#processStat'">1. Main</b-nav-item>
-          <b-nav-item href="#CurrentActivity" v-scroll-to="'#CurrentActivity'">2. Current activity</b-nav-item>
-          <b-nav-item href="#DecisionDetails" v-scroll-to="'#DecisionDetails'">3. Decisions</b-nav-item>
-          <b-nav-item href="#variableList" v-scroll-to="'#variableList'">4. Variables</b-nav-item>
-          <b-nav-item href="#variableList" v-scroll-to="'#historyDetails'">5. Variables history</b-nav-item>
-          <b-nav-item href="#networkdiagram" v-scroll-to="'#networkdiagram'">6. History digaram</b-nav-item>
-          <b-nav-item href="#stream" v-scroll-to="'#stream'">7. History stream</b-nav-item>
-          <b-nav-item>
-            <p>
-              <b-btn
-                v-clipboard:copy="message"
-                v-clipboard:success="onCopy"
-                v-clipboard:error="onError"
-                size="sm"
-                variant="outline-primary"
-              >
-                <font-awesome-icon icon="share"/>
-              </b-btn>
-            </p>
-          </b-nav-item>
-        </small>
+        <b-btn size="sm" variant="link" v-b-toggle.collapse3 class="m-1">∨</b-btn>
+        <b-collapse id="collapse3">
+          <small>
+            <b-nav-item href="#processStat" v-scroll-to="'#processStat'">1. Main</b-nav-item>
+            <b-nav-item href="#CurrentActivity" v-scroll-to="'#CurrentActivity'">2. Current activity</b-nav-item>
+            <b-nav-item href="#DecisionDetails" v-scroll-to="'#DecisionDetails'">3. Decisions</b-nav-item>
+            <b-nav-item href="#variableList" v-scroll-to="'#variableList'">4. Variables</b-nav-item>
+            <b-nav-item href="#variableList" v-scroll-to="'#historyDetails'">5. Variables history</b-nav-item>
+            <b-nav-item href="#networkdiagram" v-scroll-to="'#networkdiagram'">6. History digaram</b-nav-item>
+            <b-nav-item href="#stream" v-scroll-to="'#stream'">7. History stream</b-nav-item>
+            <b-nav-item>
+              <p>
+                <b-btn
+                  v-clipboard:copy="message"
+                  v-clipboard:success="onCopy"
+                  v-clipboard:error="onError"
+                  size="sm"
+                  variant="outline-primary"
+                >
+                  <font-awesome-icon icon="share"/>
+                </b-btn>
+              </p>
+            </b-nav-item>
+          </small>
+        </b-collapse>
       </b-nav>
       <p class="text-right">
         <b-btn
@@ -103,5 +106,6 @@ export default {
   z-index: 9999;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 3px;
+  background-color: white;
 }
 </style>

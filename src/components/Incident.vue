@@ -119,11 +119,16 @@ export default {
           retries: this.retries,
           jobQuery: this.jobQuerySelected
         })
-        .then(function() {
+        .then(response => {
           var index = this.incidents.indexOf(item);
           if (index > -1) {
             this.incidents.splice(index, 1);
           }
+          this.$notify({
+            group: "foo",
+            title: "Rerun started",
+            type: "info"
+          });
         });
     },
     healAndRetry() {

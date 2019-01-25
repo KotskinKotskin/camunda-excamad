@@ -12,8 +12,7 @@
 
 <script>
 import Navbar from "@/components/NavBar.vue";
-import store from "@/store/store";
-import { AUTH_REQUEST, AUTH_LOGOUT } from "@/store/actions/auth";
+import { AUTH_REQUEST } from "@/store/actions/auth";
 
 export default {
   name: "home",
@@ -29,7 +28,7 @@ export default {
   mounted() {
     if (this.$route.query.dashboard == "true") {
       this.dashboard = true;
-      this.containerClass = "container";
+      this.containerClass = "container width";
     } else this.dashboard = false;
 
     setTimeout(() => {
@@ -67,5 +66,10 @@ export default {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+#containerOverRouter {
+  max-width: 1400px;
+  margin-top: 110px;
 }
 </style>

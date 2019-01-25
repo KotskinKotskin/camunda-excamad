@@ -6,7 +6,7 @@
           <th>Id</th>
           <th>Deploy date</th>
           <th>Deploy name</th>
-          <th>Process key</th>
+          <th>Process id</th>
           <th>Verions</th>
           <th>Documentaion</th>
           <th>Edit</th>
@@ -19,18 +19,25 @@
           <td>{{ convertDateToHumanStyle(item.deploymentTime) }}</td>
           <td>{{ item.name }}</td>
           <td>
-            <b>{{item.processDefinition[0].key}}</b>
+            <router-link
+              v-if="item.processDefinition"
+              :to="{name:'definition', params:{ definitionId: item.processDefinition[0].id}}"
+            >{{ item.processDefinition[0].id}}</router-link>
           </td>
-          <td>{{item.processDefinition[0].version}}</td>
+          <td
+            v-if="item.processDefinition"
+          >{{item.processDefinition[0].version ? item.processDefinition[0].version : 'error'}}</td>
           <td>
             <router-link
+              v-if="item.processDefinition"
               :to="{name:'deployhelp', params:{ diagramId: item.processDefinition[0].id}}"
             >Check</router-link>
           </td>
           <td>
             <router-link
+              v-if="item.processDefinition"
               :to="{name:'newdiagram', params:{ diagramKey: item.processDefinition[0].key}}"
-            >Create new version</router-link>
+            >Check</router-link>
           </td>
           <td>
             <b-btn
@@ -47,43 +54,49 @@
 
 <script>
 import * as api from "@/api/api";
-import store from "@/store/store";
-import { prototype } from "ids";
+
 export default {
   name: "DeployTable",
   data() {
     return {
-      ready: false,
+      ready: true,
       deployedProcess: []
     };
   },
   created() {
     this.getDeployedProcess();
   },
-  mounted() {
-    setTimeout(() => {
-      this.ready = true;
-    }, 200);
-  },
+  mounted() {},
   methods: {
     getDeployedProcess() {
       api
         .getEntity(
           "deployment",
           "",
-          "source=" +
-            this.$store.getters.getProfile.userName +
-            "&&sortBy=deploymentTime&&sortOrder=desc"
+          // "source=" +
+          //   this.$store.getters.getProfile.userName +
+          "sortBy=deploymentTime&&sortOrder=desc&maxResults=50"
         )
 
         .then(value => {
-          this.deployedProcess = value;
+          var itemsProcessed = 0;
+
           value.forEach(element => {
-            api
-              .getEntity("process-definition", "", "deploymentId=" + element.id)
-              .then(response => {
-                this.$set(element, "processDefinition", response);
-              });
+            if (element.id != null) {
+              this.$api()
+                .get("/process-definition?deploymentId=" + element.id)
+                .then(response => {
+                  itemsProcessed++;
+                  if (response.data != null) {
+                    this.$set(element, "processDefinition", response.data);
+                    this.deployedProcess.push(element);
+                  }
+                  if (response.data == null) {
+                    this.$set(element, "processDefinition");
+                    this.deployedProcess.push(element);
+                  }
+                });
+            }
           });
         });
     },

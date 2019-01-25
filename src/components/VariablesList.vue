@@ -33,7 +33,9 @@ export default {
 
   methods: {
     calculateName(item) {
-      return item.name + " = " + item.value;
+      var obj = item.name;
+
+      return obj;
     },
     getVariables() {
       this.variables = [];
@@ -45,9 +47,11 @@ export default {
         .then(response => {
           this.variables = response.data;
 
-          this.applicationId = response.data.filter(obj => {
-            return obj.name === "applicationId";
-          })[0].value;
+          try {
+            this.applicationId = response.data.filter(obj => {
+              return obj.name === "applicationId";
+            })[0].value;
+          } catch (error) {}
         });
     }
   }

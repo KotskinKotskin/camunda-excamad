@@ -171,7 +171,6 @@ export default {
             var result = "";
             this.network.nodes.forEach(element => {
               if (element.label == this.historyDetails[i].activityInstanceId) {
-                console.log(element.id);
                 result = element.id;
               }
             });

@@ -36,7 +36,6 @@
           <th>Active</th>
           <th>Done</th>
           <th>Incidents</th>
-          <th>Online stat</th>
         </tr>
       </thead>
       <tbody>
@@ -61,35 +60,11 @@
             <small>{{ item.version }}, {{item.deployTimeString}}</small>
           </td>
           <td>
-            <router-link :to="{name:'diagram', params:{ diagramKey: item.key}}">{{ item.id }}</router-link>
+            <router-link :to="{name:'definition', params:{ definitionId: item.id}}">{{ item.id }}</router-link>
           </td>
           <td>{{item.activeCount}}</td>
           <td>{{item.endedCount}}</td>
           <td>{{item.incidentCount}}</td>
-          <td>
-            <b-btn
-              size="sm"
-              v-b-modal="'modal'+item.id"
-              variant="outline-info"
-              @click="getActivityAndCalculate(item)"
-            >
-              <font-awesome-icon icon="search"/>
-            </b-btn>
-          </td>
-          <b-modal
-            @hidden="onHide(item)"
-            class="my-modal"
-            hide-footer
-            size="lg"
-            :id="'modal'+item.id"
-            title="Statistic"
-          >
-            <diagram
-              v-if="item.showModal"
-              :processActivityToShowArray="finalPropsArray"
-              :processDefinitionId="item.id"
-            ></diagram>
-          </b-modal>
         </tr>
       </tbody>
     </table>

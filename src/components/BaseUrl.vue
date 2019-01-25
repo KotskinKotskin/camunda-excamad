@@ -36,13 +36,23 @@ v-on:keyup.enter="userSetBaseUrl()"
             
              </div>
               <small> <b-link href="#" @click="clear">Clear</b-link> </small>
+              
       </div>
       </form>    
        <div class="form-check">
     <input v-model="workOnBpmasservicePrivate" :click="setWorkOnBPMasSerivce(workOnBpmasservicePrivate)" type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">BPMaS</label>
-  </div>
+    <label class="form-check-label" for="exampleCheck1">BPMaS</label> <br>
+    <small> Current url {{bpmasserviceUrl}} </small> <br>
+      </div>
      </div>
+     <b-form v-if="workOnBpmasservicePrivate" inline>
+       
+      <label class="sr-only" for="inlineFormInputName2">Name</label>
+      <b-input v-model="privateBpmasUrl" class="mb-2 mr-sm-2 mb-sm-0" id="inlineFormInputName2" placeholder="Jane Doe" />
+      <label class="sr-only"  for="inlineFormInputGroupUsername2">Username</label>
+
+      <b-button @click="setCustomBPMasUrl(privateBpmasUrl)" variant="primary">Save as BPMas URL</b-button>
+    </b-form>
   </b-card>
 
 
@@ -64,6 +74,7 @@ export default {
       workOnBpmasservicePrivate: false,
       list: [],
       privateurl: "",
+      privateBpmasUrl: "",
       candidateToSuggest: "",
       productionAlert: "",
       testAlert: "",
@@ -103,6 +114,7 @@ export default {
 
     this.checkEnvortment();
     this.healthcheck();
+
     setInterval(
       function growUp() {
         this.healthcheck();
@@ -118,6 +130,9 @@ export default {
   computed: {
     baseurl() {
       return this.$store.state.baseurl;
+    },
+    bpmasserviceUrl() {
+      return this.$store.state.bpmasserviceUrl;
     }
   },
   methods: {
@@ -129,6 +144,9 @@ export default {
     },
     setWorkOnBPMasSerivce(workOnBpmasservicePrivate) {
       this.$store.commit("changeworkOnBpmasservice", workOnBpmasservicePrivate);
+    },
+    setCustomBPMasUrl(privateUrl) {
+      this.$store.commit("setBpmasserviceUrl", this.privateBpmasUrl);
     },
 
     calculateVariant: function(item) {
