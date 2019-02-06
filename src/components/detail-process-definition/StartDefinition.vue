@@ -1,7 +1,7 @@
 <template>
   <div id="startDefinition">
     <b-btn
-      :disabled="!isAuthenticated"
+     
       size="sm"
       v-b-modal.myModal
       variant="success"
