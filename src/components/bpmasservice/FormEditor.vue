@@ -118,15 +118,21 @@ export default {
       selectedType: "",
       selectedEnum: [],
       readOnly: false,
+      testObj: "",
       required: false,
       selectedProps: [],
       previewDone: false,
-      typeOptions: ["Time", "String", "JSON", "boolean", "Enum"],
+      typeOptions: ["Time", "String", "JSON", "boolean", "Enum", "Table"],
       propsByType: [
         {
           type: "Time",
           typeForVariable: "string",
           props: [{ type: "TCEDataPicker" }, { validator: "date" }]
+        },
+        {
+          type: "Table",
+          typeForVariable: "string",
+          props: [{ type: "TCETable" }]
         },
         {
           type: "String",
@@ -156,8 +162,6 @@ export default {
     };
   },
   watch: {
-    selectedType: function(oldValue, newValue) {},
-    selectedField: function(oldValue, newValue) {},
     idSelectedField: function(newValue, oldValue) {
       if (oldValue.selectedFieldId == newValue.selectedFieldId) {
         var defaultProps = this.getDefaultProps(newValue.selectedType);
@@ -262,6 +266,24 @@ export default {
     }
   },
   methods: {
+    isJson(str) {
+      try {
+        JSON.parse(str);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    },
+    whatToAddToModel(element) {
+      if (element.defaultValue) {
+        if (this.isJson(element.defaultValue)) {
+         
+
+          var obj = JSON.parse(element.defaultValue);
+          return obj;
+        } else return element.defaultValue;
+      } else return "";
+    },
     generatePreview() {
       this.formGeneratorKey = this.formGeneratorKey + 1;
       this.model = {};
@@ -269,11 +291,10 @@ export default {
       this.previewDone = false;
       var fieldsToSchema = [];
       this.fields.forEach(element => {
-        this.$set(
-          this.model,
-          element.id,
-          element.defaultValue ? element.defaultValue : ""
-        );
+        var obj = this.whatToAddToModel(element);
+    
+        this.$set(this.model, element.id, obj);
+
         var field = {};
         field["model"] = element.id;
         field["label"] = element.label;
@@ -299,9 +320,9 @@ export default {
             ? element.properties.values.find(q => q.id === "inputType").value
             : element.properties.values.find(q => q.id === "type").value
         );
-
+       
         var defaultProps = this.getDefaultProps(complexType);
-
+     
         defaultProps.props.forEach(element => {
           for (var key in element) {
             field[key] = element[key];
@@ -326,6 +347,8 @@ export default {
         return "boolean";
       } else if (type == "enum" && inputType == "checklist") {
         return "Enum";
+      } else if (type == "string" && inputType == "TCETable") {
+        return "Table";
       }
     },
     getDefaultProps: function(complexType) {
@@ -339,7 +362,7 @@ export default {
       this.selectedType = "";
       this.selectedField = {};
       this.selectedField = this.fields.find(x => x.id === item.id);
-      var prefiledOptions = {};
+      
       if (
         this.selectedField.type == "string" &&
         this.selectedField.properties.values.find(
@@ -367,6 +390,11 @@ export default {
         this.selectedField.properties.values.find(x => x.value === "checklist")
       ) {
         this.selectedType = "Enum";
+      } else if (
+        this.selectedField.type == "string" &&
+        this.selectedField.properties.values.find(x => x.value === "TCETable")
+      ) {
+        this.selectedType = "Table";
       }
       try {
         this.readOnly =
@@ -378,7 +406,9 @@ export default {
         this.required =
           this.selectedField.properties.values.find(z => z.id === "required")
             .value == "true";
-      } catch (error) {}
+      } catch (error) {
+        
+      }
 
       if (this.selectedType == "Enum") {
         this.selectedField.values.forEach(element => {

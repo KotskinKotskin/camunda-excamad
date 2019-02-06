@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <navbar v-if="!dashboard"></navbar>
+    <navbar v-on:refresh="refreshRoute" v-if="!dashboard"></navbar>
     <transition name="fade">
       <div id="containerOverRouter" :class="containerClass">
-        <router-view :key="$route.fullPath" class="mt-3"/>
+        <router-view :key="$route.fullPath + key" class="mt-3"/>
       </div>
     </transition>
     <notifications group="foo"/>
@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       containerClass: "",
+      key: 1,
       dashboard: false
     };
   },
@@ -48,6 +49,10 @@ export default {
     }
   },
   methods: {
+    refreshRoute() {
+      this.key = this.key + 1;
+     
+    },
     ContainerOrNot: function() {
       this.containerClass = "container";
       if (this.dashboard == true) {

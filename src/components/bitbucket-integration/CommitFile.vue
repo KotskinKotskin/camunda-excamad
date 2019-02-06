@@ -83,7 +83,7 @@ export default {
             "/branches/",
           {
             name: "userdeploy/" + Number(new Date()),
-            startPoint: "refs/heads/master"
+            startPoint: "refs/heads/develop"
           },
           {
             headers: {

@@ -41,19 +41,13 @@
               <b-nav-item-dropdown text="Misc" right>
                 <b-dropdown-item to="/deploytable">Deployments</b-dropdown-item>
               </b-nav-item-dropdown>
+              <b-button @click="refresh" size="sm" variant="outline-secondary" class="my-2 my-sm-0">
+                <font-awesome-icon icon="redo"/>
+              </b-button>
             </b-navbar-nav>
 
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
-              <input
-                class="mt-1 routerinput"
-                size="sm"
-                placeholder="search"
-                type="text"
-                v-model="query"
-                v-smart-routes="routes"
-                v-on:keyup.enter="routes[0].handler"
-              >
               <ul class="ulrouter" v-if="routes.length">
                 <b-list-group>
                   <b-list-group-item
@@ -64,7 +58,7 @@
                   ></b-list-group-item>
                 </b-list-group>
               </ul>
-
+              <search v-on:setUrlFromSearch="setUrlFromEmit"></search>
               <b-nav-item to="/settings">Settings</b-nav-item>
               <b-nav-item-dropdown text="Systems" right>
                 <b-dropdown-item-button
@@ -122,6 +116,11 @@
 </template>
 
 <script>
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faSync);
+
 import {
   PRODSUBSTRING,
   TESTSUBSTRING,
@@ -213,11 +212,17 @@ export default {
     expertCurrent(newExpertCurrent) {
       localStorage.expertCurrent = newExpertCurrent;
     },
-    baseurl(newPrivateurl) {
+    baseurl() {
       this.getList();
     }
   },
   methods: {
+    setUrlFromEmit: function(newUrl) {
+      this.userSetBaserUrlFromBadge(newUrl);
+    },
+    refresh() {
+      this.$emit("refresh");
+    },
     calculatePillColorForUrl(name) {
       var testAlert = name.indexOf(this.substringForTest);
       var productionAlert = name.indexOf(this.substringForProduction);
@@ -252,19 +257,15 @@ export default {
       }
     },
 
-    goFirstRoute() {
-      if (this.routes) {
-      }
-    },
     healthcheck() {
       this.$api()
         .get("/engine")
-        .then(response => {
+        .then(() => {
           this.status = "UP";
           this.statusDate = Date();
           this.$store.commit("changeServerStatus", true); //
         })
-        .catch(response => {
+        .catch(() => {
           this.status = "DOWN";
           this.statusDate = Date();
           this.$store.commit("changeServerStatus", false); //
@@ -310,6 +311,7 @@ export default {
       });
       this.$store.commit("setBaseUrl", item);
       this.checkEnvortment();
+      this.refresh();
     },
     commitExpertMode() {
       this.$notify({
@@ -339,7 +341,7 @@ export default {
   background-color: white;
   border-bottom: solid 2px #cecece;
 }
-,
+
 .hide {
   border: solid 0px;
   height: 35px;

@@ -334,6 +334,7 @@ export default {
     drawOverlays: function(bpmnViewer) {
       var canvas = bpmnViewer.get("canvas"),
         overlays = bpmnViewer.get("overlays");
+
       var elementRegistry = bpmnViewer.get("elementRegistry");
       canvas.zoom("0.9");
 

@@ -81,7 +81,7 @@ export default {
 };
 </script>
 
-<style scoled>
+<style scoped>
 tr.info {
   background: #6c757d;
   color: white;

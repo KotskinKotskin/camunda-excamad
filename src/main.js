@@ -12,43 +12,55 @@ import ActivityList from "@/components/ActivityList.vue";
 import Login from "@/components/Login.vue";
 import VariableModify from "@/components/VariableModify.vue";
 import OldActivity from "@/components/OldActivity.vue";
-import DetailDiagram from "@/components/detail-process-diagram/DetailDiagram.vue";
+import DetailDiagram from "@/components/detail-process-instance/DetailDiagram.vue";
 import DeployHelp from "@/components/bpmasservice/DeployHelp.vue";
 import EmbeddedDiagram from "@/components/EmbeddedDiagram.vue";
 import FormEditor from "@/components/bpmasservice/FormEditor.vue";
 import Deploy from "@/components/bpmasservice/Deploy.vue";
 import VariableList from "@/components/VariablesList.vue";
 import JiraStat from "@/components/jira-integration/JiraStat.vue";
-import DetailProcessStat from "@/components/detail-process-diagram/DetailProcessStat.vue";
+import DetailProcessStat from "@/components/detail-process-instance/DetailProcessStat.vue";
 import NewDiagram from "@/components/bpmasservice/NewDiagram.vue";
-import PrepareCurrentStateAndDiagram from "@/components/PrepareCurrentStateAndDiagram.vue";
+import PrepareCurrentStateAndDiagram from "@/components/detail-process-instance/PrepareCurrentStateAndDiagram.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueJsonPretty from "vue-json-pretty";
-import DetailIncident from "@/components/detail-process-diagram/DetailIncident.vue";
+import DetailIncident from "@/components/detail-process-instance/DetailIncident.vue";
 import Notifications from "vue-notification";
-import AuditReader from "@/components/detail-process-diagram/AuditReader.vue";
+import AuditReader from "@/components/detail-process-instance/AuditReader.vue";
 import DecisionGrid from "@/components/decisions/DecisionGrid.vue";
-import Tasklist from "@/components/TaskList.vue";
+import Tasklist from "@/components/tasklist/TaskList.vue";
 import DefinitionMetadata from "@/components/detail-process-definition/DefinitionMetadata.vue";
 import VueFormGenerator from "vue-form-generator";
 
 import StartDefinition from "@/components/detail-process-definition/StartDefinition.vue";
 Vue.component("start-definition", StartDefinition);
 
-import TaskDetails from "@/components/TaskDetails.vue";
+import TaskDetails from "@/components/tasklist/TaskDetails.vue";
 import VueClipboard from "vue-clipboard2";
+
+import DefinitionHistoryInstances from "@/components/detail-process-definition/DefinitionHistoryInstances.vue";
+Vue.component("definition-history-instances", DefinitionHistoryInstances);
 
 import DefinitionDiagram from "@/components/detail-process-definition/DefinitionDiagram.vue";
 
 import DefinitionRunTimeInstances from "@/components/detail-process-definition/DefinitionRunTimeInstances.vue";
 
+import IncidentsHistory from "@/components/detail-instance/IncidentsHistory.vue";
+
+Vue.component("incidents-history", IncidentsHistory);
+
+import Search from "@/components/smart-search/Search.vue";
+Vue.component("search", Search);
+
 import DeployTable from "@/components/bpmasservice/DeployTable.vue";
 import VueGoogleCharts from "vue-google-charts";
 import CommitFile from "@/components/bitbucket-integration/CommitFile.vue";
 import vue2vis from "vue2vis";
-import networkDigaram from "@/components/detail-process-diagram/NetworkDiagram.vue";
-import fieldTCEDataPicker from "@/customFields/fieldTCEDataPicker.vue";
-import fieldTCEJson from "@/customFields/fieldTCEJson.vue";
+import networkDigaram from "@/components/detail-process-instance/NetworkDiagram.vue";
+import fieldTCEDataPicker from "@/components/tasklist/customFields/fieldTCEDataPicker.vue";
+import fieldTCEJson from "@/components/tasklist/customFields/fieldTCEJson.vue";
+import fieldTCETable from "@/components/tasklist/customFields/fieldTCETable.vue";
+
 import WhatIsThis from "@/components/bpmasservice/WhatIsThis.vue";
 import DecisionDetails from "@/components/decisions/DecisionDetails.vue";
 import DecisionDiagram from "@/components/decisions/DecisionDiagram.vue";
@@ -58,6 +70,12 @@ import vSuggest from "v-suggest";
 import HistoryDetails from "@/components/detail-instance/HistoryDetails.vue";
 import { ClientTable } from "vue-tables-2";
 Vue.use(ClientTable);
+
+import MoveToken from "@/components/detail-instance/MoveToken.vue";
+Vue.component("move-token", MoveToken);
+
+import SendMessage from "@/components/detail-instance/SendMessage.vue";
+Vue.component("send-message", SendMessage);
 
 import BootstrapVue from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -71,6 +89,7 @@ Vue.use(JsonEditor);
 Vue.use(vSuggest);
 Vue.component("fieldTCEDataPicker", fieldTCEDataPicker);
 Vue.component("fieldTCEJson", fieldTCEJson);
+Vue.component("fieldTCETable", fieldTCETable);
 
 Vue.use(VueGoogleCharts);
 var moment = require("moment");

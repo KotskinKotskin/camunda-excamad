@@ -20,8 +20,8 @@
             :definitionId="definitionId"
           ></definition-runtime-instances>
         </b-tab>
-        <b-tab title="History" disabled>
-          <br>History
+        <b-tab title="History instances">
+          <definition-history-instances :definitionId="definitionId"></definition-history-instances>
         </b-tab>
         <b-tab title="Incidents" disabled>
           <br>Incidents

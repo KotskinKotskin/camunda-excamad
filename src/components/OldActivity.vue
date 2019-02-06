@@ -10,12 +10,17 @@
           <th>Activity</th>
           <th>Activity type</th>
           <th>Instance</th>
+          <th>Business key</th>
         </tr>
       </thead>
       <tbody>
         <tr :key="item.id" v-for="item in oldActivites">
           <td style="word-break:break-all;">{{convertDateToHumanStyle(item.startTime)}}</td>
-          <td style="word-break:break-all;">{{item.processDefinitionKey}}</td>
+          <td style="word-break:break-all;">
+            <router-link
+              :to="{name:'definition', params:{ definitionId: item.processDefinitionId}}"
+            >{{ item.processDefinitionId }}</router-link>
+          </td>
           <td style="word-break:break-all;">{{item.activityId}}</td>
           <td style="word-break:break-all;">{{item.activityType}}</td>
           <td style="word-break:break-all;">
@@ -27,6 +32,7 @@
               </p>
             </router-link>
           </td>
+          <td style="word-break:break-all;">{{item.processInstance.businessKey}}</td>
         </tr>
       </tbody>
     </table>
@@ -61,7 +67,21 @@ export default {
             this.momentdays +
             "&sortBy=startTime&sortOrder=asc&maxResults=200"
         )
-        .then(value => (this.oldActivites = value));
+        .then(value => {
+          value.forEach(element => {
+            api
+              .getEntity(
+                "process-instance/" + element.processInstanceId,
+                "",
+                ""
+              )
+              .then(response => {
+                this.$set(element, "processInstance", response);
+              });
+          });
+
+          this.oldActivites = value;
+        });
     },
     findSubtractDate: function() {
       var date = new Date();

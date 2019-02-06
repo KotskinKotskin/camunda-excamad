@@ -45,14 +45,6 @@ v-on:keyup.enter="userSetBaseUrl()"
     <small> Current url {{bpmasserviceUrl}} </small> <br>
       </div>
      </div>
-     <b-form v-if="workOnBpmasservicePrivate" inline>
-       
-      <label class="sr-only" for="inlineFormInputName2">Name</label>
-      <b-input v-model="privateBpmasUrl" class="mb-2 mr-sm-2 mb-sm-0" id="inlineFormInputName2" placeholder="Jane Doe" />
-      <label class="sr-only"  for="inlineFormInputGroupUsername2">Username</label>
-
-      <b-button @click="setCustomBPMasUrl(privateBpmasUrl)" variant="primary">Save as BPMas URL</b-button>
-    </b-form>
   </b-card>
 
 
@@ -185,31 +177,55 @@ export default {
       localStorage.urllist = JSON.stringify(this.list);
     },
     userSetBaserUrlFromBadge(item) {
-      this.$notify({
-        group: "foo",
-        title: "URL setuped",
-        text: this.privateurl,
-        type: "success"
-      });
-      this.privateurl = item;
-      this.privateurl = this.privateurl.replace(/\s+/g, "");
-      this.setBaseUrl();
+      if (this.workOnBpmasservicePrivate == true) {
+        this.privateBpmasUrl = item;
+        this.setCustomBPMasUrl(this.privateurl);
+
+        this.$notify({
+          group: "foo",
+          title: " BPMaS URL setuped",
+          text: item,
+          type: "success"
+        });
+      } else {
+        this.$notify({
+          group: "foo",
+          title: "URL setuped",
+          text: this.privateurl,
+          type: "success"
+        });
+        this.privateurl = item;
+        this.privateurl = this.privateurl.replace(/\s+/g, "");
+        this.setBaseUrl();
+      }
     },
 
     userSetBaseUrl() {
-      this.$notify({
-        group: "foo",
-        title: "URL setuped",
-        text: this.privateurl,
-        type: "success"
-      });
-      this.privateurl = this.privateurl.replace(/\s+/g, "");
-      var lastsimbol = this.privateurl[this.privateurl.length - 1];
-      if (lastsimbol != "/") {
-        this.privateurl = this.privateurl + "/";
+      if (this.workOnBpmasservicePrivate == true) {
+        this.privateBpmasUrl = this.privateurl;
+        this.setCustomBPMasUrl(this.privateurl);
+
+        this.$notify({
+          group: "foo",
+          title: "BPMaS URL",
+          text: this.privateurl,
+          type: "success"
+        });
+      } else {
+        this.$notify({
+          group: "foo",
+          title: "URL setuped",
+          text: this.privateurl,
+          type: "success"
+        });
+        this.privateurl = this.privateurl.replace(/\s+/g, "");
+        var lastsimbol = this.privateurl[this.privateurl.length - 1];
+        if (lastsimbol != "/") {
+          this.privateurl = this.privateurl + "/";
+        }
+        this.setBaseUrl();
+        this.addToSuggest();
       }
-      this.setBaseUrl();
-      this.addToSuggest();
     },
     setBaseUrl() {
       this.$store.commit("setBaseUrl", this.privateurl);

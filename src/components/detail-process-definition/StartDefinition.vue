@@ -1,6 +1,12 @@
 <template>
   <div id="startDefinition">
-    <b-btn size="sm" v-b-modal.myModal variant="success" @click="getActivityList()">Start process</b-btn>
+    <b-btn
+      :disabled="!isAuthenticated"
+      size="sm"
+      v-b-modal.myModal
+      variant="success"
+      @click="getActivityList()"
+    >Start process</b-btn>
     <b-modal
       v-on:ok="startProcess"
       centered
@@ -10,7 +16,7 @@
       :title="'Start process ' + definitionId"
       id="myModal"
     >
-      <b-form-checkbox v-model="startWithVariable">Start with variables</b-form-checkbox>
+      <b-form-checkbox disabled v-model="startWithVariable">Start with variables</b-form-checkbox>
       <div v-if="startWithVariable" id="variables">
         <b-btn @click="addVariable()" class="mt-1 mb-1" variant="link" size="sm">
           <font-awesome-icon icon="plus"/>Add
@@ -25,9 +31,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in arrayOfVaribales">
+            <tr :key="index" v-for="(item,index) in arrayOfVaribales">
               <td>
                 <b-form-input
+                  :disabled="arrayOfVaribales[index].name == 'initiator'"
                   v-model="arrayOfVaribales[index].name"
                   type="text"
                   placeholder="Enter variable"
@@ -35,6 +42,7 @@
               </td>
               <td>
                 <b-form-select
+                  :disabled="arrayOfVaribales[index].name == 'initiator'"
                   v-model="arrayOfVaribales[index].type"
                   :options="variablesTypes"
                   class="mb-3"
@@ -42,13 +50,20 @@
               </td>
               <td>
                 <b-form-input
+                  :disabled="arrayOfVaribales[index].name == 'initiator'"
                   v-model="arrayOfVaribales[index].value"
                   type="text"
                   placeholder="Enter variable"
                 ></b-form-input>
               </td>
               <td>
-                <b-btn @click="removeItem(index)" class="mt-1" variant="link" size="sm">
+                <b-btn
+                  :disabled="arrayOfVaribales[index].name == 'initiator'"
+                  @click="removeItem(index)"
+                  class="mt-1"
+                  variant="link"
+                  size="sm"
+                >
                   <font-awesome-icon icon="minus"/>
                 </b-btn>
               </td>
@@ -105,7 +120,7 @@ export default {
   data() {
     return {
       query: "",
-      arrayOfVaribales: [{ name: "", type: "String", value: "" }],
+      arrayOfVaribales: [{ name: "initiator", type: "String", value: "" }],
       activityList: [],
       instanceToCopyVariables: "",
       variablesFromHistory: "",
@@ -119,15 +134,29 @@ export default {
         "Object"
       ],
       selectedActivity: "",
-      startWithVariable: false,
+      startWithVariable: true,
       startFromSpecificActivity: false,
       definitionInXml: "",
       ready: false
     };
   },
+  computed: {
+    profile() {
+      return this.$store.getters.getProfile;
+    },
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated;
+    }
+  },
   methods: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
     removeItem(item) {
       this.arrayOfVaribales.splice(item, 1);
+    },
+    getUserName() {
+      return this.profile.userName;
     },
 
     startProcess() {
@@ -161,7 +190,7 @@ export default {
           objectToRun
         )
         .then(response => {
-          console.log(response.data);
+
           var url =
             ' <a href="#/processdetail/' +
             response.data.id +
@@ -182,7 +211,7 @@ export default {
             type: "error"
           });
         });
-      console.log(objectToRun);
+  
     },
     serialazier(item) {
       var searchobj = "";
@@ -278,6 +307,12 @@ export default {
   },
   mounted() {
     this.getActivityList();
+    this.arrayOfVaribales[0].value = this.getUserName();
+  },
+  watch: {
+    isAuthenticated(newValue, OldValue) {
+      this.arrayOfVaribales[0].value = this.getUserName();
+    }
   }
 };
 </script>

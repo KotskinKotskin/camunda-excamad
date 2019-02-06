@@ -10,8 +10,9 @@
             <b-nav-item href="#DecisionDetails" v-scroll-to="'#DecisionDetails'">3. Decisions</b-nav-item>
             <b-nav-item href="#variableList" v-scroll-to="'#variableList'">4. Variables</b-nav-item>
             <b-nav-item href="#variableList" v-scroll-to="'#historyDetails'">5. Variables history</b-nav-item>
-            <b-nav-item href="#networkdiagram" v-scroll-to="'#networkdiagram'">6. History digaram</b-nav-item>
-            <b-nav-item href="#stream" v-scroll-to="'#stream'">7. History stream</b-nav-item>
+            <b-nav-item href="#variableList" v-scroll-to="'#incidentsHistory'">6. Incidents history</b-nav-item>
+            <b-nav-item href="#networkdiagram" v-scroll-to="'#networkdiagram'">7. History digaram</b-nav-item>
+            <b-nav-item href="#stream" v-scroll-to="'#stream'">8. History stream</b-nav-item>
             <b-nav-item>
               <p>
                 <b-btn
@@ -42,12 +43,12 @@
       <detail-incident :processInstanceId="processInstanceId"></detail-incident>
 
       <detailprocessstat :processInstanceId="processInstanceId"></detailprocessstat>
-
       <currentstate class="mt-5" :processInstanceId="processInstanceId"></currentstate>
       <decision-details class="mt-5" :processInstanceId="processInstanceId"></decision-details>
 
       <variable-list class="mt-5" :processInstanceId="processInstanceId"></variable-list>
       <history-details class="mt-5" :processInstanceId="processInstanceId"></history-details>
+      <incidents-history class="mt-5" :processInstanceId="processInstanceId"></incidents-history>
       <network-diagram class="mt-5" :processInstanceId="processInstanceId"></network-diagram>
       <stream class="mt-5" :processInstanceId="processInstanceId"></stream>
     </b-card>
@@ -101,7 +102,7 @@ export default {
 @import "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.1/vis.min.css";
 .fixed {
   position: fixed;
-  top: 60%;
+  top: 40%;
   left: 1%;
   z-index: 9999;
   border: 1px solid rgba(0, 0, 0, 0.125);

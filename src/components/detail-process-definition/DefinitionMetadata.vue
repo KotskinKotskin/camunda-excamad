@@ -280,6 +280,4 @@ export default {
 
   z-index: 99;
 }
-.atom-spinner {
-}
 </style>

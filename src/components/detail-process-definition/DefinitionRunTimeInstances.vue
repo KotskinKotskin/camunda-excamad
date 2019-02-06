@@ -226,7 +226,7 @@ export default {
         });
     },
     calculateTotalPage() {
-      this.totalPage = Math.round(this.runtimeCount / this.maxResult);
+      this.totalPage = Math.round(this.runtimeCount / this.maxResult) + 1;
     }
   }
 };
