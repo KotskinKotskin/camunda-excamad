@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <deploy-table></deploy-table>
+  <div id="ReportView">
+    <report></report>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Deploy Table"
+  name: "ReportView"
 };
 </script>
 

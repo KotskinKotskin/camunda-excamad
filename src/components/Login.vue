@@ -17,7 +17,12 @@
           class="ml-2 my-2 my-sm-0"
         >
           <img class="face" :src="calculatePhoto(profile.userName)">
-          <b>{{profile.userName}}</b>
+          <small>
+            {{profile.userName}}
+            <b-badge pill :variant="calculateADPillColor()">A</b-badge>
+            <b-badge pill :variant="calculateCAPillColor()">C</b-badge>
+          </small>
+          <br>
         </b-button>
       </b-nav-form>
     </b-navbar-nav>
@@ -54,7 +59,11 @@
 </template>
 
 <script>
-import { AUTH_REQUEST, AUTH_LOGOUT } from "@/store/actions/auth";
+import {
+  AUTH_REQUEST,
+  AUTH_LOGOUT,
+  AUTH_CAMUNDA_REQUEST
+} from "@/store/actions/auth";
 import { USERPHOTOLOADURL } from "@/config/settings";
 export default {
   name: "Login",
@@ -69,6 +78,9 @@ export default {
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
     },
+    isCamundaAuthenticated() {
+      return this.$store.getters.isCamundaAuthenticated;
+    },
     authStatus() {
       return this.$store.getters.authStatus;
     },
@@ -77,6 +89,16 @@ export default {
     }
   },
   methods: {
+    calculateADPillColor() {
+      if (this.isAuthenticated) {
+        return "success";
+      } else return "secondary";
+    },
+    calculateCAPillColor() {
+      if (this.isCamundaAuthenticated) {
+        return "success";
+      } else return "secondary";
+    },
     calculatePhoto(user) {
       return USERPHOTOLOADURL + user + ".png";
     },
@@ -85,6 +107,9 @@ export default {
     },
     login: function() {
       const { userName, password } = this;
+      this.$store
+        .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
+        .then(() => {});
       this.$store.dispatch(AUTH_REQUEST, { userName, password }).then(() => {
         this.$refs.myModalRef.hide();
       });
