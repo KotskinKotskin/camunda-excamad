@@ -4,10 +4,15 @@
       <b-input
         v-model="userSearchObj.name"
         class="mb-2 mr-sm-2 mb-sm-0"
+        id="inlineFormInputName2"
         placeholder="applicationId"
       />
       <b-input-group left="@" class="mb-2 mr-sm-2 mb-sm-0">
-        <b-input v-model="userSearchObj.value" placeholder="20190201133328115IBL329027"/>
+        <b-input
+          v-model="userSearchObj.value"
+          id="inlineFormInputGroupUsername2"
+          placeholder="20190201133328115IBL329027"
+        />
       </b-input-group>
       <b-button @click="clickSearch" variant="success">Search</b-button>
       <b-button @click="clear" variant="link">Clear</b-button>
@@ -66,13 +71,12 @@ export default {
       currentPage: 1,
       maxResult: 20,
       totalResult: 0,
-      totalPage: 0,
       userSearchObj: {
         name: "",
         operator: "eq",
         value: ""
       },
-
+      totalPage: 0,
       historyProcessInstances: null
     };
   },

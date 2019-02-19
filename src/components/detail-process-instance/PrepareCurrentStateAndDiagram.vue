@@ -46,8 +46,6 @@
         :processDefinitionId="processDefinition"
         :processInstanceId="processInstanceId"
       ></send-message>
-      <detail-jobs :processInstanceId="processInstanceId"></detail-jobs>
-      <br>
     </b-card>
   </div>
 </template>

@@ -76,7 +76,7 @@ export default {
       diagramInXml: "",
       ready: false,
       elementsOfDiagram: "",
-
+      processKey: "",
       arrayOfTopic: []
     };
   },
@@ -87,20 +87,15 @@ export default {
     });
   },
   computed: {
-    processKey() {
-      var index = this.diagramId.indexOf(":");
-
-      return this.diagramId.slice(0, index);
-    },
     bpmasurl: function() {
       return this.$store.state.bpmasserviceUrl;
     },
     versionStart: function() {
-      return this.bpmasurl + "process-definition/" + this.diagramId + "/start";
+      return this.bpmasurl + "/process-definition/" + this.diagramId + "/start";
     },
     lastVersionStart: function() {
       return (
-        this.bpmasurl + "process-definition/key/" + this.processKey + "/start"
+        this.bpmasurl + "/process-definition/key/" + this.processKey + "/start"
       );
     }
   },

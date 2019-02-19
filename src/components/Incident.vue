@@ -1,12 +1,5 @@
 <template>
   <div id="incident">
-    <atom-spinner
-      v-if="!(ready == true)"
-      class="spinner"
-      :animation-duration="1000"
-      :size="60"
-      :color="'#007bff'"
-    />
     <h2>Incidents count: {{incidents.length}}</h2>
 
     <div v-if="incidents.length != 0">
@@ -78,11 +71,7 @@
         </div>
       </small>
     </div>
-    <div
-      v-if="incidents.length == 0 && ready==true"
-      class="alert alert-primary"
-      role="alert"
-    >No incidents!</div>
+    <div v-if="incidents.length == 0" class="alert alert-primary" role="alert">No incidents!</div>
     <hr>
   </div>
 </template>
@@ -100,7 +89,6 @@ export default {
     return {
       containerClass: "",
       incidents: [],
-      ready: null,
       retries: 3,
       jobQuery: {
         withRetriesLeft: 0,
@@ -119,10 +107,7 @@ export default {
     getAllIncidents() {
       api
         .getEntity("incident", "", "sortBy=incidentTimestamp&sortOrder=desc")
-        .then(value => {
-          this.incidents = value;
-          this.ready = true;
-        });
+        .then(value => (this.incidents = value));
     },
     updateSingleJobRetry(item) {
       this.jobQuerySelected.processInstanceId = [];

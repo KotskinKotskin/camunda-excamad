@@ -99,7 +99,6 @@ export default {
          
         })
         .catch(() => {
-           reject();
           vm.fieldsOk = false;
         });
 

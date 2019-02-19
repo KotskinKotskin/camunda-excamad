@@ -1,10 +1,5 @@
 <template>
   <div>
-    <b-form inline class="mt-2 mb-2">
-      <b-form-checkbox size="sm" id="checkbox1" v-model="latestVersion">Latest Version</b-form-checkbox>
-      <b-button size="sm" @click="getDecisions" variant="outline-success">Search</b-button>
-    </b-form>
-
     <table class="table table-striped table-sm">
       <thead>
         <tr>
@@ -39,8 +34,7 @@ export default {
 
   data() {
     return {
-      decisions: "",
-      latestVersion: true
+      decisions: ""
     };
   },
   created() {
@@ -52,11 +46,7 @@ export default {
   methods: {
     getDecisions() {
       api
-        .getEntity(
-          "decision-definition",
-          "",
-          "sortBy=version&sortOrder=desc&latestVersion=" + this.latestVersion
-        )
+        .getEntity("decision-definition", "", "sortBy=version&sortOrder=desc")
         .then(value => {
           value.forEach(element => {
             api

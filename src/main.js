@@ -30,8 +30,6 @@ import AuditReader from "@/components/detail-process-instance/AuditReader.vue";
 import DecisionGrid from "@/components/decisions/DecisionGrid.vue";
 import Tasklist from "@/components/tasklist/TaskList.vue";
 import DefinitionMetadata from "@/components/detail-process-definition/DefinitionMetadata.vue";
-import DefinitionIncidents from "@/components/detail-process-definition/DefinitionIncidents.vue";
-
 import VueFormGenerator from "vue-form-generator";
 
 import StartDefinition from "@/components/detail-process-definition/StartDefinition.vue";
@@ -47,17 +45,14 @@ import DefinitionDiagram from "@/components/detail-process-definition/Definition
 
 import DefinitionRunTimeInstances from "@/components/detail-process-definition/DefinitionRunTimeInstances.vue";
 
-import IncidentsHistory from "@/components/detail-process-instance/IncidentsHistory.vue";
+import IncidentsHistory from "@/components/detail-instance/IncidentsHistory.vue";
 
 Vue.component("incidents-history", IncidentsHistory);
-
-import DetailJobs from "@/components/detail-process-instance/DetailJobs.vue";
-Vue.component("detail-jobs", DetailJobs);
 
 import Search from "@/components/smart-search/Search.vue";
 Vue.component("search", Search);
 
-import DeployTableBPMAS from "@/components/bpmasservice/DeployTable.vue";
+import DeployTable from "@/components/bpmasservice/DeployTable.vue";
 import VueGoogleCharts from "vue-google-charts";
 import CommitFile from "@/components/bitbucket-integration/CommitFile.vue";
 import vue2vis from "vue2vis";
@@ -72,27 +67,15 @@ import DecisionDiagram from "@/components/decisions/DecisionDiagram.vue";
 import DecisionItem from "@/components/decisions/DecisionItem.vue";
 import VueFriendlyIframe from "vue-friendly-iframe";
 import vSuggest from "v-suggest";
-import HistoryDetails from "@/components/detail-process-instance/HistoryDetails.vue";
+import HistoryDetails from "@/components/detail-instance/HistoryDetails.vue";
 import { ClientTable } from "vue-tables-2";
 Vue.use(ClientTable);
 
-import MoveToken from "@/components/detail-process-instance/MoveToken.vue";
+import MoveToken from "@/components/detail-instance/MoveToken.vue";
 Vue.component("move-token", MoveToken);
 
-import { AtomSpinner } from "epic-spinners";
-Vue.component("atom-spinner", AtomSpinner);
-
-import SendMessage from "@/components/detail-process-instance/SendMessage.vue";
+import SendMessage from "@/components/detail-instance/SendMessage.vue";
 Vue.component("send-message", SendMessage);
-
-import DeployTable from "@/components/misc/DeployTable.vue";
-Vue.component("deploy-table", DeployTable);
-
-import Report from "@/components/misc/Report.vue";
-Vue.component("report", Report);
-
-import TheFooter from "@/components/footer/TheFooter.vue";
-Vue.component("the-footer", TheFooter);
 
 import BootstrapVue from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -118,7 +101,7 @@ Vue.config.productionTip = false;
 Vue.use(Notifications);
 Vue.component("vue2vis", vue2vis);
 Vue.component("definition-diagram", DefinitionDiagram);
-Vue.component("deploy-table-bpmas", DeployTableBPMAS);
+Vue.component("deploy-table", DeployTable);
 Vue.component("history-details", HistoryDetails);
 Vue.component("decision-details", DecisionDetails);
 Vue.component("definition-runtime-instances", DefinitionRunTimeInstances);
@@ -130,7 +113,6 @@ Vue.component("vue-friendly-iframe", VueFriendlyIframe);
 Vue.component("decision-grid", DecisionGrid);
 Vue.component("what-is-this", WhatIsThis);
 Vue.component("definition-metadata", DefinitionMetadata);
-Vue.component("definition-incidents", DefinitionIncidents);
 Vue.component("new-diagram", NewDiagram);
 Vue.component("deploy-help", DeployHelp);
 Vue.component("deploy", Deploy);

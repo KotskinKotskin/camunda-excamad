@@ -5,7 +5,12 @@
         <h5>Find task by variable</h5>
         <b-form inline>
           <label class="sr-only" for="inlineFormInputName2">Name</label>
-          <b-input v-model="variableName" class="mb-2 mr-sm-2 mb-sm-0" placeholder="Variable name"/>
+          <b-input
+            v-model="variableName"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            id="inlineFormInputName2"
+            placeholder="Variable name"
+          />
           <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
           <b-input-group left="@" class="mt-2 mb-2 mr-sm-2 mb-sm-0">
             <b-input

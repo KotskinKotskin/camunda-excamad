@@ -1,10 +1,12 @@
 <template>
   <div class="migrationView">
-    <migration :key="componentKey"></migration>
+    <migration  :key="componentKey" v-if="serverStatus == true"></migration>
+      <noConnect v-if="serverStatus != true"> </noConnect>
   </div>
 </template>
 
 <script>
+// @ is an alias to /src
 import Migration from "@/components/Migration.vue";
 import store from "@/store/store";
 
@@ -15,8 +17,7 @@ export default {
   },
   data() {
     return {
-      componentKey: 0,
-      ready: false
+      componentKey: 0
     };
   },
   computed: {

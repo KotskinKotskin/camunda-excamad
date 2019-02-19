@@ -1,7 +1,7 @@
 <template>
   <div id="definitionDigaram">
+  
     <diagram
-      v-if="statistics"
       :key="diagramKey"
       class="mt-2"
       :suspendedJobs="suspendedJobs"
@@ -60,7 +60,7 @@ export default {
       clickedElement: null,
       clickedJobDefinition: null,
       processActivityToShowArray: [],
-      statistics: null
+      statistics: {}
     };
   },
   mounted() {

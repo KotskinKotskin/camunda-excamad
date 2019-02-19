@@ -21,13 +21,9 @@ export default {
       diagramInXML: ""
     };
   },
-  mounted() {},
   methods: {
     onNewDiagramInXml: function(newDiagram) {
       this.diagramInXML = newDiagram;
-    },
-    currentWorkOnBPMassservice() {
-      return this.$store.state.workOnBpmasservice;
     }
   }
 };

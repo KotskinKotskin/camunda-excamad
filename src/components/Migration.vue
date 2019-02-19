@@ -1,18 +1,12 @@
 <template>
   <div class>
-    <atom-spinner
-      v-if="!(ready == true)"
-      class="spinner"
-      :animation-duration="1000"
-      :size="60"
-      :color="'#007bff'"
-    />
     <div class="row">
       <div class="col-11">
         <h2>Versions</h2>
         <b-form inline class="mt-2 mb-2">
           <b-input
             class="mb-2 mr-sm-2 mb-sm-0"
+            id="inlineFormInputName2"
             placeholder="Definition name"
             size="sm"
             v-model="nameOfProcessDefinition"
@@ -82,10 +76,7 @@
       @click="generateMigrateAndRenew"
     >Migrate</button>
     <hr>
-    <b-button variant="link" size="sm" v-b-toggle.collapse2 class="m-1">Variable modify</b-button>
-    <b-collapse id="collapse2">
-      <variables-modify :processDefinitionsStringArray="processDefinitionsStringArray"></variables-modify>
-    </b-collapse>
+    <variables-modify :processDefinitionsStringArray="processDefinitionsStringArray"></variables-modify>
   </div>
 </template>
 
@@ -114,7 +105,6 @@ export default {
       nameOfProcessDefinition: null,
       finalPropsArray: [],
       processActivityCountToShow: [],
-      ready: null,
       processMigrationInstructions: {}
     };
   },
@@ -134,7 +124,6 @@ export default {
   },
   methods: {
     findDefinitionByName() {
-      this.ready = false;
       this.processDefinitions = [];
       this.processDefinitionsStringArray = [];
       var keyLike = "";
@@ -150,7 +139,7 @@ export default {
         )
         .then(response => {
           this.processDefinitions = response.data;
-          this.ready = true;
+
           this.updateCountForeach();
         })
         .catch();
@@ -159,7 +148,6 @@ export default {
       item.showModal = false;
     },
     searchProcessDefinitions() {
-      this.ready = false;
       this.nameOfProcessDefinition = "";
       this.processDefinitions = [];
       this.processDefinitionsStringArray = [];
@@ -171,7 +159,7 @@ export default {
         )
         .then(response => {
           this.processDefinitions = response.data;
-          this.ready = true;
+
           this.updateCountForeach();
         })
         .catch();
@@ -391,7 +379,6 @@ export default {
     }
   },
   mounted: function() {
-    this.ready = false;
     this.searchProcessDefinitions();
   }
 };

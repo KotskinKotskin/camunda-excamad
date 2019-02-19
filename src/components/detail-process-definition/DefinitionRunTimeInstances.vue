@@ -9,11 +9,17 @@
       >
         <option slot="first" :value="null">Choose...</option>
       </b-form-select>
-      <b-input v-model="variable" class="mb-2 mr-sm-2 mb-sm-0" placeholder="applicationId"/>
+      <b-input
+        v-model="variable"
+        class="mb-2 mr-sm-2 mb-sm-0"
+        id="inlineFormInputName2"
+        placeholder="applicationId"
+      />
       <b-input-group left="@" class="mb-2 mr-sm-2 mb-sm-0">
         <b-input
           :disabled="selected !='variable'"
           v-model="variableValue"
+          id="inlineFormInputGroupUsername2"
           placeholder="ultranumber"
         />
       </b-input-group>
