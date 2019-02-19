@@ -16,13 +16,15 @@ import DicisionDiagram from "@/components/decisions/DecisionDiagram.vue";
 import LoginView from "@/views/LoginView.vue";
 import DefinitionDetailView from "@/views/DefinitionDetailView.vue";
 import DeployView from "@/views/DeployView.vue";
-import DeployTableView from "@/views/DeployTableView.vue";
+import DeployTableBPMaSView from "@/views/DeployTableBPMaSView.vue";
 import DeployHelpView from "@/views/DeployHelpView.vue";
 import WhatIsThisView from "@/views/WhatIsThisView.vue";
 import DecisionDefinitionsView from "@/views/DecisionDefinitionsView.vue";
 import Home from "@/views/Home.vue";
 import store from "@/store/store";
 import VueSmartRoute from "vue-smart-route";
+import DeployTableView from "@/views/DeployTableView.vue";
+import ReportView from "@/views/ReportView.vue";
 
 Vue.use(Router);
 Vue.use(VueSmartRoute);
@@ -132,7 +134,7 @@ export default new Router({
     {
       path: "/bpmasservice/deploytable/",
       name: "deploytable",
-      component: DeployTableView,
+      component: DeployTableBPMaSView,
       beforeEnter: ifAuthenticated
     },
     {
@@ -206,6 +208,11 @@ export default new Router({
       path: "/deploytable/",
       name: "deploytable",
       component: DeployTableView
+    },
+    {
+      path: "/report/",
+      name: "report",
+      component: ReportView
     }
   ]
 });

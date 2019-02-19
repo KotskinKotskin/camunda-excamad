@@ -10,7 +10,6 @@
           <th>Verions</th>
           <th>Documentaion</th>
           <th>Edit</th>
-          <th>Run</th>
         </tr>
       </thead>
       <tbody>
@@ -39,13 +38,6 @@
               :to="{name:'newdiagram', params:{ diagramKey: item.processDefinition[0].key}}"
             >Check</router-link>
           </td>
-          <td>
-            <b-btn
-              size="sm"
-              variant="outline-success"
-              @click="startProcess(item.processDefinition[0].id)"
-            >Run</b-btn>
-          </td>
         </tr>
       </tbody>
     </table>
@@ -73,9 +65,9 @@ export default {
         .getEntity(
           "deployment",
           "",
-          // "source=" +
-          //   this.$store.getters.getProfile.userName +
-          "sortBy=deploymentTime&&sortOrder=desc&maxResults=50"
+          "source=" +
+            this.$store.getters.getProfile.userName +
+            "&sortBy=deploymentTime&&sortOrder=desc&maxResults=50"
         )
 
         .then(value => {

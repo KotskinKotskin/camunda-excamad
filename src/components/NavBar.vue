@@ -6,7 +6,7 @@
           <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
           <router-link to="/migration">
-            <b-navbar-brand>TCE</b-navbar-brand>
+            <b-navbar-brand>EXCAMAD</b-navbar-brand>
           </router-link>
 
           <b-collapse is-nav id="nav_collapse">
@@ -40,6 +40,7 @@
               </b-nav-item-dropdown>
               <b-nav-item-dropdown text="Misc" right>
                 <b-dropdown-item to="/deploytable">Deployments</b-dropdown-item>
+                <b-dropdown-item to="/report">Report</b-dropdown-item>
               </b-nav-item-dropdown>
               <b-button @click="refresh" size="sm" variant="outline-secondary" class="my-2 my-sm-0">
                 <font-awesome-icon icon="redo"/>
@@ -118,6 +119,7 @@
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { AUTH_REQUEST, AUTH_CAMUNDA_REQUEST } from "@/store/actions/auth";
 
 library.add(faSync);
 
@@ -227,7 +229,7 @@ export default {
       var testAlert = name.indexOf(this.substringForTest);
       var productionAlert = name.indexOf(this.substringForProduction);
 
-      if (testAlert > 0 && productionAlert > 0) {
+      if ((productionAlert > 0 || productionAlert < 0) && testAlert > 0) {
         return "info";
       }
       if (productionAlert > 0 && testAlert < 0) {
@@ -246,7 +248,8 @@ export default {
     calculateEnvormentForUrl(name) {
       var testAlert = name.indexOf(this.substringForTest);
       var productionAlert = name.indexOf(this.substringForProduction);
-      if (testAlert > 0 && productionAlert > 0) {
+
+      if (productionAlert > 0 && testAlert > 0) {
         return "TEST";
       }
       if (productionAlert > 0 && testAlert < 0) {
@@ -254,6 +257,9 @@ export default {
       }
       if (productionAlert < 0 && testAlert < 0) {
         return "UNKNOWN";
+      }
+      if (productionAlert < 0 && testAlert > 0) {
+        return "TEST";
       }
     },
 
@@ -274,7 +280,10 @@ export default {
     checkEnvortment() {
       this.testAlert = this.baseurl.indexOf(this.substringForTest);
       this.productionAlert = this.baseurl.indexOf(this.substringForProduction);
-      if (this.testAlert > 0 && this.productionAlert > 0) {
+      if (
+        this.testAlert > 0 &&
+        (this.productionAlert > 0 || this.productionAlert < 0)
+      ) {
         this.envortment = "TEST";
       }
       if (this.productionAlert > 0 && this.testAlert < 0) {
@@ -312,6 +321,21 @@ export default {
       this.$store.commit("setBaseUrl", item);
       this.checkEnvortment();
       this.refresh();
+      this.$router.push({
+        name: "migration"
+      });
+      if (localStorage.usertoken != null) {
+        var usertokenstring = atob(localStorage.usertoken).split(":");
+
+        var userName = usertokenstring[0];
+        var password = usertokenstring[1];
+        this.$store
+          .dispatch(AUTH_REQUEST, { userName, password })
+          .then(() => {});
+        this.$store
+          .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
+          .then(() => {});
+      }
     },
     commitExpertMode() {
       this.$notify({

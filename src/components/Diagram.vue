@@ -112,6 +112,7 @@ export default {
   data() {
     return {
       ready: false,
+      elementRegistryVue: "",
       formEditorKey: 0,
       processDefinitionInXml: "",
       globalViewer: "",
@@ -123,7 +124,7 @@ export default {
       moddleElement: "",
       processId: "",
       activityHistory: [],
-      defaultstyle: "height: 600px",
+      defaultstyle: "height: 350px",
       fullscreen: false,
       hrefAndDownload: {
         href: "",
@@ -136,6 +137,9 @@ export default {
   },
   mounted() {
     this.getAndBuild();
+    if (this.editMode == true) {
+      this.defaultstyle = "height: 700px";
+    }
   },
 
   methods: {
@@ -158,7 +162,7 @@ export default {
     },
     toggleback() {
       // this.$refs["fullscreen"].toggle(); // recommended
-      this.defaultstyle = "height: 600px";
+      this.defaultstyle = "height: 350px";
     },
     fullscreenChange(fullscreen) {
       this.fullscreen = fullscreen;
@@ -246,6 +250,16 @@ export default {
             });
         }
       });
+    },
+    convertDateToHumanStyle: function(date) {
+      var rel = this.$momenttrue(date)
+        .startOf("second")
+        .fromNow();
+
+      var cal = this.$momenttrue(date).format("MMMM Do YYYY, H:mm:ss");
+
+      var output = rel + " (" + cal + ") ";
+      return output;
     },
     returnAllarm: function(item) {},
     buildViewer: function() {
@@ -336,22 +350,37 @@ export default {
         overlays = bpmnViewer.get("overlays");
 
       var elementRegistry = bpmnViewer.get("elementRegistry");
-      canvas.zoom("0.9");
+      this.elementRegistryVue = elementRegistry;
+      canvas.zoom("fit-viewport");
 
       this.activityHistory.forEach(activity => {
-        var shape = elementRegistry.get(activity.activityId);
-        var $overlayHtml = $('<div class="highlight-overlay">').css({
-          width: shape.width,
-          height: shape.height
-        });
+        if (!activity.activityId.includes("#multiInstanceBody")) {
+          var shape = elementRegistry.get(activity.activityId);
 
-        overlays.add(activity.activityId, {
-          position: {
-            top: 0,
-            left: 0
-          },
-          html: $overlayHtml
-        });
+          if (activity.endTime) {
+            activity.endTime = this.convertDateToHumanStyle(activity.endTime);
+            overlays.add(activity.activityId, {
+              position: {
+                bottom: -20,
+                left: 0
+              },
+              html: '<div class="timer"> ' + activity.endTime + "</div"
+            });
+          }
+
+          var $overlayHtml = $('<div class="highlight-overlay">').css({
+            width: shape.width,
+            height: shape.height
+          });
+
+          overlays.add(activity.activityId, {
+            position: {
+              top: 0,
+              left: 0
+            },
+            html: $overlayHtml
+          });
+        }
 
         if (activity.activityType == "callActivity") {
           var baseurl =
@@ -418,28 +447,31 @@ export default {
         });
       }
 
-      this.statistics.forEach(stat => {
-        overlays.add(stat.id, {
-          position: {
-            top: -20,
-            left: 0
-          },
-          html: '<div class="count"> ' + stat.instances + "</div"
-        });
-
-        if (stat.incidents != null && stat.incidents.length > 0) {
+      if (this.statistics) {
+        this.statistics.forEach(stat => {
           overlays.add(stat.id, {
             position: {
               top: -20,
-              left: 50
+              left: 0
             },
-            html:
-              '<div class="problem-count"> ' +
-              stat.incidents[0].incidentCount +
-              "</div"
+            html: '<div class="count"> ' + stat.instances + "</div"
           });
-        }
-      });
+
+          if (stat.incidents != null && stat.incidents.length > 0) {
+            overlays.add(stat.id, {
+              position: {
+                top: -20,
+                left: 50
+              },
+              html:
+                '<div class="problem-count"> ' +
+                stat.incidents[0].incidentCount +
+                "</div"
+            });
+          }
+        });
+      }
+
       if (this.suspendedJobs != null && this.suspendedJobs.length > 0) {
         this.suspendedJobs.forEach(element => {
           overlays.add(element.activityId, {
@@ -458,7 +490,7 @@ export default {
       if (this.processActivityToShowArray != null || this.statistics != null) {
         setTimeout(() => {
           this.drawOverlays(bpmnViewer);
-        }, 800);
+        }, 50);
       }
     }
   }
@@ -473,6 +505,15 @@ body,
   height: 100%;
   padding: 0;
   margin: 0;
+}
+.timer {
+  font-size: 8px;
+  z-index: 1999;
+  background-color: #f2f2f2c4;
+  border: solid 1px black;
+  width: 100px;
+  height: 45px;
+  padding: 5px 5px 5px 5px;
 }
 
 .diagram-note {
