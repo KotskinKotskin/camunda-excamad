@@ -14,10 +14,16 @@
       <form>
       <div class="form-group">
           <label for="exampleInputEmail1"></label>URL Camunda Engine REST </label>
+            <br>
+             
+               <b-form-checkbox id="checkbox1"
+                     v-model="workOnBpmasservicePrivate" :click="setWorkOnBPMasSerivce(workOnBpmasservicePrivate)">
+      BPMaS
+    </b-form-checkbox>
+
           <div class="row">
             <div class="col-10">
           <div class="input-group mb-3">
-
 <vue-bootstrap-typeahead style="width: 500px"
 v-on:keyup.enter="userSetBaseUrl()" 
   v-model="privateurl"
@@ -27,6 +33,7 @@ v-on:keyup.enter="userSetBaseUrl()"
 
 
           <div class="input-group-append">
+            
           <button type="button" class="btn btn-primary" @click="userSetBaseUrl()">Save</button>
            </div>
             </div>
@@ -38,11 +45,10 @@ v-on:keyup.enter="userSetBaseUrl()"
               <small> <b-link href="#" @click="clear">Clear</b-link> </small>
               
       </div>
+      
       </form>    
        <div class="form-check">
-    <input v-model="workOnBpmasservicePrivate" :click="setWorkOnBPMasSerivce(workOnBpmasservicePrivate)" type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">BPMaS</label> <br>
-    <small> Current url {{bpmasserviceUrl}} </small> <br>
+  
       </div>
      </div>
   </b-card>
@@ -57,7 +63,9 @@ v-on:keyup.enter="userSetBaseUrl()"
 <script>
 import * as URLs from "@/config/camundasUrl";
 import VueBootstrapTypeahead from "vue-bootstrap-typeahead";
+
 export default {
+  name: "BaseURL",
   components: {
     VueBootstrapTypeahead
   },
@@ -138,6 +146,7 @@ export default {
       this.$store.commit("changeworkOnBpmasservice", workOnBpmasservicePrivate);
     },
     setCustomBPMasUrl(privateUrl) {
+      this.privateurl = this.privateBpmasUrl;
       this.$store.commit("setBpmasserviceUrl", this.privateBpmasUrl);
     },
 
@@ -179,6 +188,18 @@ export default {
     userSetBaserUrlFromBadge(item) {
       if (this.workOnBpmasservicePrivate == true) {
         this.privateBpmasUrl = item;
+        if (localStorage.usertoken != null) {
+          var usertokenstring = atob(localStorage.usertoken).split(":");
+
+          var userName = usertokenstring[0];
+          var password = usertokenstring[1];
+          this.$store
+            .dispatch(AUTH_REQUEST, { userName, password })
+            .then(() => {});
+          this.$store
+            .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
+            .then(() => {});
+        }
         this.setCustomBPMasUrl(this.privateurl);
 
         this.$notify({
@@ -237,12 +258,12 @@ export default {
     healthcheck() {
       this.$api()
         .get("/engine")
-        .then(response => {
+        .then(() => {
           this.status = "UP";
           this.statusDate = Date();
           this.$store.commit("changeServerStatus", true); //
         })
-        .catch(response => {
+        .catch(() => {
           this.status = "DOWN";
           this.statusDate = Date();
           this.$store.commit("changeServerStatus", false); //

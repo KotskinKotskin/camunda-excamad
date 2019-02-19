@@ -66,9 +66,17 @@ export default {
           .then(response => {
             if (response.data && response.data.length > 0) {
               response.data.forEach(element => {
-                arrayOfProcess.push(
-                  "History " + element.id + " (" + businessKey + ")"
-                );
+                var elemToAdd =
+                  "History " +
+                  businessKey +
+                  ", " +
+                  vm.convertDateToHumanStyle(element.startTime) +
+                  ", process " +
+                  element.processDefinitionId +
+                  " id #" +
+                  element.id +
+                  "#";
+                arrayOfProcess.push(elemToAdd);
               });
             }
             resolve(arrayOfProcess);
@@ -77,6 +85,16 @@ export default {
             reject();
           });
       });
+    },
+    convertDateToHumanStyle: function(date) {
+      var rel = this.$momenttrue(date)
+        .startOf("second")
+        .fromNow();
+
+      var cal = this.$momenttrue(date).format("MMMM Do YYYY, H:mm:ss");
+
+      var output = rel + " (" + cal + ") ";
+      return output;
     },
     tryCheckInstanceInRuntime(instance) {
       var vm = this;
@@ -88,7 +106,7 @@ export default {
             if (response.data && response.data.length > 0) {
               response.data.forEach(element => {
                 arrayOfProcess.push(
-                  "Runtime " + element.id + " (" + instance + ")"
+                  "Runtime " + element.id + " (" + element.definitionId + ")"
                 );
               });
             }
@@ -109,7 +127,13 @@ export default {
             if (response.data && response.data.length > 0) {
               response.data.forEach(element => {
                 arrayOfProcess.push(
-                  "History " + element.id + " (" + instance + ")"
+                  "History id #" +
+                    element.id +
+                    "# (" +
+                    element.processDefinitionId +
+                    ", started " +
+                    vm.convertDateToHumanStyle(element.startTime) +
+                    ")"
                 );
               });
             }
@@ -120,7 +144,36 @@ export default {
           });
       });
     },
-
+    tryCheckProcessDefinition(definition) {
+      var vm = this;
+      var arrayOfAnswers = [];
+      return new Promise((resolve, reject) => {
+        vm.$api()
+          .get(
+            "/process-definition?sortBy=version&sortOrder=desc&keyLike=" +
+              definition
+          )
+          .then(response => {
+            if (response.data && response.data.length > 0) {
+              response.data.forEach(element => {
+                arrayOfAnswers.push(
+                  "ProcessDefinition " +
+                    element.id +
+                    " (" +
+                    element.key +
+                    ", " +
+                    element.name +
+                    ")"
+                );
+              });
+            }
+            resolve(arrayOfAnswers);
+          })
+          .catch(error => {
+            reject();
+          });
+      });
+    },
     tryCheckUrl(url) {
       var possibleUrl = URLs.generatePossibleUrl();
       var matchedUrl = [];
@@ -150,39 +203,56 @@ export default {
                     vm.tryCheckInstanceInHistory(inputValue).then(
                       responseInstanceHistory => {
                         array.push.apply(array, responseInstanceHistory);
-                        vm.ready = true;
-                        resolve(array);
+
+                        vm.tryCheckProcessDefinition(inputValue).then(
+                          responseDefinition => {
+                            array.push.apply(array, responseDefinition);
+                            vm.ready = true;
+                            resolve(array);
+                          }
+                        );
                       }
                     );
                   }
                 );
               })
-              .catch(error => {
+              .catch(() => {
                 this.ready = true;
                 resolve(vm.tryCheckUrl(inputValue));
               });
           })
-          .catch(error => {
+          .catch(() => {
             this.ready = true;
             resolve(vm.tryCheckUrl(inputValue));
           });
       });
     },
     onSelect(suggest) {
-     
       if (suggest) {
-        if (suggest.includes("Runtime") || suggest.includes("History")) {
-          var firstSpace = suggest.indexOf(" ");
-          var secondSpace = suggest.indexOf(" ", firstSpace + 1);
-          var myString = suggest.substring(firstSpace + 1, secondSpace);
-
+        var firstSpace = suggest.indexOf(" ");
+        var secondSpace = suggest.indexOf(" ", firstSpace + 1);
+        var myString = suggest.substring(firstSpace + 1, secondSpace);
+        if (suggest.includes("Runtime")) {
           this.$router.push({
             name: "processdetail",
             params: { processInstanceId: myString }
           });
-        }
-        if (suggest.includes("http")) {
-        
+        } else if (suggest.includes("id")) {
+          var id = suggest.indexOf("#");
+
+          var secondSpaceId = suggest.indexOf("#", id + 1);
+
+          var id = suggest.substring(id + 1, secondSpaceId);
+          this.$router.push({
+            name: "processdetail",
+            params: { processInstanceId: id }
+          });
+        } else if (suggest.includes("ProcessDefinition")) {
+          this.$router.push({
+            name: "definition",
+            params: { definitionId: myString }
+          });
+        } else if (suggest.includes("http")) {
           this.$emit("setUrlFromSearch", suggest);
         }
       }
@@ -194,7 +264,7 @@ export default {
 <style>
 .vue-simple-suggest.designed,
 .vue-simple-suggest.designed * {
-  width: 550px;
+  width: 500px;
 }
 .vue-simple-suggest.designed .suggestions .suggest-item,
 .vue-simple-suggest.designed .suggestions .misc-item {

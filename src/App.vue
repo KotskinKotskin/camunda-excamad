@@ -7,12 +7,13 @@
       </div>
     </transition>
     <notifications group="foo"/>
+    <the-footer class="footer"></the-footer>
   </div>
 </template>
 
 <script>
 import Navbar from "@/components/NavBar.vue";
-import { AUTH_REQUEST } from "@/store/actions/auth";
+import { AUTH_REQUEST, AUTH_CAMUNDA_REQUEST } from "@/store/actions/auth";
 
 export default {
   name: "home",
@@ -29,7 +30,7 @@ export default {
   mounted() {
     if (this.$route.query.dashboard == "true") {
       this.dashboard = true;
-      this.containerClass = "container width";
+      this.containerClass = "container width content";
     } else this.dashboard = false;
 
     setTimeout(() => {
@@ -46,15 +47,17 @@ export default {
       var userName = usertokenstring[0];
       var password = usertokenstring[1];
       this.$store.dispatch(AUTH_REQUEST, { userName, password }).then(() => {});
+      this.$store
+        .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
+        .then(() => {});
     }
   },
   methods: {
     refreshRoute() {
       this.key = this.key + 1;
-     
     },
     ContainerOrNot: function() {
-      this.containerClass = "container";
+      this.containerClass = "container content";
       if (this.dashboard == true) {
         this.containerClass = "";
       }
@@ -76,5 +79,12 @@ export default {
 #containerOverRouter {
   max-width: 1400px;
   margin-top: 110px;
+}
+
+.content {
+  min-height: calc(100vh - 20px);
+}
+.footer {
+  height: 50px;
 }
 </style>

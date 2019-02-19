@@ -46,6 +46,9 @@ export default new Vuex.Store({
     },
     changeworkOnBpmasservice(state, workOnBpmasservice) {
       state.workOnBpmasservice = workOnBpmasservice;
+      if (workOnBpmasservice == true) {
+        state.bpmasserviceUrl = state.baseurl;
+      }
     }
   },
   actions: {}

@@ -67,14 +67,7 @@ export default {
   mounted() {
     setTimeout(() => {
       this.getLastActivity();
-    }, 200);
-
-    setInterval(
-      function growUp() {
-        this.addIfNotInArray();
-      }.bind(this),
-      5000
-    );
+    }, 100);
   },
   methods: {
     getLastActivity() {
@@ -108,42 +101,39 @@ export default {
       }
     },
     addIfNotInArray() {
-      if (!this.processInstanceId) {
-        this.$api()
-          .get(
-            "/history/activity-instance?&&sortBy=startTime&&sortOrder=desc&&maxResults=10"
-          )
-          .then(response => {
-            this.activitiesAutoLoad = response.data;
-          });
-        var a = this.activities;
-        var b = this.activitiesAutoLoad;
-        this.uniqArray = b.filter(o => !a.find(o2 => o.id === o2.id));
-
-        this.uniqArray.forEach(element => {
-          this.$set(element, "unRead", true);
-          this.activities.unshift(element);
-        });
-      }
-
-      if (this.processInstanceId) {
-        this.$api()
-          .get(
-            "/history/activity-instance?&&sortBy=startTime&&sortOrder=desc&&maxResults=10&&processInstanceId=" +
-              this.processInstanceId
-          )
-          .then(response => {
-            this.activitiesAutoLoad = response.data;
-          });
-        var a2 = this.activities;
-        var b2 = this.activitiesAutoLoad;
-        this.uniqArray = b2.filter(o => !a2.find(o2 => o.id === o2.id));
-
-        this.uniqArray.forEach(element => {
-          this.$set(element, "unRead", true);
-          this.activities.unshift(element);
-        });
-      }
+      // if (!this.processInstanceId) {
+      //   this.$api()
+      //     .get(
+      //       "/history/activity-instance?&&sortBy=startTime&&sortOrder=desc&&maxResults=10"
+      //     )
+      //     .then(response => {
+      //       this.activitiesAutoLoad = response.data;
+      //     });
+      //   var a = this.activities;
+      //   var b = this.activitiesAutoLoad;
+      //   this.uniqArray = b.filter(o => !a.find(o2 => o.id === o2.id));
+      //   this.uniqArray.forEach(element => {
+      //     this.$set(element, "unRead", true);
+      //     this.activities.unshift(element);
+      //   });
+      // }
+      // if (this.processInstanceId) {
+      //   this.$api()
+      //     .get(
+      //       "/history/activity-instance?&&sortBy=startTime&&sortOrder=desc&&maxResults=10&&processInstanceId=" +
+      //         this.processInstanceId
+      //     )
+      //     .then(response => {
+      //       this.activitiesAutoLoad = response.data;
+      //     });
+      //   var a2 = this.activities;
+      //   var b2 = this.activitiesAutoLoad;
+      //   this.uniqArray = b2.filter(o => !a2.find(o2 => o.id === o2.id));
+      //   this.uniqArray.forEach(element => {
+      //     this.$set(element, "unRead", true);
+      //     this.activities.unshift(element);
+      //   });
+      // }
     },
     calculateStyle(item) {
       if (item == true) {
