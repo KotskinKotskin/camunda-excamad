@@ -26,7 +26,7 @@
       <hr>
       <deploy
         class="mb-2"
-        v-if="newSavedXML && wasCommited"
+        v-if="(newSavedXML && wasCommited) || expertMode "
         extension="dmn"
         :diagramInXML="newSavedXML"
       ></deploy>
@@ -51,6 +51,7 @@ export default {
   data() {
     return {
       decisionInXml: "",
+      decisionMeta: "",
       editMode: false,
       newSavedXML: "",
       componentKey: 0,
@@ -69,12 +70,16 @@ export default {
       prjName = prjName.substring(lastIndex + 1, prjName.length);
       return prjName;
     },
+    expertMode() {
+      //
+      return this.$store.state.expertMode;
+    },
     pathToFile() {
-      return "basedOn_" + this.decisionInXml.id + ".dmn";
+      return this.projectName + "/src/main/resources" + this.decisionMeta.resource.replace("BOOT-INF/classes", "");
     }
   },
   watch: {
-    editMode: function(newValue, OldValue) {
+    editMode: function (newValue, OldValue) {
       this.getDecisionInXml().then(() => {
         this.BuildViewerDiagram();
         this.readXML();
@@ -97,7 +102,7 @@ export default {
         this.decisionInXml.dmnXml,
         "dmn:Definitions",
         "",
-        function(err, proc) {
+        function (err, proc) {
           if (err) {
           }
           if (!err) {
@@ -107,9 +112,9 @@ export default {
       );
     },
 
-    getDecisionInXml: async function() {
+    getDecisionInXml: async function () {
       var vm = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         api
           .getEntity("decision-definition/" + vm.decisionId, "xml", "")
           .then(value => {
@@ -118,9 +123,15 @@ export default {
           });
       });
     },
+
+    getDeicionsMeta() {
+      this.$api().get("/decision-definition/" + this.decisionId).then(response => {
+        this.decisionMeta = response.data;
+      })
+    },
     SaveXML() {
       var vm = this;
-      this.globalModeler.saveXML({ format: true }, function(err, xml) {
+      this.globalModeler.saveXML({ format: true }, function (err, xml) {
         if (err) {
           return console.error("could not save DMN 1.1 diagram", err);
         }
@@ -148,7 +159,7 @@ export default {
         this.globalModeler = dmnViewer;
       }
 
-      dmnViewer.importXML(vm.decisionInXml.dmnXml, function(err) {
+      dmnViewer.importXML(vm.decisionInXml.dmnXml, function (err) {
         // access active viewer components
         var activeViewer = dmnViewer.getActiveViewer();
         // access active editor components
@@ -162,6 +173,7 @@ export default {
     this.getDecisionInXml().then(() => {
       this.BuildViewerDiagram();
       this.readXML();
+      this.getDeicionsMeta();
     });
   }
 };

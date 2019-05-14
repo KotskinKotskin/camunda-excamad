@@ -206,18 +206,18 @@ export default {
       var revision = "*" + item.revision + "*";
 
       var label =
-        "Время обновления: " +
+        "Update time: " +
         time +
         "\n" +
-        "Переменная: " +
+        "variable: " +
         variableName +
         "\n" +
-        "Новое значение: " +
+        "New value: " +
         value +
         "\n";
 
       if (revision > 0) {
-        label = label + "Ревизия:" + revision + "\n";
+        label = label + "Revision:" + revision + "\n";
       }
 
       return label;

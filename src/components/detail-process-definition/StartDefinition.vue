@@ -1,9 +1,9 @@
 <template>
   <div id="startDefinition">
     <b-btn
-     
+      :disabled="!isAuthenticated"
       size="sm"
-      v-b-modal.myModal
+      v-b-modal="'Start process' + definitionId"
       variant="success"
       @click="getActivityList()"
     >Start process</b-btn>
@@ -14,7 +14,7 @@
       ok-title="Run process"
       size="lg"
       :title="'Start process ' + definitionId"
-      id="myModal"
+      :id="'Start process' + definitionId"
     >
       <b-form-checkbox disabled v-model="startWithVariable">Start with variables</b-form-checkbox>
       <div v-if="startWithVariable" id="variables">
@@ -71,11 +71,7 @@
           </tbody>
         </table>Copy variables from history
         <b-form inline>
-          <b-form-input
-            v-model="instanceToCopyVariables"
-            type="number"
-            placeholder="Enter processInstanceId"
-          ></b-form-input>
+          <b-form-input v-model="instanceToCopyVariables" placeholder="Enter processInstanceId"></b-form-input>
           <b-button class="ml-2" @click="getVariableHistory" variant="secondary">Copy</b-button>
         </b-form>
       </div>
@@ -152,6 +148,27 @@ export default {
     expertMode() {
       return this.$store.state.expertMode;
     },
+    getStartFormVariables() {
+      this.$api().get("/process-definition/" + this.definitionId + "/form-variables").then(response => {
+        if (response.data != null) {
+          console.log(response.data);
+
+          for (var key in response.data) {
+            if (response.data[key].type != "Object") {
+              var obj = {
+                name: key,
+                type: response.data[key].type,
+                value: response.data[key].value
+              }
+            }
+            if (obj.name != "initiator") {
+              this.arrayOfVaribales.push(obj);
+            }
+          }
+        }
+
+      })
+    },
     removeItem(item) {
       this.arrayOfVaribales.splice(item, 1);
     },
@@ -211,7 +228,7 @@ export default {
             type: "error"
           });
         });
-  
+
     },
     serialazier(item) {
       var searchobj = "";
@@ -244,7 +261,7 @@ export default {
       this.$api()
         .get(
           "/history/variable-instance?processInstanceId=" +
-            this.instanceToCopyVariables
+          this.instanceToCopyVariables
         )
         .then(response => {
           this.variablesFromHistory = response.data;
@@ -289,7 +306,7 @@ export default {
       var moddle = new BpmnModdle({ camunda: camundaModdle });
       var vm = this;
       vm.activityList = [];
-      this.moddle = moddle.fromXML(this.definitionInXml, function(
+      this.moddle = moddle.fromXML(this.definitionInXml, function (
         err,
         definitions
       ) {
@@ -308,6 +325,7 @@ export default {
   mounted() {
     this.getActivityList();
     this.arrayOfVaribales[0].value = this.getUserName();
+    this.getStartFormVariables();
   },
   watch: {
     isAuthenticated(newValue, OldValue) {

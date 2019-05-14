@@ -39,7 +39,7 @@ export default {
       var bodyFormData = new FormData();
       bodyFormData.append("content", this.FileInString);
       bodyFormData.append("branch", this.branch);
-
+      bodyFormData.append("sourceCommitId", this.sourceCommitId);
       bodyFormData.append("message", "this is commit from excamad");
       axios
         .put(

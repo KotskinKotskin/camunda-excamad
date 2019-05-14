@@ -26,9 +26,9 @@ export default {
     this.getHistoryDecisions();
   },
   methods: {
-    getHistoryDecisions: async function() {
+    getHistoryDecisions: async function () {
       var vm = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         api
           .getEntity(
             "history",

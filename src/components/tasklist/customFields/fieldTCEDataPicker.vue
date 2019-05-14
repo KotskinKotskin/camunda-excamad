@@ -5,7 +5,7 @@
       clearable
       :placeholder="schema.placeholder"
       :disabled="disabled"
-      :format="'YYYY-MM-DDTHH:mm:ss'"
+      format="YYYY-MM-DDTHH:mm:ss"
       v-model="value"
     />
   </div>
@@ -36,6 +36,21 @@ export default {
       weeks: "Mon_Tue_Wed_Thu_Fri_Sat_Sun".split("_"), // weeks
       cancelTip: "Cancel" // default text for cancel button  submitTip: '提交' // default text for submit button
     }
-  })
+  }),
+  created() {
+    if (this.value != null && this.value.split(' ').length - 1 > 4) {
+      this.value = this.value.substr(this.value.indexOf(" ") + 1);
+
+
+      var lastIndex = this.value.lastIndexOf(" ");
+      this.value = this.value.substring(0, lastIndex);
+
+      lastIndex = this.value.lastIndexOf(" ");
+      this.value = this.value.substring(0, lastIndex);
+
+      this.value = this.$momenttrue(this.value).format();
+    }
+
+  }
 };
 </script>

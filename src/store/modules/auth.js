@@ -8,22 +8,22 @@ import {
   AUTH_CAMUNDA_REQUEST,
   AUTH_CAMUNDA_SUCCESS,
   AUTH_CAMUNDA_ERROR
-} from "../actions/auth";
+} from '../actions/auth';
 import {
   USER_REQUEST,
   USER_CAMUNDA_ERROR,
   USER_SUCCESS,
   USER_CAMUNDA_SUCCESS
-} from "../actions/user";
-import axios from "axios";
-import * as api from "@/api/api";
-import { URLFORAUTH } from "@/config/settings";
+} from '../actions/user';
+import axios from 'axios';
+import * as api from '@/api/api';
+import { URLFORAUTH } from '@/config/settings';
 
 const state = {
-  token: /*localStorage.getItem("user-token") || */ "",
-  status: "",
-  camundaStatus: "",
-  camundaToken: ""
+  token: /*localStorage.getItem("user-token") || */ '',
+  status: '',
+  camundaStatus: '',
+  camundaToken: ''
 };
 
 const getters = {
@@ -38,22 +38,22 @@ const actions = {
       // The Promise used for router redirect in login
       commit(AUTH_REQUEST);
       var bodyFormData = new FormData();
-      bodyFormData.set("userName", user.userName);
-      bodyFormData.set("password", user.password);
+      bodyFormData.set('userName', user.userName);
+      bodyFormData.set('password', user.password);
       axios({
         url: URLFORAUTH,
         data: bodyFormData,
         config: {
           headers: {
-            "Content-Type": "multipart/form-data"
+            'Content-Type': 'multipart/form-data'
           }
         },
-        method: "POST"
+        method: 'POST'
       })
         .then(resp => {
-          const token = btoa(user.userName + ":" + user.password);
+          const token = btoa(user.userName + ':' + user.password);
 
-          localStorage.setItem("usertoken", token);
+          localStorage.setItem('usertoken', token);
 
           commit(AUTH_SUCCESS, token);
           commit(USER_SUCCESS, resp.data);
@@ -61,7 +61,7 @@ const actions = {
         })
         .catch(err => {
           commit(AUTH_ERROR, err);
-          localStorage.removeItem("usertoken"); // if the request fails, remove any possible user token if possible
+          localStorage.removeItem('usertoken'); // if the request fails, remove any possible user token if possible
           reject(err);
         });
     });
@@ -69,13 +69,13 @@ const actions = {
   [AUTH_LOGOUT]: ({ commit, dispatch }) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_LOGOUT);
-      localStorage.removeItem("usertoken"); // clear your user's token from localstorage
+      localStorage.removeItem('usertoken'); // clear your user's token from localstorage
       resolve();
     });
   },
   [AUTH_CAMUNDA_REQUEST]: ({ commit, dispatch }, user) => {
     return new Promise((resolve, reject) => {
-      const camundatoken = btoa(user.userName + ":" + user.password);
+      const camundatoken = btoa(user.userName + ':' + user.password);
       commit(AUTH_CAMUNDA_REQUEST);
       var identityObj = {
         username: user.userName,
@@ -84,14 +84,16 @@ const actions = {
 
       api
         .createApi()
-        .post("/identity/verify", identityObj)
+        .post('/identity/verify', identityObj)
         .then(response => {
           if (response.data.authenticated) {
+            commit(AUTH_CAMUNDA_SUCCESS, camundatoken);
+            commit(USER_CAMUNDA_SUCCESS, response.data);
             api
               .createApi()
-              .get("/identity/groups?userId=" + response.data.authenticatedUser)
+              .get('/identity/groups?userId=' + response.data.authenticatedUser)
               .then(responseGroups => {
-                response.data["groups"] = responseGroups.data.groups;
+                response.data['groups'] = responseGroups.data.groups;
                 commit(AUTH_CAMUNDA_SUCCESS, camundatoken);
                 commit(USER_CAMUNDA_SUCCESS, response.data);
               });
@@ -112,30 +114,30 @@ const actions = {
 
 const mutations = {
   [AUTH_REQUEST]: state => {
-    state.status = "loading";
+    state.status = 'loading';
   },
   [AUTH_CAMUNDA_REQUEST]: state => {
-    state.camundaStatus = "loading";
+    state.camundaStatus = 'loading';
   },
   [AUTH_SUCCESS]: (state, resp) => {
-    state.status = "success";
+    state.status = 'success';
     state.token = resp;
     state.hasLoadedOnce = true;
   },
   [AUTH_ERROR]: state => {
-    state.status = "error";
+    state.status = 'error';
     state.hasLoadedOnce = true;
   },
   [AUTH_CAMUNDA_ERROR]: state => {
-    state.camundaStatus = "error";
+    state.camundaStatus = 'error';
     state.camundaToken = null;
     state.hasLoadedOnce = true;
   },
   [AUTH_LOGOUT]: state => {
-    state.token = "";
+    state.token = '';
   },
   [AUTH_CAMUNDA_SUCCESS]: (state, resp) => {
-    state.camundaStatus = "success";
+    state.camundaStatus = 'success';
     state.camundaToken = resp;
   }
 };

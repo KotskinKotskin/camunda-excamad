@@ -63,11 +63,18 @@
             >
           </td>
           <td>
-            <small>{{ item.version }}, {{item.deployTimeString}}</small>
+            <small>
+              {{ item.version }}
+              <br>
+              {{item.deployTimeString}}
+            </small>
           </td>
           <td>
-            <router-link :to="{name:'definition', params:{ definitionId: item.id}}">{{ item.id }}</router-link>
+            <router-link :to="{name:'definition', params:{ definitionId: item.id}}">{{item.key}}</router-link>
+            <br>
+            <small>{{item.name}}</small>
           </td>
+
           <td>{{item.activeCount}}</td>
           <td>{{item.endedCount}}</td>
           <td>{{item.incidentCount}}</td>
@@ -75,12 +82,29 @@
       </tbody>
     </table>
     <hr>
-    <button
-      type="submit"
-      :disabled="!expertMode"
-      class="btn btn-outline-info mb-2 mr-2"
-      @click="generateMigrateAndRenew"
-    >Migrate</button>
+    <b-form inline class="mt-2 mb-2">
+      <vue-tags-input
+        :disabled="migrateAll"
+        placeholder="Process instances to migrate"
+        v-model="tag"
+        :tags="tags"
+        :separators="separators"
+        @tags-changed="newTags => tags = newTags"
+      />
+      <b-form-checkbox
+        class="ml-2"
+        v-on:input="nullTags"
+        size="sm"
+        id="migrateall"
+        v-model="migrateAll"
+      >Migrate all</b-form-checkbox>
+      <button
+        type="submit"
+        :disabled="!expertMode"
+        class="btn btn-outline-info"
+        @click="generateMigrateAndRenew"
+      >Migrate</button>
+    </b-form>
     <hr>
     <b-button variant="link" size="sm" v-b-toggle.collapse2 class="m-1">Variable modify</b-button>
     <b-collapse id="collapse2">
@@ -93,12 +117,20 @@
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import VueTagsInput from "@johmun/vue-tags-input";
 var _ = require("lodash");
 import * as api from "@/api/api";
 library.add(faSearch);
 export default {
+  components: {
+    VueTagsInput
+  },
   data() {
     return {
+      tag: "",
+      migrateAll: false,
+      separators: [";", ","],
+      tags: [],
       query: "",
       routes: [],
       latestVersion: true,
@@ -133,6 +165,10 @@ export default {
     }
   },
   methods: {
+    nullTags() {
+      this.tag = "";
+      this.tags = [];
+    },
     findDefinitionByName() {
       this.ready = false;
       this.processDefinitions = [];
@@ -144,7 +180,7 @@ export default {
 
       this.$api()
         .get(
-          "/process-definition?sortBy=deploymentId&sortOrder=desc&latestVersion=" +
+          "/process-definition?sortBy=version&sortOrder=desc&latestVersion=" +
             this.latestVersion +
             keyLike
         )
@@ -166,7 +202,7 @@ export default {
 
       this.$api()
         .get(
-          "/process-definition?sortBy=deploymentId&sortOrder=desc&latestVersion=" +
+          "/process-definition?sortBy=version&sortOrder=desc&latestVersion=" +
             this.latestVersion
         )
         .then(response => {
@@ -363,12 +399,24 @@ export default {
     },
     migrate() {
       this.$nextTick(() => {
+        var objToMigrate = {
+          processInstanceQuery: this.processInstanceQuery,
+          migrationPlan: this.processMigrationInstructions,
+          skipCustomListeners: true
+        };
+
+        if (this.migrateAll == false) {
+          var instacesToMigrate = [];
+          if (this.tags.length > 0) {
+            this.tags.forEach(tag => {
+              instacesToMigrate.push(tag.text);
+            });
+            objToMigrate["processInstanceIds"] = instacesToMigrate;
+          }
+        }
+
         this.$api()
-          .post("/migration/executeAsync", {
-            processInstanceQuery: this.processInstanceQuery,
-            migrationPlan: this.processMigrationInstructions,
-            skipCustomListeners: true
-          })
+          .post("/migration/executeAsync", objToMigrate)
           .then(response => {
             if (response) {
               this.$notify({
@@ -396,3 +444,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.ti-input {
+  width: 450px;
+}
+</style>

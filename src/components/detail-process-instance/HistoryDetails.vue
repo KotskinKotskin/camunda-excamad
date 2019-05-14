@@ -19,6 +19,8 @@ export default {
       historyElements: [],
       columns: [
         "id",
+        "executionId",
+        "type",
         "time",
         "variableName",
         "value",

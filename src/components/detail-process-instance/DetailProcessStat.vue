@@ -15,7 +15,7 @@
             {{processHistoryDetail.id}}
             <router-link
               :to="{name:'definition', params:{ definitionId: processHistoryDetail.processDefinitionId}}"
-            >{{ processHistoryDetail.processDefinitionId }}</router-link>
+            >{{ processHistoryDetail.processDefinitionKey }}({{processHistoryDetail.processDefinitionVersion}})</router-link>
           </h3>
         </b-col>
         <b-col v-if="processInstanceRuntimeData" col lg="2" class="text-right">

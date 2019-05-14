@@ -1,242 +1,224 @@
 <template>
   <div class id="baseView">
-    <h2>Select variable or instance</h2>
-    <div class="row">
-      <div class="col-4">
-        <form>
-          <div class="form-group">
-            <label>Variable name</label>
-            <input
-              v-model="variable.variableName"
-              type="text"
-              class="form-control"
-              placeholder="applicationId"
-            >
-          </div>
-          <div class="form-group">
-            <label>Variable value</label>
-            <input
-              v-model="variable.variableValue"
-              type="text"
-              class="form-control"
-              placeholder="3-MRBA8OKM"
-            >
-          </div>
-          <b-btn
-            size="sm"
-            @click="findHistoryAndRuntimeInstancesByVariable"
-            variant="outline-primary"
-          >Find instances {{variable.variableName}}={{variable.variableValue}}</b-btn>
-          <hr>
-        </form>
-        <form>
-          <div class="form-group">
-            <label>
-              <b>OR</b> instance
-            </label>
-            <input
-              v-model="processInstanceForSearch"
-              type="text"
-              class="form-control"
-              placeholder="3-MRBA8OKM"
-            >
-          </div>
-          <b-btn
-            size="sm"
-            @click="findHistoryAndRuntimeInstaancesByProcessId"
-            variant="outline-primary"
-          >Find {{processInstanceForSearch}} instance</b-btn>
-        </form>
-      </div>
-      <div class="col-8">
-        <h5
-          v-if="variableHistoryElements.length!= 0 "
-        >Total {{variableHistoryElements.length}} elements</h5>
-        <h5 v-if="variableHistoryElements.length == 0 && searchTryed == true">Nothing there...
-          <router-link to="/stream">check live stream.</router-link>
-        </h5>
-        <div
-          v-bind:key="item.id"
-          v-for="item in variableHistoryElements"
-          v-if="variableHistoryElements.length!= 0"
-          role="tablist"
+    <h2>Find instances in history by business key</h2>
+    <b-form inline>
+      <b-input
+        v-model="variable.variableName"
+        disabled
+        class="mb-2 mr-sm-2 mb-sm-0"
+        id="inlineFormInputName2"
+        placeholder="Variable name"
+      />
+      <b-input
+        class="width: 300px"
+        v-model="variable.variableValue"
+        id="inlineFormInputGroupUsername2"
+        placeholder="Variable value"
+      />
+      <b-btn
+        class="ml-3"
+        @click="search"
+        variant="outline-primary"
+      >Find instances {{variable.variableName}}={{variable.variableValue}}</b-btn>
+    </b-form>
+    <small
+      class="mt-2"
+      v-if="variableHistoryElements.length!= 0 "
+    >Total {{variableHistoryElements.length}} elements</small>
+    <h5 v-if="findedProcessInstances.length == 0 && searchTryed == true">Nothing there...
+      <router-link to="/stream">check live stream.</router-link>
+    </h5>
+    <atom-spinner
+      v-if="!(ready == true)"
+      class="spinner"
+      :animation-duration="1000"
+      :size="60"
+      :color="'#007bff'"
+    />
+    <b-table
+      caption-top
+      class="mt-2"
+      small
+      hover
+      :fields="fields"
+      :items="findedProcessInstances"
+      striped
+    >
+      <template slot="table-caption">Total {{totalResult}}</template>
+      <template slot="id" slot-scope="data">
+        <router-link :to="{name:'processdetail', params:{ processInstanceId: data.item.id}}">
+          <b>{{data.item.id.substring(0,5)}}...</b>
+        </router-link>
+      </template>
+      <template slot="superProcessInstanceId" slot-scope="data">
+        <router-link
+          :to="{name:'processdetail', params:{ processInstanceId: data.item.superProcessInstanceId}}"
         >
-          <b-card no-body class="mb-1">
-            <b-btn
-              @click="getProcessInstanceHisoryAndCalculateActivity(item)"
-              class="text-left"
-              block
-              v-b-toggle="'collapse2'+item.id"
-              :variant="returnCssClassFromAccordion(item)"
-            >
-              Process
-              <b>{{item.processDefinitionId}}</b>, instance
-              <b>{{item.processInstanceId}}</b>
-            </b-btn>
-            <b-collapse v-bind:id="'collapse2'+item.id" accordion="my-accordion" role="tabpanel">
-              <b-card v-if="item.needShow ==true">
-                <small>
-                  <div
-                    :key="incident.id"
-                    v-if="item.isIncident == true"
-                    v-for="incident in item.incidents"
-                  >
-                    <b-alert show variant="warning">
-                      <b-badge
-                        variant="info"
-                      >{{convertDateToHumanStyle(incident.incidentTimestamp)}}</b-badge>
-                      <b>
-                        <i>{{incident.activityId}}</i>
-                        {{incident.incidentMessage}}
-                      </b>
-                    </b-alert>
-                  </div>
-                </small>
-                <acitivity-list :processInstanceItem="item"></acitivity-list>
-              </b-card>
-            </b-collapse>
-          </b-card>
-        </div>
-      </div>
-    </div>
-    <b-btn variant="outline-info" size="sm" class="mt-5 fixed-button-2" v-scroll-to="'#baseView'">⇑</b-btn>
-    <b-btn
-      variant="outline-info"
+          <b>{{ data.item.superProcessInstanceId ? data.item.superProcessInstanceId.substring(0,5)+'...' : ''}}</b>
+        </router-link>
+      </template>
+      <template slot="processDefinitionKey" slot-scope="data">
+        <router-link
+          :to="{name:'definition', params:{ definitionId: data.item.processDefinitionId}}"
+        >{{data.item.processDefinitionKey}}</router-link>
+        <br>
+        <small>{{data.item.processDefinitionName}}</small>
+      </template>
+
+      <template slot="startTime" slot-scope="data">{{convertDateToHumanStyle(data.item.startTime)}}</template>
+      <template
+        slot="endTime"
+        slot-scope="data"
+      >{{data.item.endTime ? convertDateToHumanStyle(data.item.endTime) : ''}}</template>
+      <template slot="show_details" slot-scope="row">
+        <b-button
+          variant="link"
+          size="sm"
+          @click="rowClick(row)"
+          class="mr-2"
+        >{{ row.detailsShowing ? 'Hide' : 'Show'}} Details</b-button>
+      </template>
+
+      <template slot="row-details" slot-scope="row">
+        <DetailProcessView :processInstanceId="row.item.id"></DetailProcessView>
+      </template>
+    </b-table>
+    <b-pagination-nav
+      align="center"
       size="sm"
-      class="mt-5 fixed-button"
-      v-scroll-to="'#variablesLine'"
-    >⇓</b-btn>
-    <hr id="variablesLine">
-    <variable-list
-      v-if="clickedToInstanceSearch==true && reshowVariablelist==false"
-      :processInstanceId="processInstanceForSearch"
-    ></variable-list>
+      base-url="#"
+      :number-of-pages="totalPage"
+      v-model="currentPage"
+    />
   </div>
 </template>
 <script>
 import * as api from "@/api/api";
+import DetailProcessView from "@/views/DetailProcessView.vue";
+
 export default {
   name: "history",
+  components: {
+    DetailProcessView
+  },
   data() {
     return {
+      firstResult: 0,
+      currentPage: 1,
+      maxResult: 20,
+      totalResult: 0,
+      totalPage: 0,
+
       variable: {
-        variableName: "applicationId",
+        variableName: "businessKey",
         variableValue: "3-MRXJM9P0"
       },
       processInstanceForSearch: "376497",
       searchTryed: false,
       clickedToInstanceSearch: false,
+      ready: true,
       reshowVariablelist: false,
-      processInstancesLoadedIds: "",
-      variableHistoryElements: []
+      findedProcessInstances: [],
+      variableHistoryElements: [],
+      fields: [
+        "id",
+        "processDefinitionKey",
+        "startTime",
+        "state",
+        "endTime",
+        "superProcessInstanceId",
+        "show_details"
+      ]
     };
   },
+  watch: {
+    currentPage: function(newValue) {
+      if (newValue != 0) {
+        this.firstResult =
+          Math.round(this.currentPage * this.maxResult) - this.maxResult;
 
+        this.getProcessInstanceHistoryByVariable();
+      }
+    }
+  },
   methods: {
-    getVariableHistory() {
-      api
-        .getEntity(
-          "history",
-          "variable-instance",
-          "variableName=" +
-            this.variable.variableName +
-            "&&variableValue=" +
+    rowClick(row) {
+      row.item._showDetails = !row.item._showDetails;
+    },
+    convertDateToHumanStyle: function(date) {
+      var rel = this.$momenttrue(date)
+        .startOf("second")
+        .fromNow();
+
+      var cal = this.$momenttrue(date).format("MMMM Do YYYY, H:mm:ss");
+
+      var output = rel + " (" + cal + ") ";
+      return output;
+    },
+    getProcessInstanceHistoryByVariable() {
+      this.ready = false;
+      var searchObj = {};
+      this.$api()
+        .get(
+          "/history/process-instance?processInstanceBusinessKeyLike=" +
+            // this.variable.variableName +
+            // "_eq_" +
             this.variable.variableValue +
-            "&&sortBy=instanceId&&sortOrder=desc"
+            "&sortBy=startTime&sortOrder=desc" +
+            "&firstResult=" +
+            this.firstResult +
+            "&maxResults=" +
+            this.maxResult
         )
-        .then(value => {
-          this.variableHistoryElements = value;
+        .then(response => {
+          this.findedProcessInstances = response.data;
+          this.ready = true;
+          this.findedProcessInstances.forEach(element => {
+            this.$set(element, "_showDetails", false);
+          });
           this.searchTryed = true;
         });
     },
-    returnCssClassFromAccordion: function(item) {
-      if (item.isIncident == true) {
-        return "danger";
-      }
-      if (item.isActive == true && item.isIncident == false) {
-        return "success";
-      }
-      if (item.isActive == false && item.isIncident == false) {
-        return "secondary";
-      }
-    },
-    convertDateToHumanStyle: function(date) {
-      return this.$momenttrue(date)
-        .startOf("second")
-        .fromNow();
-    },
-    getVariableHistoryByProcessInstanceId() {
-      this.variableHistoryElements = [];
-      api
-        .getEntity(
-          "history",
-          "variable-instance",
-          "processInstanceId=" + this.processInstanceForSearch
+    getProcessInstanceHistoryByVariableCount() {
+      this.$api()
+        .get(
+          "/history/process-instance/count?processInstanceBusinessKeyLike=" +
+            // this.variable.variableName +
+            // "_eq_" +
+            this.variable.variableValue +
+            "&sortBy=startTime&sortOrder=desc"
         )
-        .then(value => {
-          var abc = value;
-          this.variableHistoryElements.push(abc[0]);
+        .then(response => {
+          this.totalResult = response.data.count;
+          this.totalPage = this.calculateTotalPage(this.totalResult);
         });
     },
-    findHistoryAndRuntimeInstaancesByProcessId() {
-      this.getVariableHistoryByProcessInstanceId();
-
-      setTimeout(() => {
-        this.CheckRunnedInstance();
-      }, 1000);
-      this.clickedToInstanceSearch = true;
+    calculateTotalPage(total) {
+      var result = Math.round(total / this.maxResult);
+      if (result <= 0) {
+        result = 1;
+      }
+      if (result * this.maxResult < total) {
+        result = result + 1;
+      }
+      return result;
     },
 
-    findHistoryAndRuntimeInstancesByVariable() {
-      this.getVariableHistory();
-
-      setTimeout(() => {
-        this.CheckRunnedInstance();
-      }, 1000);
-    },
-
-    getProcessInstanceHisoryAndCalculateActivity(item) {
-      if (item.needShow == true) {
-        item.needShow = false;
-      } else vm.$set(item, "needShow", true);
-      this.processInstanceForSearch = item.processInstanceId;
-      this.clickedToInstanceSearch = true;
-      this.reshowVariablelist = true;
-      setTimeout(() => {
-        this.reshowVariablelist = false;
-      }, 300);
-    },
-
-    CheckRunnedInstance() {
-      var arr = this.variableHistoryElements;
-      arr.forEach(function(item) {
-        vm.$api()
-          .get(
-            "/process-instance/" +
-              item.processInstanceId +
-              "/activity-instances"
-          )
-          .then(response => {
-            vm.$set(item, "isActive", true);
-            vm.$api()
-              .get("/incident?processInstanceId=" + item.processInstanceId)
-              .then(response => {
-                if (response.data.length != 0) {
-                  vm.$set(item, "isIncident", true);
-                  vm.$set(item, "incidents", response.data);
-                } else {
-                  vm.$set(item, "isIncident", false);
-                }
-              });
-          })
-          .catch();
-      });
+    search() {
+      this.getProcessInstanceHistoryByVariable();
+      this.getProcessInstanceHistoryByVariableCount();
     }
   }
 };
 </script>
 
-<style>
+<style scoped>
+.form-inline .form-control {
+  display: inline-block;
+  width: 300px;
+  vertical-align: middle;
+}
+
 .fixed-button {
   position: fixed;
   top: 70%;

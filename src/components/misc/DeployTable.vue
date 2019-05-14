@@ -14,7 +14,7 @@
 
       <template slot="row-details" slot-scope="row">
         <b-card>
-          <li v-for="resourse in row.item.resourses">{{resourse.name}}</li>
+          <li v-bind:key="resourse.name" v-for="resourse in row.item.resourses">{{resourse.name}}</li>
 
           <b-button variant="link" size="sm" @click="row.toggleDetails">Hide Details</b-button>
         </b-card>

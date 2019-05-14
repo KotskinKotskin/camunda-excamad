@@ -7,8 +7,13 @@
       :size="60"
       :color="'#007bff'"
     />
-    <h2>Incidents count: {{incidents.length}}</h2>
 
+    <h2>Incidents count: {{incidentsToShow.length}}</h2>
+    <b-form-checkbox
+      id="checkbox1"
+      name="checkbox1"
+      v-model="hideParentIncidents"
+    >Hide parent incidents</b-form-checkbox>
     <div v-if="incidents.length != 0">
       <button
         type="button"
@@ -25,6 +30,8 @@
                   <tr>
                     <th>Failed activity</th>
                     <th>Error text</th>
+                    <th>Root</th>
+                    <th>Cause</th>
                     <th>Time</th>
                     <th>Definition</th>
                     <th>Instance</th>
@@ -33,9 +40,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr :key="item.id" v-for="item in incidents">
+                  <tr :key="item.id" v-for="item in incidentsToShow">
                     <td style="word-break:break-all;">{{item.activityId}}</td>
-                    <td style="word-break:break-all;">{{item.incidentMessage}}</td>
+                    <td
+                      style="word-break:break-all;"
+                    >{{ item.incidentMessage ? item.incidentMessage.substring(0,100)+'...' : ''}}</td>
+                    <td>{{item.rootCauseIncidentId}}</td>
+                    <td>{{item.causeIncidentId}}</td>
                     <td
                       style="word-break:break-all;"
                     >{{convertDateToHumanStyle(item.incidentTimestamp)}}</td>
@@ -100,6 +111,10 @@ export default {
     return {
       containerClass: "",
       incidents: [],
+      incidentsToShow: [],
+      incidentsGlobalRoot: [],
+      incidentsNotGlobalRoot: [],
+      hideParentIncidents: false,
       ready: null,
       retries: 3,
       jobQuery: {
@@ -115,6 +130,20 @@ export default {
       }
     };
   },
+  watch: {
+    hideParentIncidents(newValue, OldValue) {
+      this.incidentsGlobalRoot = this.incidents.filter(function(obj) {
+        return obj.globalRoot === true;
+      });
+      if (newValue == true) {
+        this.incidentsToShow = this.incidentsGlobalRoot;
+      }
+
+      if (newValue == false) {
+        this.incidentsToShow = this.incidents;
+      }
+    }
+  },
   methods: {
     getAllIncidents() {
       api
@@ -122,6 +151,15 @@ export default {
         .then(value => {
           this.incidents = value;
           this.ready = true;
+          this.incidents.forEach(incident => {
+            if (!incident.incidentMessage) {
+              vm.$set(incident, "globalRoot", false);
+            } else {
+              vm.$set(incident, "globalRoot", true);
+              this.incidentsToShow.push(incident);
+            }
+          });
+          this.incidentsToShow = this.incidents;
         });
     },
     updateSingleJobRetry(item) {

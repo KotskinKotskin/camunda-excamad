@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="text-center theFooter">
-      <small>Version 0.3.1</small>
+      <small>Version 0.4.5</small>
       <br>
-      <small>19.02.2019</small>
+      <small>14.05.2019</small>
       <br>
 
       <small>
-        <a href="mailto:kotov@bpmn2.ru">Help</a>
+        <a href="#/help">Help</a>
       </small>
     </div>
   </div>

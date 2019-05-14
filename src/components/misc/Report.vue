@@ -25,10 +25,10 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .vue-friendly-iframe iframe {
-  width: 1300px;
-  height: 1300px;
+  width: 1400px;
+  height: 2000px;
   border: 0px;
 }
 </style>

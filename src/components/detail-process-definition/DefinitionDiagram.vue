@@ -92,7 +92,7 @@ export default {
           "/job-definition/" + this.clickedJobDefinition[0].id + "/suspended",
           {
             executionDate: null,
-            includeJobs: this.inculdeCurrentInstance,
+            includeJobs: this.includeJobs,
             suspended: !this.clickedJobDefinition[0].suspended
           }
         )

@@ -28,27 +28,32 @@
         @click="changeTaskId(item)"
         button
         :key="item.id"
-        v-for="item in tasks.slice(0,10)"
+        v-for="item in tasks.slice(0,25)"
+        v-if="item.assignee == null || item.assignee==profile.userName"
         class="flex-column align-items-start"
       >
-        <div class="d-flex justify-content-between">
-          <h6 class="mb-1">{{item.name}}</h6>
-          <small>{{convertDateToHumanStyle(item.created)}}</small>
-        </div>
-        <p class="mb-1">
-          {{item.processDefinitionId}}
-          <br>
-          <small>
-            <router-link
-              :to="{name:'processdetail', params:{ processInstanceId: item.processInstanceId}}"
-            >
-              <b>{{item.processInstanceId}}</b>
-            </router-link>
-          </small>
-        </p>
-        <div class="d-flex justify-content-between">
-          <small>{{item.assignee}}</small>
-          <small>{{item.id}}</small>
+        <div v-if="item.assignee == null || item.assignee==profile.userName" id="smallTask">
+          <div class="d-flex justify-content-between">
+            <h6 class="mb-1">{{item.name}}</h6>
+            <small>{{convertDateToHumanStyle(item.created)}}</small>
+          </div>
+          <p class="mb-1">
+            {{item.processDefinitionId}}
+            <br>
+            <small>
+              <router-link
+                :to="{name:'processdetail', params:{ processInstanceId: item.processInstanceId}}"
+              >
+                <b>{{item.processInstanceId}}</b>
+              </router-link>
+            </small>
+          </p>
+          <div class="d-flex justify-content-between">
+            <small>{{item.assignee}}</small>
+            <small>
+              <router-link :to="{name:'task', params:{taskId: item.id}}">{{item.id}}</router-link>
+            </small>
+          </div>
         </div>
       </b-list-group-item>
     </b-list-group>
@@ -85,61 +90,95 @@ export default {
     };
   },
   mounted() {
-    this.getUnfinishedTasks();
+    this.getCandidateGroupTasks();
   },
   computed: {
     taskId() {
       return this.$store.state.taskId;
     },
+    profile() {
+      return this.$store.getters.getProfile;
+    },
     model() {
       var obj = {};
       obj["name"] = JSON.stringify(this.schema);
       return obj;
-    }
+    },
+    camundaProfile() {
+      return this.$store.getters.getCamundaProfile;
+    },
+    isCamundaAuthenticated() {
+      return this.$store.getters.isCamundaAuthenticated;
+    },
   },
   watch: {
-    taskId: function(newValue, OldValue) {
+    taskId: function (newValue, OldValue) {
       if (OldValue != null && newValue == null) {
         this.tasks.splice(
-          this.tasks.findIndex(function(i) {
+          this.tasks.findIndex(function (i) {
             return i.id === OldValue;
           }),
           1
         );
         setTimeout(() => {
-          this.getUnfinishedTasks();
+          this.getCandidateGroupTasks();
         }, 500);
       }
     }
   },
   methods: {
-    getUnfinishedTasks() {
-      api
-        .getEntity("task", "", "active=true&sortBy=created&sortOrder=desc")
-        .then(value => {
-          this.tasks = value;
+    getCandidateGroupTasks() {
+      var firstRequestCount = 0;
+      var searchObjByCandidate = {
+        active: true,
+        candidateUser: this.camundaProfile.authenticatedUser
+      }
+      this.$api().post("/task", searchObjByCandidate).then(response => {
+        response.data.forEach(task => {
+          this.tasks.push(task);
         });
+        firstRequestCount = response.data.length;
+        console.log(firstRequestCount);
+      })
+      var searchObjByUnassigne = {
+        active: true,
+        unassigned: true
+      }
+      this.$api().post("/task", searchObjByUnassigne).then(response => {
+        response.data.forEach(task => {
+
+          if (firstRequestCount == 0 || this.tasks.filter(e => e.id === task.id).length < 0) {
+            this.tasks.push(task);
+          }
+        });
+      })
+
+
     },
+
     getUnfinishedTasksByQuery() {
       api
         .getEntity(
           "task",
           "",
           "active=true&sortBy=created&sortOrder=desc&processVariables=" +
-            this.variableName +
-            "_eq_" +
-            this.variableValue
+          this.variableName +
+          "_eq_" +
+          this.variableValue
         )
         .then(value => {
           this.tasks = value;
         });
     },
-    checkIsActive: function(item) {
+
+
+
+    checkIsActive: function (item) {
       if (item.id == this.taskId) {
         return true;
       } else return false;
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       return this.$momenttrue(date)
         .startOf("second")
         .fromNow();

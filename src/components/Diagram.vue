@@ -102,7 +102,7 @@ export default {
     "processInstanceIdForLoadHistory"
   ],
   watch: {
-    fullscreen: function(val) {
+    fullscreen: function (val) {
       if (val == false) {
         this.toggleback();
       }
@@ -146,7 +146,7 @@ export default {
     readModdle() {
       vm = this;
       var moddle = new BpmnModdle();
-      moddle.fromXML(this.processDefinitionInXml, function(err, definitions) {
+      moddle.fromXML(this.processDefinitionInXml, function (err, definitions) {
         vm.elementsOfDiagram = definitions;
       });
     },
@@ -170,7 +170,7 @@ export default {
 
     saveXML() {
       var stringXml = "";
-      this.globalViewer.saveXML({ format: true }, function(err, xml) {
+      this.globalViewer.saveXML({ format: true }, function (err, xml) {
         stringXml = xml;
       });
       var encodedData = encodeURIComponent(stringXml);
@@ -181,7 +181,7 @@ export default {
     },
     saveSVG() {
       var stringSVG = "";
-      this.globalViewer.saveSVG({ format: true }, function(err, svg) {
+      this.globalViewer.saveSVG({ format: true }, function (err, svg) {
         stringSVG = svg;
       });
       var encodedDataSVG = encodeURIComponent(stringSVG);
@@ -203,10 +203,10 @@ export default {
         });
       }
     },
-    getXml: async function() {
+    getXml: async function () {
       var vm = this;
 
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         if (vm.diagramKey == null) {
           vm.$api()
             .get("/process-definition/" + vm.processDefinitionId + "/xml")
@@ -219,7 +219,7 @@ export default {
                 vm.$api()
                   .get(
                     "/history/activity-instance?processInstanceId=" +
-                      vm.processInstanceIdForLoadHistory
+                    vm.processInstanceIdForLoadHistory
                   )
                   .then(activityResponse => {
                     vm.activityHistory = activityResponse.data;
@@ -240,7 +240,7 @@ export default {
                 vm.$api()
                   .get(
                     "/history/activity-instance?processInstanceId=" +
-                      vm.processInstanceIdForLoadHistory
+                    vm.processInstanceIdForLoadHistory
                   )
                   .then(activityResponse => {
                     vm.activityHistory = activityResponse.data;
@@ -251,7 +251,7 @@ export default {
         }
       });
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       var rel = this.$momenttrue(date)
         .startOf("second")
         .fromNow();
@@ -261,8 +261,8 @@ export default {
       var output = rel + " (" + cal + ") ";
       return output;
     },
-    returnAllarm: function(item) {},
-    buildViewer: function() {
+    returnAllarm: function (item) { },
+    buildViewer: function () {
       if (this.editMode != true) {
         var viewer = new BpmnViewer({
           container: "#canvas"
@@ -286,7 +286,7 @@ export default {
       return viewer;
     },
 
-    eventBusDispatcher: function(viewer) {
+    eventBusDispatcher: function (viewer) {
       if (true) {
         vm = this;
         var eventBus = viewer.get("eventBus");
@@ -301,14 +301,14 @@ export default {
           // "element.mouseup"
         ];
 
-        events.forEach(function(event) {
-          eventBus.on(event, function(e) {
+        events.forEach(function (event) {
+          eventBus.on(event, function (e) {
             // e.element = the model element
             // e.gfx = the graphical element
 
             vm.moddleElement = e.element.businessObject;
             var stringXml = "";
-            vm.globalViewer.saveXML({ format: true }, function(err, xml) {
+            vm.globalViewer.saveXML({ format: true }, function (err, xml) {
               stringXml = xml;
             });
             vm.$emit("digaramInXml", stringXml);
@@ -342,10 +342,10 @@ export default {
       }
     },
 
-    makePrettyHtml: function(item) {
+    makePrettyHtml: function (item) {
       return;
     },
-    drawOverlays: function(bpmnViewer) {
+    drawOverlays: function (bpmnViewer) {
       var canvas = bpmnViewer.get("canvas"),
         overlays = bpmnViewer.get("overlays");
 
@@ -354,53 +354,55 @@ export default {
       canvas.zoom("fit-viewport");
 
       this.activityHistory.forEach(activity => {
-        if (!activity.activityId.includes("#multiInstanceBody")) {
-          var shape = elementRegistry.get(activity.activityId);
-
-          if (activity.endTime) {
-            activity.endTime = this.convertDateToHumanStyle(activity.endTime);
+        try {
+          if (!activity.activityId.includes("#multiInstanceBody")) {
+            var shape = elementRegistry.get(activity.activityId);
+            if (activity.endTime) {
+              activity.endTime = this.convertDateToHumanStyle(activity.endTime);
+              overlays.add(activity.activityId, {
+                position: {
+                  bottom: -20,
+                  left: 0
+                },
+                html: '<div class="timer"> ' + activity.endTime + "</div"
+              });
+            }
+            var $overlayHtml = $('<div class="highlight-overlay">').css({
+              width: shape.width,
+              height: shape.height
+            });
             overlays.add(activity.activityId, {
               position: {
-                bottom: -20,
+                top: 0,
                 left: 0
               },
-              html: '<div class="timer"> ' + activity.endTime + "</div"
+              html: $overlayHtml
             });
           }
-
-          var $overlayHtml = $('<div class="highlight-overlay">').css({
-            width: shape.width,
-            height: shape.height
-          });
-
-          overlays.add(activity.activityId, {
-            position: {
-              top: 0,
-              left: 0
-            },
-            html: $overlayHtml
-          });
+          if (activity.activityType == "callActivity") {
+            var baseurl =
+              process.env.NODE_ENV === "production" ? "/camunda-excamad/" : "/";
+            var url =
+              baseurl + "#/processdetail/" + activity.calledProcessInstanceId;
+            var htmllink =
+              '<a  href="' +
+              url +
+              '">' +
+              activity.calledProcessInstanceId +
+              "</a";
+            overlays.add(activity.activityId, {
+              position: {
+                bottom: -5,
+                left: 0
+              },
+              html: htmllink
+            });
+          }
+        }
+        catch(error ) {
+          console.error(error);
         }
 
-        if (activity.activityType == "callActivity") {
-          var baseurl =
-            process.env.NODE_ENV === "production" ? "/camunda-excamad/" : "/";
-          var url =
-            baseurl + "#/processdetail/" + activity.calledProcessInstanceId;
-          var htmllink =
-            '<a  href="' +
-            url +
-            '">' +
-            activity.calledProcessInstanceId +
-            "</a";
-          overlays.add(activity.activityId, {
-            position: {
-              bottom: -5,
-              left: 0
-            },
-            html: htmllink
-          });
-        }
       });
 
       if (this.processActivityToShowArray != null) {
@@ -485,7 +487,7 @@ export default {
       }
     },
 
-    importXML: function(bpmnViewer) {
+    importXML: function (bpmnViewer) {
       bpmnViewer.importXML(this.processDefinitionInXml);
       if (this.processActivityToShowArray != null || this.statistics != null) {
         setTimeout(() => {

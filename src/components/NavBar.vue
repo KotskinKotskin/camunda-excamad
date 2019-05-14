@@ -16,6 +16,7 @@
                 <b-dropdown-item to="/history">History and search</b-dropdown-item>
                 <b-dropdown-item to="/oldactivity">Old processes</b-dropdown-item>
                 <b-dropdown-item to="/embedded">Embed and share</b-dropdown-item>
+                <b-dropdown-item to="/startdefinition">Start processes</b-dropdown-item>
               </b-nav-item-dropdown>
               <b-nav-item-dropdown text="Decisions">
                 <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
@@ -42,9 +43,6 @@
                 <b-dropdown-item to="/deploytable">Deployments</b-dropdown-item>
                 <b-dropdown-item to="/report">Report</b-dropdown-item>
               </b-nav-item-dropdown>
-              <b-button @click="refresh" size="sm" variant="outline-secondary" class="my-2 my-sm-0">
-                <font-awesome-icon icon="redo"/>
-              </b-button>
             </b-navbar-nav>
 
             <!-- Right aligned nav items -->
@@ -60,6 +58,7 @@
                 </b-list-group>
               </ul>
               <search v-on:setUrlFromSearch="setUrlFromEmit"></search>
+
               <b-nav-item to="/settings">Settings</b-nav-item>
               <b-nav-item-dropdown text="Systems" right>
                 <b-dropdown-item-button
@@ -87,6 +86,10 @@
                 </b-nav-form>
                 <input class="hide" v-on:keyup.45="setVisible">
               </b-nav-item-dropdown>
+
+              <b-nav-item v-b-tooltip.hover title="FAQ and manual" to="/help">
+                <font-awesome-icon icon="question-circle"/>
+              </b-nav-item>
             </b-navbar-nav>
 
             <login></login>
@@ -108,7 +111,7 @@
           <small>
             <b-nav-text v-if="baseurl !=''" class="ml-2">{{baseurl}}</b-nav-text>
           </small>
-          
+
           <small></small>
         </b-nav>
       </div>
@@ -117,243 +120,246 @@
 </template>
 
 <script>
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { AUTH_REQUEST, AUTH_CAMUNDA_REQUEST } from "@/store/actions/auth";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import * as access from '@/store/modules/accessSetings'
+import { faSync, faQuestion, faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+import { AUTH_REQUEST, AUTH_CAMUNDA_REQUEST } from '@/store/actions/auth'
 
-library.add(faSync);
+library.add(faSync)
+library.add(faQuestion)
+library.add(faQuestionCircle)
 
 import {
   PRODSUBSTRING,
   TESTSUBSTRING,
   PREFIXURLINPATHTOREMOVE,
   POSTFIXURLINPATHTOREMOVE
-} from "@/config/settings";
+} from '@/config/settings'
 export default {
   components: {},
   data() {
     return {
-      query: "",
+      query: '',
       routes: [],
       list: [],
-      productionAlert: "",
-      testAlert: "",
-      privateurl: "",
-      status: "",
+      productionAlert: '',
+      testAlert: '',
+      privateurl: '',
+      status: '',
       substringForProduction: PRODSUBSTRING,
       substringForTest: TESTSUBSTRING,
-      statusDate: "",
-      envortment: "",
-      expertCurrent: "",
+      statusDate: '',
+      envortment: '',
+      expertCurrent: '',
       secretButtonPressed: false
-    };
+    }
+  },
+  created() {
+    this.$store.commit('changeExpertMode', localStorage.expertMode == 'true')
   },
   mounted() {
-    this.healthcheck();
-    this.getList();
+    if (localStorage.lastUrl) {
+      this.userSetBaserUrlFromBadge(localStorage.lastUrl)
+    }
+
+    this.healthcheck()
+    this.getList()
     setTimeout(() => {
-      this.healthcheck();
-      this.checkEnvortment();
-    }, 30);
+      this.healthcheck()
+      this.checkEnvortment()
+    }, 30)
 
     setInterval(
       function growUp() {
-        this.healthcheck();
-        this.checkEnvortment();
+        this.healthcheck()
+        this.checkEnvortment()
       }.bind(this),
       9000
-    );
-    if (localStorage.privateurl) {
-      this.$store.commit("setBaseUrl", localStorage.privateurl);
-    }
-
-    if (localStorage.expertCurrent) {
-      this.expertCurrent = localStorage.expertCurrent == "true";
-    }
+    )
   },
   computed: {
     baseurl() {
-      return this.$store.state.baseurl;
+      return this.$store.state.baseurl
     },
     workOnBpmAsSerivce() {
-      return this.$store.state.workOnBpmasservice;
+      return this.$store.state.workOnBpmasservice
     },
     pillColor() {
-      if (this.envortment == "PRODUCTION") {
-        return "warning";
+      if (this.envortment == 'PRODUCTION') {
+        return 'warning'
       }
-      if (this.envortment == "TEST") {
-        return "info";
+      if (this.envortment == 'TEST') {
+        return 'info'
       }
-      if (this.envortment != "TEST" && this.envortment != "PRODUCTION") {
-        return "secondary";
+      if (this.envortment != 'TEST' && this.envortment != 'PRODUCTION') {
+        return 'secondary'
       }
     },
     pillColorStatus() {
       if (this.serverStatus == true) {
-        return "success";
+        return 'success'
       }
       if (this.serverStatus != true) {
-        return "danger";
+        return 'danger'
       }
     },
     envortmentFromStore() {
-      return this.$store.state.envortment;
+      return this.$store.state.envortment
     },
     expertModeFromStore() {
-      return this.$store.state.expertMode;
+      return this.$store.state.expertMode
     },
     isAuthenticated() {
-      return this.$store.getters.isAuthenticated;
+      return this.$store.getters.isAuthenticated
     },
     serverStatus() {
-      return this.$store.state.serverStatus;
+      return this.$store.state.serverStatus
     }
   },
   watch: {
-    expertCurrent(newExpertCurrent) {
-      localStorage.expertCurrent = newExpertCurrent;
-    },
+    expertCurrent(newExpertCurrent) { },
     baseurl() {
-      this.getList();
+      this.getList()
     }
   },
   methods: {
-    setUrlFromEmit: function(newUrl) {
-      this.userSetBaserUrlFromBadge(newUrl);
+    setUrlFromEmit: function (newUrl) {
+      this.userSetBaserUrlFromBadge(newUrl)
+      this.$router.push({
+        name: 'migration'
+      })
     },
     refresh() {
-      this.$emit("refresh");
+      this.$emit('refresh')
     },
     calculatePillColorForUrl(name) {
-      var testAlert = name.indexOf(this.substringForTest);
-      var productionAlert = name.indexOf(this.substringForProduction);
+      var testAlert = name.indexOf(this.substringForTest)
+      var productionAlert = name.indexOf(this.substringForProduction)
 
       if ((productionAlert > 0 || productionAlert < 0) && testAlert > 0) {
-        return "info";
+        return 'info'
       }
       if (productionAlert > 0 && testAlert < 0) {
-        return "warning";
+        return 'warning'
       }
       if (productionAlert < 0 && testAlert < 0) {
-        return "secondary";
+        return 'secondary'
       }
     },
     substringUrl(name) {
       return name
-        .replace(PREFIXURLINPATHTOREMOVE, "")
-        .replace(POSTFIXURLINPATHTOREMOVE, "");
+        .replace(PREFIXURLINPATHTOREMOVE, '')
+        .replace(POSTFIXURLINPATHTOREMOVE, '')
     },
 
     calculateEnvormentForUrl(name) {
-      var testAlert = name.indexOf(this.substringForTest);
-      var productionAlert = name.indexOf(this.substringForProduction);
+      var testAlert = name.indexOf(this.substringForTest)
+      var productionAlert = name.indexOf(this.substringForProduction)
 
       if (productionAlert > 0 && testAlert > 0) {
-        return "TEST";
+        return 'TEST'
       }
       if (productionAlert > 0 && testAlert < 0) {
-        return "PRODUCTION";
+        return 'PRODUCTION'
       }
       if (productionAlert < 0 && testAlert < 0) {
-        return "UNKNOWN";
+        return 'UNKNOWN'
       }
       if (productionAlert < 0 && testAlert > 0) {
-        return "TEST";
+        return 'TEST'
       }
     },
 
     healthcheck() {
       this.$api()
-        .get("/engine")
+        .get('/engine')
         .then(() => {
-          this.status = "UP";
-          this.statusDate = Date();
-          this.$store.commit("changeServerStatus", true); //
+          this.status = 'UP'
+          this.statusDate = Date()
+          this.$store.commit('changeServerStatus', true) //
         })
         .catch(() => {
-          this.status = "DOWN";
-          this.statusDate = Date();
-          this.$store.commit("changeServerStatus", false); //
-        });
+          this.status = 'DOWN'
+          this.statusDate = Date()
+          this.$store.commit('changeServerStatus', false) //
+        })
     },
     checkEnvortment() {
-      this.testAlert = this.baseurl.indexOf(this.substringForTest);
-      this.productionAlert = this.baseurl.indexOf(this.substringForProduction);
+      this.testAlert = this.baseurl.indexOf(this.substringForTest)
+      this.productionAlert = this.baseurl.indexOf(this.substringForProduction)
       if (
         this.testAlert > 0 &&
         (this.productionAlert > 0 || this.productionAlert < 0)
       ) {
-        this.envortment = "TEST";
+        this.envortment = 'TEST'
       }
       if (this.productionAlert > 0 && this.testAlert < 0) {
-        this.envortment = "PRODUCTION";
+        this.envortment = 'PRODUCTION'
       }
       if (this.productionAlert < 0 && this.testAlert < 0) {
-        this.envortment = "UNKNOWN";
+        this.envortment = 'UNKNOWN'
       }
-      this.$store.commit("changeEnvortment", this.envortment); //
+      this.$store.commit('changeEnvortment', this.envortment) //
     },
     clear() {
-      this.list = [];
-      localStorage.urllist = "";
+      this.list = []
     },
     getList() {
       if (localStorage.urllist) {
-        const arr = JSON.parse(localStorage.urllist);
+        const arr = JSON.parse(localStorage.urllist)
 
         var result = arr.reduce((unique, o) => {
           if (!unique.some(obj => obj.name === o.name)) {
-            unique.push(o);
+            unique.push(o)
           }
-          return unique;
-        }, []);
-        this.list = result;
+          return unique
+        }, [])
+        this.list = result
       }
     },
     userSetBaserUrlFromBadge(item) {
       this.$notify({
-        group: "foo",
-        title: "Url setuped",
-        text: this.privateurl,
-        type: "success"
-      });
-      this.$store.commit("setBaseUrl", item);
-      this.checkEnvortment();
-      this.refresh();
-      this.$router.push({
-        name: "migration"
-      });
-      if (localStorage.usertoken != null) {
-        var usertokenstring = atob(localStorage.usertoken).split(":");
+        group: 'foo',
+        title: 'Url setuped',
+        text: item,
+        type: 'success'
+      })
+      this.$store.commit('setBaseUrl', item)
+      this.checkEnvortment()
+      this.refresh()
 
-        var userName = usertokenstring[0];
-        var password = usertokenstring[1];
+      localStorage.lastUrl = item
+      if (localStorage.usertoken != null) {
+        var usertokenstring = atob(localStorage.usertoken).split(':')
+
+        var userName = usertokenstring[0]
+        var password = usertokenstring[1]
         this.$store
           .dispatch(AUTH_REQUEST, { userName, password })
-          .then(() => {});
+          .then(() => { })
         this.$store
           .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
-          .then(() => {});
+          .then(() => { })
       }
     },
     commitExpertMode() {
       this.$notify({
-        group: "foo",
-        title: "Expert mode on",
-        text: "Right now " + this.expertCurrent,
-        type: "info"
-      });
+        group: 'foo',
+        title: 'Expert mode on',
+        text: 'Right now ' + this.expertCurrent,
+        type: 'info'
+      })
       setTimeout(() => {
-        this.$store.commit("changeExpertMode", this.expertCurrent);
-      }, 100);
+        localStorage.expertMode = this.expertCurrent
+        this.$store.commit('changeExpertMode', this.expertCurrent)
+      }, 100)
       //
     },
     setVisible() {
-      this.secretButtonPressed = true;
+      this.secretButtonPressed = true
     }
   }
-};
+}
 </script>
 
 <style>

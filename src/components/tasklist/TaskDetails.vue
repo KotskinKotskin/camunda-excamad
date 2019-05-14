@@ -1,10 +1,7 @@
 <template>
   <div id="TaskDetails" v-if="taskId != null">
     <p class="text-right">
-      <b-button-group size="sm">
-        <b-button disabled variant="outline-info">
-          <font-awesome-icon icon="child"/>Claim
-        </b-button>
+      <b-button-group v-show="!fieldsOk" size="sm">
         <b-button @click="generateAndUpdate" :disabled="fieldsOk" variant="outline-success">
           <font-awesome-icon icon="check"/>Done
         </b-button>
@@ -57,158 +54,157 @@ export default {
     this.ready = false;
 
 
-    this.getTaskProps().then(()=>{
-      this.getFormVariables().then(()=>{
+    this.getTaskProps().then(() => {
+      this.getFormVariables().then(() => {
         this.addPropsToSchema()
       });
-    }).catch( ()=> {
- 
-      this.getFormVariables().then(()=>{
+    }).catch(() => {
+
+      this.getFormVariables().then(() => {
         this.generateDefaultForm();
       });
-      
-    }); 
+
+    });
 
 
   },
   methods: {
     isJson(str) {
-       try {
+      try {
         JSON.parse(str);
-    } catch (e) {
+      } catch (e) {
         return false;
-    }
-    return true;
+      }
+      return true;
     },
-
     getTaskProps() {
       var vm = this;
-      return new Promise(function(resolve,reject){
-      api
-        .getEntity("taskfields/" + vm.taskId, null, null)
-        .then(value => {
-        
-          if (value != null && value != "" && value.length > 0) {
-            vm.formProps = value;
-            vm.fieldsOk = true;
-            resolve();
-          }
-           else if (value == null || value.length == 0 || value == "") {
-            reject();
-          }
-         
-        })
-        .catch(() => {
-           reject();
-          vm.fieldsOk = false;
-        });
+      return new Promise(function (resolve, reject) {
+        api
+          .getEntity("taskfields/" + vm.taskId, null, null)
+          .then(value => {
 
-});
+            if (value != null && value != "" && value.length > 0) {
+              vm.formProps = value;
+              vm.fieldsOk = true;
+              resolve();
+            }
+            else if (value == null || value.length == 0 || value == "") {
+              reject();
+            }
+
+          })
+          .catch(() => {
+            reject();
+            vm.fieldsOk = false;
+          });
+
+      });
     },
     getFormVariables() {
-      
+
       var vm = this;
-      return new Promise(function(resolve,reject) {
-      api
-        .getEntity("task/" + vm.taskId, "form-variables", null)
-        .then(value => {
+      return new Promise(function (resolve, reject) {
+        api
+          .getEntity("task/" + vm.taskId, "form-variables", null)
+          .then(value => {
             vm.formVariables = value;
-          for (var key in value) {
-            if (value[key].type != "Object") {
-              var obj = {};
-              obj["model"] = key;
-            
-              var testobj =vm.formProps.find( x => x.id === key);
-              if (testobj) {
-              if (vm.isJson(value[key].value)) {
-               vm.$set(vm.model, key, JSON.parse(value[key].value));
-              } else  vm.$set(vm.model, key, value[key].value);
+            for (var key in value) {
+              if (value[key].type != "Object") {
+                var obj = {};
+                obj["model"] = key;
+
+                var testobj = vm.formProps.find(x => x.id === key);
+                if (testobj) {
+                  if (vm.isJson(value[key].value)) {
+                    vm.$set(vm.model, key, JSON.parse(value[key].value));
+                  } else vm.$set(vm.model, key, value[key].value);
 
 
-             
-              vm.fields.push(obj);
+
+                  vm.fields.push(obj);
+                }
               }
+
             }
-            
-          }
-          vm.$set(vm.schema, "fields", vm.fields);
-          resolve();
-        }).catch(error => {reject(error)});
-        });
+            vm.$set(vm.schema, "fields", vm.fields);
+            resolve();
+          }).catch(error => { reject(error) });
+      });
     },
     addPropsToSchema() {
       this.ready = false;
 
       var vm = this;
-      return new Promise(function(resolve){
-      if (vm.fieldsOk == true) {
-        for (var index = 0; index < vm.formProps.length; index++) {
-          
+      return new Promise(function (resolve) {
+        if (vm.fieldsOk == true) {
+          for (var index = 0; index < vm.formProps.length; index++) {
 
-          const props = vm.formProps[index];
-          var result = vm.schema.fields.find(obj => {
-            return obj.model === props.id;
-          });
 
-          const field = result;
+            const props = vm.formProps[index];
+            var result = vm.schema.fields.find(obj => {
+              return obj.model === props.id;
+            });
 
-          for (var property in props.properties) {
-            field["label"] = props.label;
-            field["default"] = props.defaultValue;
-            if (
-              props.properties[property] == "true" ||
-              props.properties[property] == "false"
-            ) {
-              field[property] = props.properties[property] === "true";
-            } else {
-              field[property] = props.properties[property];
+            const field = result;
+
+            for (var property in props.properties) {
+              field["label"] = props.label;
+              field["default"] = props.defaultValue;
+              if (
+                props.properties[property] == "true" ||
+                props.properties[property] == "false"
+              ) {
+                field[property] = props.properties[property] === "true";
+              } else {
+                field[property] = props.properties[property];
+              }
+            }
+            if (props.type.name == "enum" && props.type.values) {
+              var arrayOfvalues = [];
+              for (var key in props.type.values) {
+                var obj = {};
+                obj["value"] = key;
+                obj["name"] = props.type.values[key];
+                arrayOfvalues.push(obj);
+              }
+              field["values"] = arrayOfvalues;
+            }
+
+
+            if (Object.entries(props.properties).length === 0 && props.properties.constructor === Object) {
+              vm.$notify({
+                group: "foo",
+                title: "Problem with generate form",
+                text: "No properties in field description " + props.id,
+                type: "error"
+              });
+
             }
           }
-          if (props.type.name == "enum" && props.type.values) {
-            var arrayOfvalues = [];
-            for (var key in props.type.values) {
-              var obj = {};
-              obj["value"] = key;
-              obj["name"] = props.type.values[key];
-              arrayOfvalues.push(obj);
-            }
-            field["values"] = arrayOfvalues;
-          }
 
-             
-          if(Object.entries(props.properties).length === 0 && props.properties.constructor === Object ) {
-           vm.$notify({
-            group: "foo",
-            title: "Problem with generate form",
-            text: "No properties in field description " + props.id,
-            type: "error"
-               });
-         
-          }
+
+          var button = {};
+          button["type"] = "submit";
+          button["buttonText"] = "Done";
+          button["validateBeforeSubmit"] = true;
+          button["onSubmit"] = vm.generateAndUpdate;
+
+          vm.fields.push(button);
         }
-        
-        
-        var button = {};
-        button["type"] = "submit";
-        button["buttonText"] = "Done";
-        button["validateBeforeSubmit"] = true;
-        button["onSubmit"] = vm.generateAndUpdate;
 
-        vm.fields.push(button);
-      }
+        if (vm.fieldsOk == false) {
+          vm.fields.forEach(element => {
+            element["label"] = element.model;
+            element["readonly"] = true;
+            element["type"] = "input";
+            element["inputType"] = "text";
+            element["disabled"] = true;
+          });
+        }
 
-      if (vm.fieldsOk == false) {
-        vm.fields.forEach(element => {
-          element["label"] = element.model;
-          element["readonly"] = true;
-          element["type"] = "input";
-          element["inputType"] = "text";
-          element["disabled"] = true;
-        });
-      }
-
-      vm.ready = true;
-      resolve();
+        vm.ready = true;
+        resolve();
       });
     },
     generateAndUpdate() {
@@ -217,39 +213,60 @@ export default {
       this.$store.commit("changeTaskId", null);
     },
     updateSimpleVariables() {
+      console.log(this.variables);
       this.$api()
         .post("task/" + this.taskId + "/submit-form", {
           variables: this.variables
         })
-        
+
     },
     generateVariables() {
+      this.variables = {};
       if (this.fieldsOk == true) {
         for (var key in this.model) {
+
+
+
+          var localvalue = Array.isArray(this.model[key]) ? JSON.stringify(this.model[key]) : this.model[key];
+
+          var localtype = this.formVariables[key].type;
+
+
+          var date = this.$momenttrue(localvalue);
+          if (date._isValid) {
+            localvalue = this.$momenttrue(localvalue).format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+            localvalue = localvalue.substring(0, localvalue.length - 4) + "030";
+            localtype = "date";
+          }
+
+
+
           var obj = {};
-          obj[key] = {
-            value: this.model[key]
+          this.variables[key] = {
+            value: localvalue,
+            type: localtype
           };
 
-          
+
         }
+
       }
     },
     generateDefaultForm() {
       this.ready = false;
       for (var key in this.formVariables) {
-      
-         if (this.formVariables[key].type != "Object") {
-         this.model[key] = this.formVariables[key].value;
-         }
-         if (this.formVariables[key].type == "Object") {
-           this.model[key] =JSON.stringify(this.formVariables[key].value);
-         }
+
+        if (this.formVariables[key].type != "Object") {
+          this.model[key] = this.formVariables[key].value;
+        }
+        if (this.formVariables[key].type == "Object") {
+          this.model[key] = JSON.stringify(this.formVariables[key].value);
+        }
       }
-      
+
       for (var keyModel in this.model) {
         var defaultField = {
-          readonly : true,
+          readonly: true,
           label: keyModel,
           model: keyModel,
           type: "input",
@@ -258,12 +275,14 @@ export default {
         this.schema.fields.push(defaultField);
       }
       this.ready = true;
-    
-       
+
+
+
     }
 
-  }
-};
+
+  }}
+
 </script>
 
 <style>
@@ -1342,4 +1361,3 @@ http://nicolasgallagher.com/micro-clearfix-hack/
   transition: all 0.3s ease;
 }
 </style>
-

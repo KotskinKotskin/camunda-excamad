@@ -5,6 +5,13 @@
       <b-card no-body>
         <b-tabs pills card vertical>
           <b-tab v-bind:key="item.id" v-for="item in variables" :title="calculateName(item)" active>
+            <variable-single-edit
+              v-if="item.type != 'Object'"
+              :variableOldValue="item.value"
+              :variableType="item.type"
+              :variableName="item.name"
+              :processInstanceId="processInstanceId"
+            ></variable-single-edit>
             <vue-json-pretty :data="item"></vue-json-pretty>
           </b-tab>
         </b-tabs>
@@ -42,7 +49,7 @@ export default {
       this.$api()
         .get(
           "/history/variable-instance?processInstanceId=" +
-            this.processInstanceId
+          this.processInstanceId
         )
         .then(response => {
           this.variables = response.data;
@@ -51,7 +58,7 @@ export default {
             this.applicationId = response.data.filter(obj => {
               return obj.name === "applicationId";
             })[0].value;
-          } catch (error) {}
+          } catch (error) { }
         });
     }
   }

@@ -35,6 +35,8 @@ v-on:keyup.enter="userSetBaseUrl()"
           <div class="input-group-append">
             
           <button type="button" class="btn btn-primary" @click="userSetBaseUrl()">Save</button>
+
+          
            </div>
             </div>
                <b-badge v-if="list.length >1" :variant="calculateVariant(item.name)" class="mr-2 mt-0" href="#" @click="userSetBaserUrlFromBadge(item.name)" pill v-for="item in list">{{item.name}}</b-badge>
@@ -43,7 +45,9 @@ v-on:keyup.enter="userSetBaseUrl()"
             
              </div>
               <small> <b-link href="#" @click="clear">Clear</b-link> </small>
-              
+              <b-form-group label="My role">
+      <b-form-radio-group stacked  id="radios1" v-model="role" :options="roleOptions" name="radioOptions" />
+    </b-form-group>
       </div>
       
       </form>    
@@ -62,6 +66,12 @@ v-on:keyup.enter="userSetBaseUrl()"
 
 <script>
 import * as URLs from "@/config/camundasUrl";
+import {
+  AUTH_REQUEST,
+  AUTH_LOGOUT,
+  AUTH_CAMUNDA_REQUEST
+} from "@/store/actions/auth";
+import * as access from "@/store/modules/accessSetings";
 import VueBootstrapTypeahead from "vue-bootstrap-typeahead";
 
 export default {
@@ -73,6 +83,7 @@ export default {
     return {
       workOnBpmasservicePrivate: false,
       list: [],
+      role: "",
       privateurl: "",
       privateBpmasUrl: "",
       candidateToSuggest: "",
@@ -92,26 +103,6 @@ export default {
 
   mounted() {
     this.possibleUrl = URLs.generatePossibleUrl();
-    if (localStorage.privateurl) {
-      this.privateurl = localStorage.privateurl;
-      this.setBaseUrl();
-    }
-    if (this.$route.query.baseurl) {
-      this.privateurl = this.$route.query.baseurl;
-      this.setBaseUrl();
-    }
-    if (localStorage.urllist) {
-      const arr = JSON.parse(localStorage.urllist);
-
-      var result = arr.reduce((unique, o) => {
-        if (!unique.some(obj => obj.name === o.name)) {
-          unique.push(o);
-        }
-        return unique;
-      }, []);
-      this.list = result;
-    }
-
     this.checkEnvortment();
     this.healthcheck();
 
@@ -123,13 +114,16 @@ export default {
     );
   },
   watch: {
-    privateurl(newPrivateurl) {
-      localStorage.privateurl = newPrivateurl;
+    role(newValue, oldValue) {
+      this.$store.commit("setRole", newValue);
     }
   },
   computed: {
     baseurl() {
       return this.$store.state.baseurl;
+    },
+    roleOptions() {
+      return access.roles;
     },
     bpmasserviceUrl() {
       return this.$store.state.bpmasserviceUrl;
@@ -140,7 +134,7 @@ export default {
 
     clear() {
       this.list = [];
-      localStorage.urllist = "";
+      access.CheckPermission("Migration view");
     },
     setWorkOnBPMasSerivce(workOnBpmasservicePrivate) {
       this.$store.commit("changeworkOnBpmasservice", workOnBpmasservicePrivate);
@@ -150,7 +144,7 @@ export default {
       this.$store.commit("setBpmasserviceUrl", this.privateBpmasUrl);
     },
 
-    calculateVariant: function(item) {
+    calculateVariant: function (item) {
       if (
         item.indexOf(this.substringForTest) > 0 &&
         item.indexOf(this.substringForProduction) > 0
@@ -183,7 +177,6 @@ export default {
         return unique;
       }, []);
       this.list = result;
-      localStorage.urllist = JSON.stringify(this.list);
     },
     userSetBaserUrlFromBadge(item) {
       if (this.workOnBpmasservicePrivate == true) {
@@ -195,10 +188,10 @@ export default {
           var password = usertokenstring[1];
           this.$store
             .dispatch(AUTH_REQUEST, { userName, password })
-            .then(() => {});
+            .then(() => { });
           this.$store
             .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
-            .then(() => {});
+            .then(() => { });
         }
         this.setCustomBPMasUrl(this.privateurl);
 
@@ -222,7 +215,12 @@ export default {
     },
 
     userSetBaseUrl() {
+
+
+
+
       if (this.workOnBpmasservicePrivate == true) {
+
         this.privateBpmasUrl = this.privateurl;
         this.setCustomBPMasUrl(this.privateurl);
 
@@ -246,6 +244,20 @@ export default {
         }
         this.setBaseUrl();
         this.addToSuggest();
+        localStorage.lastUrl = this.privateurl;
+      }
+
+      if (localStorage.usertoken != null) {
+        var usertokenstring = atob(localStorage.usertoken).split(":");
+
+        var userName = usertokenstring[0];
+        var password = usertokenstring[1];
+        this.$store
+          .dispatch(AUTH_REQUEST, { userName, password })
+          .then(() => { });
+        this.$store
+          .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
+          .then(() => { });
       }
     },
     setBaseUrl() {
