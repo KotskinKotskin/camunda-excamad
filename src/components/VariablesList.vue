@@ -1,10 +1,15 @@
 <template>
   <div id="variableList">
-    <h2>Instance variables</h2>
+    <h2>Instance variables (max 150)</h2>
     <small>
       <b-card no-body>
         <b-tabs pills card vertical>
-          <b-tab v-bind:key="item.id" v-for="item in variables" :title="calculateName(item)" active>
+          <b-tab
+            v-bind:key="item.id"
+            v-for="item in variables.slice(0,50)"
+            :title="calculateName(item)"
+            active
+          >
             <variable-single-edit
               v-if="item.type != 'Object'"
               :variableOldValue="item.value"

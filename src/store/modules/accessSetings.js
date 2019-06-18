@@ -1,52 +1,52 @@
-import store from "@/store/store";
+import store from '@/store/store';
 
 export const roles = [
-  "Tester",
-  "Analyst",
-  "Developer",
-  "Admin",
-  "Support",
-  "Business",
-  "All"
+  'Tester',
+  'Analyst',
+  'Developer',
+  'Admin',
+  'Support',
+  'Business',
+  'All'
 ];
 
-const CRUD = ["Create", "Read", "Update", "Delete"];
-const appearance = ["Show", "Disable", "Hide"];
+const CRUD = ['Create', 'Read', 'Update', 'Delete'];
+const appearance = ['Show', 'Disable', 'Hide'];
 const resourse = [
-  "Migration view",
-  "Migration",
-  "Process history view",
-  "Old Process view",
-  "Embedded and share view",
-  "Process definition view",
-  "Process definition suspend",
-  "Job defintion suspend",
-  "Process definition start",
-  "Process instance terminate",
-  "Process instance move token",
-  "Process instance send message",
-  "Process instance execute job",
-  "Process instance view",
-  "Decisions view",
-  "Decisions deploy view",
-  "Incidents view",
-  "Incidents rerun view",
-  "Live view",
-  "Task list view",
-  "BPMaS view",
-  "Misc view",
-  "Search view"
+  'Migration view',
+  'Migration',
+  'Process history view',
+  'Old Process view',
+  'Embedded and share view',
+  'Process definition view',
+  'Process definition suspend',
+  'Job defintion suspend',
+  'Process definition start',
+  'Process instance terminate',
+  'Process instance move token',
+  'Process instance send message',
+  'Process instance execute job',
+  'Process instance view',
+  'Decisions view',
+  'Decisions deploy view',
+  'Incidents view',
+  'Incidents rerun view',
+  'Live view',
+  'Task list view',
+  'BPMaS view',
+  'Misc view',
+  'Search view'
 ];
 
 const permissions = [
   {
-    role: "Tester",
+    role: 'Tester',
     access: [
-      "Migration view",
-      "Process history view",
-      "Process definition view"
+      'Migration view',
+      'Process history view',
+      'Process definition view'
     ],
-    deny: ["Migration", "Embedded and share view", "BPMaS view"]
+    deny: ['Migration', 'Embedded and share view', 'BPMaS view']
   }
 ];
 

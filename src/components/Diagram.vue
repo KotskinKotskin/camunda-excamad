@@ -106,7 +106,7 @@ export default {
       if (val == false) {
         this.toggleback();
       }
-    }
+    },
   },
 
   data() {
@@ -120,6 +120,7 @@ export default {
       elementDetails: "",
       jiraKey: 0,
       componentKey: "",
+      container: "",
       activityId: "",
       moddleElement: "",
       processId: "",
@@ -135,13 +136,19 @@ export default {
       fieldsToPass: {}
     };
   },
-  mounted() {
-    this.getAndBuild();
-    if (this.editMode == true) {
-      this.defaultstyle = "height: 700px";
-    }
+  created() {
+    this.container = "#canvas";
   },
+  mounted() {
 
+    setTimeout(() => {
+      this.getAndBuild();
+      if (this.editMode == true) {
+        this.defaultstyle = "height: 700px";
+      }
+    }, 500);
+
+  },
   methods: {
     readModdle() {
       vm = this;
@@ -243,7 +250,7 @@ export default {
                     vm.processInstanceIdForLoadHistory
                   )
                   .then(activityResponse => {
-                    vm.activityHistory = activityResponse.data;
+                    vm.activityHistory = activityResponse.data.slice(50);
                     resolve();
                   });
               } else resolve();
@@ -263,16 +270,17 @@ export default {
     },
     returnAllarm: function (item) { },
     buildViewer: function () {
+      var vm = this;
       if (this.editMode != true) {
         var viewer = new BpmnViewer({
-          container: "#canvas"
+          container: vm.container
         });
       }
 
       if (this.editMode == true) {
         this.readModdle();
         var viewer = new BpmnModeler({
-          container: "#canvas",
+          container: vm.container,
           propertiesPanel: {
             parent: "#js-properties-panel"
           },
@@ -285,7 +293,6 @@ export default {
 
       return viewer;
     },
-
     eventBusDispatcher: function (viewer) {
       if (true) {
         vm = this;
@@ -295,8 +302,8 @@ export default {
         var events = [
           // "element.hover",
           // "element.out",
-          "element.click"
-          // "element.dblclick",
+          "element.click",
+          "element.dblclick",
           // "element.mousedown",
           // "element.mouseup"
         ];
@@ -313,6 +320,7 @@ export default {
             });
             vm.$emit("digaramInXml", stringXml);
             vm.$emit("clickedOnDiagram", e.element.businessObject);
+
             var moddle = new BpmnModdle({ camunda: camundaModdle });
 
             if (vm.moddleElement.$type == "bpmn:UserTask") {
@@ -340,10 +348,6 @@ export default {
           });
         });
       }
-    },
-
-    makePrettyHtml: function (item) {
-      return;
     },
     drawOverlays: function (bpmnViewer) {
       var canvas = bpmnViewer.get("canvas"),
@@ -399,7 +403,7 @@ export default {
             });
           }
         }
-        catch(error ) {
+        catch (error) {
           console.error(error);
         }
 
@@ -486,7 +490,6 @@ export default {
         });
       }
     },
-
     importXML: function (bpmnViewer) {
       bpmnViewer.importXML(this.processDefinitionInXml);
       if (this.processActivityToShowArray != null || this.statistics != null) {
@@ -613,6 +616,12 @@ body,
 }
 .highlight-overlay {
   background-color: #15b427; /* color elements as green */
+  opacity: 0.5;
+  border-radius: 13px;
+  pointer-events: none; /* no pointer events, allows clicking through onto the element */
+}
+.highlight-migration-select-overlay {
+  background-color: rgb(255, 116, 0); /* color elements as green */
   opacity: 0.5;
   border-radius: 13px;
   pointer-events: none; /* no pointer events, allows clicking through onto the element */

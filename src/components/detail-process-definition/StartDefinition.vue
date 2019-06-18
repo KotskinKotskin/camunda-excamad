@@ -74,6 +74,10 @@
           <b-form-input v-model="instanceToCopyVariables" placeholder="Enter processInstanceId"></b-form-input>
           <b-button class="ml-2" @click="getVariableHistory" variant="secondary">Copy</b-button>
         </b-form>
+        <br>Business key
+        <b-form inline>
+          <b-form-input v-model="businessKey" placeholder="Enter businessKey"></b-form-input>
+        </b-form>
       </div>
 
       <br>
@@ -116,6 +120,7 @@ export default {
   data() {
     return {
       query: "",
+      businessKey: "",
       arrayOfVaribales: [{ name: "initiator", type: "String", value: "" }],
       activityList: [],
       instanceToCopyVariables: "",
@@ -151,7 +156,7 @@ export default {
     getStartFormVariables() {
       this.$api().get("/process-definition/" + this.definitionId + "/form-variables").then(response => {
         if (response.data != null) {
-          console.log(response.data);
+
 
           for (var key in response.data) {
             if (response.data[key].type != "Object") {
@@ -201,6 +206,10 @@ export default {
         startInstructions.push(elementOfInstructions);
         objectToRun["startInstructions"] = startInstructions;
       }
+      if (this.businessKey != "") {
+        objectToRun["businessKey"] = this.businessKey
+      }
+
       this.$api()
         .post(
           "/process-definition/" + this.definitionId + "/start",

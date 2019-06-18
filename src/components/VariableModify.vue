@@ -148,12 +148,17 @@ export default {
       }, 500);
     },
     getRunnedProcessCounts() {
+      if (isFinite(this.variablesToModify.variableOld)) {
+        this.variablesToModify.variableOld = Number(this.variablesToModify.variableOld);
+      }
+
+      var postObj = {
+        variableValues: [{ name: this.variablesToModify.variableName, operator: "eq", value: this.variablesToModify.variableOld }]
+      }
+
       this.$api()
-        .get(
-          "/process-instance/count?active=true&&variables=" +
-            this.variablesToModify.variableName +
-            "_eq_" +
-            this.variablesToModify.variableOld
+        .post(
+          "/variable-instance/count", postObj
         )
         .then(responce => {
           this.variablesToModify.variableCount = responce.data.count;
@@ -163,12 +168,16 @@ export default {
     },
     getRunnedProcessInstances() {
       this.processInstancesToModify = [];
+      if (isFinite(this.variablesToModify.variableOld)) {
+        this.variablesToModify.variableOld = Number(this.variablesToModify.variableOld);
+      }
+
+      var postObj = {
+        variableValues: [{ name: this.variablesToModify.variableName, operator: "eq", value: this.variablesToModify.variableOld }]
+      }
       this.$api()
-        .get(
-          "/variable-instance?variableValues=" +
-            this.variablesToModify.variableName +
-            "_eq_" +
-            this.variablesToModify.variableOld
+        .post(
+          "/variable-instance", postObj
         )
         .then(responce => {
           responce.data.forEach(element => {
@@ -207,6 +216,9 @@ export default {
       this.modifications = variableToPush;
       this.processInstancesToModify.forEach(process => {
         this.modifyVariables(process);
+        setTimeout(() => {
+
+        }, 200);
       });
     },
     generateNewVariable() {
@@ -225,7 +237,7 @@ export default {
       this.$api()
         .get(
           "/process-instance?processDefinitionId=" +
-            this.newVariable.processInstanceIdToModify
+          this.newVariable.processInstanceIdToModify
         )
         .then(responce => {
           responce.data.forEach(element => {

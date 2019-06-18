@@ -9,12 +9,14 @@
         id="inlineFormInputName2"
         placeholder="Variable name"
       />
+
       <b-input
         class="width: 300px"
         v-model="variable.variableValue"
         id="inlineFormInputGroupUsername2"
         placeholder="Variable value"
       />
+      <b-form-checkbox class="ml-2" id="checkbox-1" v-model="unfinished">Unfinished</b-form-checkbox>
       <b-btn
         class="ml-3"
         @click="search"
@@ -25,7 +27,8 @@
       class="mt-2"
       v-if="variableHistoryElements.length!= 0 "
     >Total {{variableHistoryElements.length}} elements</small>
-    <h5 v-if="findedProcessInstances.length == 0 && searchTryed == true">Nothing there...
+    <h5 v-if="findedProcessInstances.length == 0 && searchTryed == true">
+      Nothing there...
       <router-link to="/stream">check live stream.</router-link>
     </h5>
     <atom-spinner
@@ -107,6 +110,7 @@ export default {
       currentPage: 1,
       maxResult: 20,
       totalResult: 0,
+      unfinished: false,
       totalPage: 0,
 
       variable: {
@@ -132,7 +136,7 @@ export default {
     };
   },
   watch: {
-    currentPage: function(newValue) {
+    currentPage: function (newValue) {
       if (newValue != 0) {
         this.firstResult =
           Math.round(this.currentPage * this.maxResult) - this.maxResult;
@@ -145,7 +149,7 @@ export default {
     rowClick(row) {
       row.item._showDetails = !row.item._showDetails;
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       var rel = this.$momenttrue(date)
         .startOf("second")
         .fromNow();
@@ -161,14 +165,16 @@ export default {
       this.$api()
         .get(
           "/history/process-instance?processInstanceBusinessKeyLike=" +
-            // this.variable.variableName +
-            // "_eq_" +
-            this.variable.variableValue +
-            "&sortBy=startTime&sortOrder=desc" +
-            "&firstResult=" +
-            this.firstResult +
-            "&maxResults=" +
-            this.maxResult
+          // this.variable.variableName +
+          // "_eq_" +
+          this.variable.variableValue +
+          "&sortBy=startTime&sortOrder=desc" +
+          "&firstResult=" +
+          this.firstResult +
+          "&maxResults=" +
+          this.maxResult +
+          "&unfinished=" +
+          this.unfinished
         )
         .then(response => {
           this.findedProcessInstances = response.data;
@@ -183,10 +189,10 @@ export default {
       this.$api()
         .get(
           "/history/process-instance/count?processInstanceBusinessKeyLike=" +
-            // this.variable.variableName +
-            // "_eq_" +
-            this.variable.variableValue +
-            "&sortBy=startTime&sortOrder=desc"
+          // this.variable.variableName +
+          // "_eq_" +
+          this.variable.variableValue +
+          "&sortBy=startTime&sortOrder=desc"
         )
         .then(response => {
           this.totalResult = response.data.count;

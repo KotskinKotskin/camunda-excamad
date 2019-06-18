@@ -1,6 +1,6 @@
 <template>
   <div id="detailJobs">
-    <h3>Active jobs</h3>
+    <h3>Active jobs (max 300)</h3>
     <b-card id="historyDetails" bg-variant="light" text-variant="dark">
       <table class="table table-striped table-hover table-sm">
         <thead>
@@ -15,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr :key="item.id" v-for="item in jobsArray">
+          <tr :key="item.id" v-for="item in jobsArray.slice(0,100)">
             <td>{{item.id}}</td>
             <td>{{item.retries}}</td>
             <td>{{convertDateToHumanStyle(item.dueDate)}}</td>
@@ -31,12 +31,7 @@
               >Stacktrace</b-btn>
             </td>
             <td>
-              <b-btn
-                @click="executeJob(item.id)"
-                :disabled="!expertMode"
-                size="sm"
-                variant="outline-danger"
-              >Execute now</b-btn>
+              <b-btn @click="executeJob(item.id)" size="sm" variant="outline-danger">Execute now</b-btn>
             </td>
           </tr>
         </tbody>
@@ -132,7 +127,7 @@ export default {
     }
   },
   methods: {
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       var rel = this.$momenttrue(date)
         .startOf("second")
         .fromNow();

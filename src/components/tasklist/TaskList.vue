@@ -23,6 +23,13 @@
           <i>Total task {{tasks.length}}</i>
         </small>
       </b-card>
+      <b-btn
+        :disabled="!expertMode"
+        class="mb-2"
+        size="sm"
+        variant="outline-warning"
+        @click="doneAllVisibleTask"
+      >Done first 25</b-btn>
       <b-list-group-item
         :active="checkIsActive(item)"
         @click="changeTaskId(item)"
@@ -73,7 +80,7 @@ export default {
     return {
       tasks: [],
       tasksWithCamundaSDK: [],
-      variableName: "caseNumberSD",
+      variableName: "applicationId",
       variableValue: "",
       selectedTaskId: "",
 
@@ -95,6 +102,9 @@ export default {
   computed: {
     taskId() {
       return this.$store.state.taskId;
+    },
+    expertMode() {
+      return this.$store.state.expertMode;
     },
     profile() {
       return this.$store.getters.getProfile;
@@ -138,7 +148,7 @@ export default {
           this.tasks.push(task);
         });
         firstRequestCount = response.data.length;
-        console.log(firstRequestCount);
+
       })
       var searchObjByUnassigne = {
         active: true,
@@ -186,6 +196,25 @@ export default {
     changeTaskId(item) {
       this.selectedTaskId = item.id;
       this.$store.commit("changeTaskId", this.selectedTaskId);
+    },
+    doneAllVisibleTask() {
+      this.$notify({
+        group: "foo",
+        title: "25 task done",
+        type: "success"
+      });
+      var variables = {};
+      var index = 0;
+      var BreakException = {};
+      this.tasks.forEach(it => {
+        this.$api()
+          .post("task/" + it.id + "/submit-form", variables
+          )
+        setTimeout(() => {
+        }, 100);
+        index = index + 1;
+        if (index === 25) throw BreakException;
+      })
     }
   }
 };

@@ -27,7 +27,11 @@ import DeployTableView from '@/views/DeployTableView.vue';
 import HelpView from '@/views/HelpView.vue';
 import ReportView from '@/views/ReportView.vue';
 import SelectedTaskView from '@/views/SelectedTaskView.vue';
+import BatchView from '@/views/BatchView.vue';
 import StartDefinitionView from '@/views/StartDefinitionView.vue';
+import ComplexMigrationView from '@/views/ComplexMigrationView.vue';
+import GroupsView from '@/views/GroupsView.vue';
+import UsersView from '@/views/UsersView.vue';
 
 Vue.use(Router);
 Vue.use(VueSmartRoute);
@@ -181,6 +185,16 @@ export default new Router({
       component: EmbeddedDiagramView
     },
     {
+      path: '/batch',
+      name: 'batch',
+      component: BatchView
+    },
+    {
+      path: '/ComplexMigration',
+      name: 'ComplexMigration',
+      component: ComplexMigrationView
+    },
+    {
       path: '/processdetail/:processInstanceId',
       name: 'processdetail',
       props: true,
@@ -225,6 +239,19 @@ export default new Router({
       path: '/startdefinition/',
       name: 'startdefinition',
       component: StartDefinitionView
+    },
+
+    {
+      path: '/groups',
+      name: 'groups',
+      component: GroupsView,
+      beforeEnter: ifAuthenticated
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersView,
+      beforeEnter: ifAuthenticated
     }
   ]
 });

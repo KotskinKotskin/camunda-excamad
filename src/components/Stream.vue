@@ -1,11 +1,11 @@
 <template>
   <b-card id="stream" bg-variant="light" text-variant="dark">
-    <h2>Online activity stream</h2>
+    <h2>Online activity stream (max 150)</h2>
     <GChart v-if="chartData.length >3" type="ColumnChart" :data="chartData"/>
 
     <timeline>
       <transition-group name="list" tag="p">
-        <timeline-item v-for="item in activities" :key="item.id" bg-color="#33333">
+        <timeline-item v-for="item in activities.slice(0,150)" :key="item.id" bg-color="#33333">
           <b-card
             :header="convertDateToHumanStyle(item.endTime)"
             :title="item.activityId"

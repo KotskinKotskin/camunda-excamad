@@ -23,13 +23,20 @@
           </b-col>
         </b-row>
       </b-container>
-
+      <b-btn
+        size="sm"
+        variant="outline-info"
+        class="mb-2"
+        :pressed="showDiagramAttirbutes"
+        @click="updateDiagram"
+      >Show attributes</b-btn>
       <diagram
         :key="digagramkey"
+        :editMode="showDiagramAttirbutes"
         v-if="readyToShowDiagram"
         :processActivityToShowArray="currentProcessActivityToShowArray"
         :processDefinitionId="processDefinition"
-        :loadHistory="true"
+        :loadHistory="loadHistory"
         :processInstanceIdForLoadHistory="processInstanceId"
       ></diagram>
       <br>
@@ -63,6 +70,8 @@ export default {
       processDefinition: "",
       readyToShowDiagram: false,
       incidents: [],
+      showDiagramAttirbutes: false,
+      loadHistory: true,
       digagramkey: 0,
       currentActivity: [],
       currentProcessActivityToShowArray: []
@@ -78,12 +87,17 @@ export default {
     this.loadData();
   },
   methods: {
-    checkButtons: function(index) {
+    checkButtons: function (index) {
       if (index == 0 && this.expertMode == true) {
         return true;
       } else return false;
     },
+    updateDiagram() {
+      this.digagramkey = this.digagramkey + 1;
+      this.showDiagramAttirbutes = !this.showDiagramAttirbutes;
+      this.loadHistory = !this.loadHistory;
 
+    },
     skipActivity(item) {
       var processInstanceIdsArray = [];
       processInstanceIdsArray.push(this.processInstanceId);
@@ -137,7 +151,7 @@ export default {
         this.readyToShowDiagram = true;
       }, 800);
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       return this.$momenttrue(date)
         .startOf("second")
         .fromNow();
@@ -180,15 +194,15 @@ export default {
 
       this.currentProcessActivityToShowArray = newArr;
     },
-    findCurrentActivity: async function() {
+    findCurrentActivity: async function () {
       var vm = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         //blabla
         {
           vm.$api()
             .get(
               "/history/activity-instance?unfinished=true&&processInstanceId=" +
-                vm.processInstanceId
+              vm.processInstanceId
             )
             .then(response => {
               vm.currentActivity = response.data;
@@ -225,7 +239,7 @@ export default {
               "incident",
               "",
               "sortBy=incidentTimestamp&sortOrder=desc&&processInstanceId=" +
-                vm.processInstanceId
+              vm.processInstanceId
             )
             .then(value => {
               vm.incidents = value;

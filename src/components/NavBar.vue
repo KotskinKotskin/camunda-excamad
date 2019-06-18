@@ -17,6 +17,7 @@
                 <b-dropdown-item to="/oldactivity">Old processes</b-dropdown-item>
                 <b-dropdown-item to="/embedded">Embed and share</b-dropdown-item>
                 <b-dropdown-item to="/startdefinition">Start processes</b-dropdown-item>
+                <b-dropdown-item to="/complexmigration">Migration</b-dropdown-item>
               </b-nav-item-dropdown>
               <b-nav-item-dropdown text="Decisions">
                 <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
@@ -41,6 +42,9 @@
               </b-nav-item-dropdown>
               <b-nav-item-dropdown text="Misc" right>
                 <b-dropdown-item to="/deploytable">Deployments</b-dropdown-item>
+                <b-dropdown-item to="/batch">Batches</b-dropdown-item>
+                <b-dropdown-item to="/groups">Groups</b-dropdown-item>
+                <b-dropdown-item to="/users">Users</b-dropdown-item>
                 <b-dropdown-item to="/report">Report</b-dropdown-item>
               </b-nav-item-dropdown>
             </b-navbar-nav>
@@ -84,7 +88,7 @@
                     variant="outline-info"
                   >Expert Mode</b-button>
                 </b-nav-form>
-                <input class="hide" v-on:keyup.45="setVisible">
+                <input class="hide" v-on:keyup.right="setVisible">
               </b-nav-item-dropdown>
 
               <b-nav-item v-b-tooltip.hover title="FAQ and manual" to="/help">
@@ -155,7 +159,7 @@ export default {
     }
   },
   created() {
-    this.$store.commit('changeExpertMode', localStorage.expertMode == 'true')
+    this.$store.commit('changeExpertMode', localStorage.expertMode1 == 'true')
   },
   mounted() {
     if (localStorage.lastUrl) {
@@ -350,7 +354,7 @@ export default {
         type: 'info'
       })
       setTimeout(() => {
-        localStorage.expertMode = this.expertCurrent
+        localStorage.expertMode1 = this.expertCurrent
         this.$store.commit('changeExpertMode', this.expertCurrent)
       }, 100)
       //

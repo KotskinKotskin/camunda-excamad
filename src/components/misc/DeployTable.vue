@@ -32,21 +32,21 @@
 
 <script>
 export default {
-  name: "DeployTable",
+  name: "deployTable",
   data() {
     return {
       firstResult: 0,
       currentPage: 1,
-      resourses: [],
       maxResult: 20,
       totalResult: 0,
       totalPage: 0,
+      resourses: [],
       deployments: [],
       fields: ["id", "deploymentTime", "name", "source", "show_details"]
     };
   },
   watch: {
-    currentPage: function(newValue) {
+    currentPage: function (newValue) {
       if (newValue != 0) {
         this.firstResult =
           Math.round(this.currentPage * this.maxResult) - this.maxResult;
@@ -69,9 +69,9 @@ export default {
       this.$api()
         .get(
           "/deployment?sortBy=deploymentTime&sortOrder=desc&firstResult=" +
-            this.firstResult +
-            "&maxResults=" +
-            this.maxResult
+          this.firstResult +
+          "&maxResults=" +
+          this.maxResult
         )
         .then(response => {
           this.deployments = response.data;
@@ -101,7 +101,7 @@ export default {
       }
       return result;
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       var rel = this.$momenttrue(date)
         .startOf("second")
         .fromNow();

@@ -12,54 +12,54 @@
           <b-col cols="3">
             <b-card class="mb-3" bg-variant="light" text-variant="dark">
               <b>Candidate</b>
-              <li
-                v-bind:key="item.index"
-                v-for="item in identitylinks"
-              >{{item.userId ? item.userId : '' }} {{item.groupId ? item.groupId : ''}} ({{item.type}})</li>
+              <li v-bind:key="item.index" v-for="item in identitylinks"> 
+                  {{item.userId ? item.userId : '' }}  {{item.groupId ? item.groupId : ''}} ({{item.type}})
+              </li>
               <hr>
-              <b>Assignee</b>
-              <br>
-              {{taskDetails.assignee ? taskDetails.assignee : "" }}
-              <b-button
-                size="sm"
-                @click="claimTask"
-                v-if="taskDetails.assignee == null"
-                variant="outline-info"
-              >
-                <font-awesome-icon icon="child"/>Claim to me
-              </b-button>
-              <b-btn
-                v-if="canTakeTask && taskDetails.assignee != null"
-                @click="unclaimTask"
-                size="sm"
-                variant="outline-secondary"
-              >Unclaim</b-btn>
-              <hr>
-              <b>Created</b>
-              <br>
-              {{convertDateToHumanStyle(taskDetails.created)}}
-              <hr>
-              <b>Due</b>
-              <br>
-              {{ taskDetails.due !=null ? convertDateToHumanStyle(taskDetails.due) : "no due" }}
-              <hr>
-              <b>Process Instance</b>
-              <br>
-              <router-link
-                :to="{name:'processdetail', params:{ processInstanceId: taskDetails.processInstanceId}}"
-              >
-                <b>{{taskDetails.processInstanceId}}</b>
-              </router-link>
-              <hr>
-              <b>Process definition</b>
-              <br>
-              <router-link
-                :to="{name:'definition', params:{ definitionId: taskDetails.processDefinitionId}}"
-              >
-                <b>{{taskDetails.processDefinitionId}}</b>
-              </router-link>
+                <b>Assignee</b>
+                <br>
+                {{taskDetails.assignee ? taskDetails.assignee : "" }}
+                <b-button
+                  size="sm"
+                  @click="claimTask"
+                  v-if="taskDetails.assignee == null"
+                  variant="outline-info"
+                >
+                  <font-awesome-icon icon="child"/>Claim to me
+                </b-button>
+                <b-btn
+                  v-if="canTakeTask && taskDetails.assignee != null"
+                  @click="unclaimTask"
+                  size="sm"
+                  variant="outline-secondary"
+                >Unclaim</b-btn>
+                <hr>
+                <b>Created</b>
+                <br>
+                {{convertDateToHumanStyle(taskDetails.created)}}
+                <hr>
+                <b>Due</b>
+                <br>
+                {{ taskDetails.due !=null ? convertDateToHumanStyle(taskDetails.due) : "no due" }}
+                <hr>
+                <b>Process Instance</b>
+                <br>
+                <router-link
+                  :to="{name:'processdetail', params:{ processInstanceId: taskDetails.processInstanceId}}"
+                >
+                  <b>{{taskDetails.processInstanceId}}</b>
+                </router-link>
+                <hr>
+                <b>Process definition</b>
+                <br>
+                <router-link
+                  :to="{name:'definition', params:{ definitionId: taskDetails.processDefinitionId}}"
+                >
+                  <b>{{taskDetails.processDefinitionId}}</b>
+                </router-link>
 
-              <hr>
+                <hr>
+              </li>
             </b-card>
           </b-col>
           <b-col>
@@ -158,7 +158,7 @@ export default {
   },
   watch: {
     isCamundaAuthenticated(newValue, oldValue) {
-      console.log("isCamundaAuthenticated");
+     
       this.checkPossibilityTakeTask();
     }
   },
@@ -188,7 +188,7 @@ export default {
           var second = element.message.indexOf('#', first
             + 1);
           element.userId = element.message.substr(first + 1, second - first - 1);
-          console.log(element.userId);
+       
           element.message = element.message.substring(0, first);
         });
         this.comments = response.data;
@@ -203,7 +203,7 @@ export default {
         message: this.message + userAddon
       }
       this.$api().post('/task/' + this.taskId + '/comment/create', comment).then(response => {
-        console.log(response.data);
+      
         this.getComments();
       })
     },
@@ -248,12 +248,12 @@ export default {
 
     },
     checkCandidateGroup() {
-      this.identitylinks.forEach(identity => {
-        this.camundaProfile.groups.forEach(camundaGroup => {
-          if (identity.groupId == camundaGroup.id && identity.type == "candidate") {
-            this.inCandidateGroup = true;
-          }
-        })
+      this.identitylinks.forEach(  identity =>{
+          this.camundaProfile.groups.forEach (camundaGroup =>{
+             if (identity.groupId == camundaGroup.id && identity.type =="candidate") {
+               this.inCandidateGroup = true;
+             }
+          })
       })
 
     }

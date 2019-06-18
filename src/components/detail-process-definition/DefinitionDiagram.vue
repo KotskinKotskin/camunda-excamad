@@ -10,6 +10,7 @@
       v-on:clickedOnDiagram="PassDiagramClick"
     ></diagram>
     <b-card
+      v-show="hideSuspend != true"
       class="mt-2"
       v-if="clickedElement !=null && clickedElement.$type !='bpmn:UserTask'"
       bg-variant="light"
@@ -45,7 +46,7 @@ import { AtomSpinner } from "epic-spinners";
 library.add(faPlay, faPause);
 export default {
   name: "DefinitionDiagram",
-  props: ["definitionId"],
+  props: ["definitionId", "hideSuspend"],
   components: {
     AtomSpinner
   },
@@ -155,8 +156,8 @@ export default {
       this.$api()
         .get(
           "/process-definition/" +
-            this.definitionId +
-            "/statistics?incidents=true"
+          this.definitionId +
+          "/statistics?incidents=true"
         )
         .then(response => {
           this.ready = true;

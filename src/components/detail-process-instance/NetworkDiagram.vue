@@ -77,7 +77,7 @@ export default {
     }, 1500);
   },
   watch: {
-    fullscreen: function(val) {
+    fullscreen: function (val) {
       if (val == false) {
         this.toggleback();
       }
@@ -99,7 +99,7 @@ export default {
       this.$refs["fullscreen"].toggle(); // recommended
       // this.defaultstyle = "height: 600px";
     },
-    returnShape: function(item) {
+    returnShape: function (item) {
       if (item.indexOf("Event") !== -1 || item.indexOf("event") !== -1) {
         return "dot";
       }
@@ -113,7 +113,7 @@ export default {
         return "ellipse";
       } else return "triangle";
     },
-    returnColor: function(item) {
+    returnColor: function (item) {
       if (item.indexOf("Event") !== -1 || item.indexOf("event") !== -1) {
         return "#83d0f2";
       }
@@ -128,7 +128,7 @@ export default {
       }
     },
 
-    returnLabel: function(item) {
+    returnLabel: function (item) {
       var name = item.id;
       var duratonInMinutes =
         Math.round((item.durationInMillis / 60000) * 100) / 100;
@@ -138,21 +138,21 @@ export default {
       var delimiter = "\n";
       return name;
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       var cal = this.$momenttrue(date).format("DD.MM.YYYY, H:mm:ss");
 
       return cal;
     },
 
-    getIdByInstance(item) {},
+    getIdByInstance(item) { },
     getHistoryDetails() {
       this.$api()
         .get(
           "/history/detail?historicVariableUpdates=true&sortBy=time&sortOrder=desc&processInstanceId=" +
-            this.processInstanceId
+          this.processInstanceId
         )
         .then(response => {
-          this.historyDetails = response.data;
+          this.historyDetails = response.data.slice(-100);
           for (var i = 0; i < this.historyDetails.length; i++) {
             var currenti = i + 1;
 
@@ -227,7 +227,7 @@ export default {
         this.$api()
           .get(
             "/history/activity-instance?&&sortBy=startTime&&sortOrder=asc&&processInstanceId=" +
-              this.processInstanceId
+            this.processInstanceId
           )
           .then(response => {
             this.activities = response.data;

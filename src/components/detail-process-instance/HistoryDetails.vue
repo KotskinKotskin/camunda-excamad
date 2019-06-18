@@ -55,7 +55,7 @@ export default {
     this.getHistoryDetails();
   },
   methods: {
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       var cal = this.$momenttrue(date).format("DD.MM.YYYY, H:mm:ss");
 
       return cal;
@@ -64,7 +64,7 @@ export default {
       this.$api()
         .get(
           "/history/detail?historicVariableUpdates=true&sortBy=time&sortOrder=desc&processInstanceId=" +
-            this.processInstanceId
+          this.processInstanceId
         )
         .then(response => {
           this.historyElements = response.data;

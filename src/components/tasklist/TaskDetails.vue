@@ -213,7 +213,7 @@ export default {
       this.$store.commit("changeTaskId", null);
     },
     updateSimpleVariables() {
-      console.log(this.variables);
+
       this.$api()
         .post("task/" + this.taskId + "/submit-form", {
           variables: this.variables

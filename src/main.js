@@ -54,11 +54,20 @@ Vue.component('incidents-history', IncidentsHistory);
 import DetailJobs from '@/components/detail-process-instance/DetailJobs.vue';
 Vue.component('detail-jobs', DetailJobs);
 
+import ComplexMigration from '@/components/migration/ComplexMigration.vue';
+Vue.component('complex-migration', ComplexMigration);
+
 import VariableSingleEidt from '@/components/VariableSingleEdit.vue';
 Vue.component('variable-single-edit', VariableSingleEidt);
 
+import BatchTable from '@/components/batch/BatchTable.vue';
+Vue.component('batch-table', BatchTable);
+
 import Search from '@/components/smart-search/Search.vue';
 Vue.component('search', Search);
+
+import DefinitionDetailView from '@/views/DefinitionDetailView.vue';
+Vue.component('definition-detail', DefinitionDetailView);
 
 import DeployTableBPMAS from '@/components/bpmasservice/DeployTable.vue';
 import VueGoogleCharts from 'vue-google-charts';
@@ -105,6 +114,12 @@ Vue.component('the-footer', TheFooter);
 
 import Help from '@/components/help/Help.vue';
 Vue.component('help', Help);
+
+import Groups from '@/components/groups/Groups.vue';
+Vue.component('groups', Groups);
+
+import Users from '@/components/groups/Users.vue';
+Vue.component('users', Users);
 
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.min.css';
