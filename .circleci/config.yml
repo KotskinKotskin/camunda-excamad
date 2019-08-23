@@ -4,7 +4,7 @@ executors:
   my-executor:
     docker:
       - image: circleci/node:8.9.1
-    working_directory: /app
+    working_directory: /
 
 jobs:
   build-job:
@@ -33,7 +33,7 @@ jobs:
       - persist_to_workspace:
           root: workspace
           paths:
-            - app
+            - /
 
   deploy-job:
     executor: my-executor
@@ -41,7 +41,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - attach_workspace:
-          at: /app/workspace
+          at: /workspace
       - run:
           name: Login to DockerHub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
