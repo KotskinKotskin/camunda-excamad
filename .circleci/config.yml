@@ -28,11 +28,11 @@ jobs:
       - store_artifacts:
           path: dist
           prefix: dist
-      - run: mkdir /tmp/dir/
+
       - persist_to_workspace:
-          root: /tmp/dir/
+          root: .
           paths:
-            - app
+            - .
 
   deploy-job:
     executor: my-executor
@@ -40,7 +40,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - attach_workspace:
-          at: /tmp/dir/app
+          at: .
       - run:
           name: Login to DockerHub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
