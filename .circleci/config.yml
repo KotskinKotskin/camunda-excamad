@@ -28,7 +28,7 @@ jobs:
       - store_artifacts:
           path: dist
           prefix: dist
-
+      - run: mkdir /tmp/dir/
       - persist_to_workspace:
           root: /tmp/dir/
           paths:
