@@ -63,6 +63,9 @@ Vue.component('variable-single-edit', VariableSingleEidt);
 import BatchTable from '@/components/batch/BatchTable.vue';
 Vue.component('batch-table', BatchTable);
 
+import Systems from '@/components/systems/Systems.vue';
+Vue.component('systems', Systems);
+
 import Search from '@/components/smart-search/Search.vue';
 Vue.component('search', Search);
 

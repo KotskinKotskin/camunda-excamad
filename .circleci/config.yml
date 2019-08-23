@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/app
+
+    docker:
+      - image: circleci/openjdk:11.0.1-jdk
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: Login to DockerHub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      - run: docker build -t excamad:latest
+
+      - run: docker push kotovdenis/excamad:latest

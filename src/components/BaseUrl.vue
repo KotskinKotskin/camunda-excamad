@@ -14,11 +14,6 @@
       <form>
       <div class="form-group">
           <label for="exampleInputEmail1"></label>URL Camunda Engine REST </label>
-            <br>
-             
-               <b-form-checkbox id="checkbox1"
-                     v-model="workOnBpmasservicePrivate" :click="setWorkOnBPMasSerivce(workOnBpmasservicePrivate)">
-      BPMaS
     </b-form-checkbox>
 
           <div class="row">
@@ -45,8 +40,6 @@ v-on:keyup.enter="userSetBaseUrl()"
             
              </div>
               <small> <b-link href="#" @click="clear">Clear</b-link> </small>
-              <b-form-group label="My role">
-      <b-form-radio-group stacked  id="radios1" v-model="role" :options="roleOptions" name="radioOptions" />
     </b-form-group>
       </div>
       
@@ -134,6 +127,7 @@ export default {
 
     clear() {
       this.list = [];
+      localStorage.listOfUrl = JSON.stringify(this.list);
       access.CheckPermission("Migration view");
     },
     setWorkOnBPMasSerivce(workOnBpmasservicePrivate) {
@@ -169,6 +163,15 @@ export default {
       var obj = {};
       obj["name"] = this.privateurl;
       this.list.push(obj);
+
+      var listOfUrl = [];
+
+      if (localStorage.listOfUrl) {
+        listOfUrl = JSON.parse(localStorage.listOfUrl)
+      }
+      listOfUrl.push(this.privateurl);
+      localStorage.listOfUrl = JSON.stringify(listOfUrl);
+
       const arr = this.list;
       var result = arr.reduce((unique, o) => {
         if (!unique.some(obj => obj.name === o.name)) {

@@ -3,19 +3,20 @@
     <h3>Move token</h3>
     <b-card id="historyDetails" bg-variant="light" text-variant="dark">
       <b-form inline>
-        <b-form-select
-          v-model="selectedFrom"
-          :options="currentActivitySimpleArray"
-          class="mb-2 mr-sm-2 mb-sm-0"
-        />=>
-        <b-form-select
-          v-model="selectedTo"
-          :options="possibleActivitySimpleArray"
-          class="mb-2 mr-sm-2 mb-sm-0"
-        />
+        <b-form-input v-model="selectedFrom" list="my-list-id"></b-form-input>
+
+        <datalist id="my-list-id">
+          <option v-for="item in currentActivitySimpleArray">{{ item }}</option>
+        </datalist>
+
+        <b-form-input v-model="selectedTo" list="my-list-id1"></b-form-input>
+
+        <datalist id="my-list-id1">
+          <option v-for="item in possibleActivitySimpleArray">{{ item }}</option>
+        </datalist>
 
         <b-button @click="moveToken" :disabled="!expertMode" variant="outline-danger">Move</b-button>
-        <br>
+        <br />
       </b-form>
       <small>{{calculateHelp()}}</small>
     </b-card>
@@ -64,9 +65,11 @@ export default {
     setTimeout(() => {
       this.getActivityList();
       this.currentActivity.forEach(element => {
+        console.log(element);
         this.currentActivitySimpleArray.push(element.activityId);
       });
       this.currentJobs.forEach(element => {
+        console.log(element);
         this.currentActivitySimpleArray.push(element.processActivityToShow);
       });
     }, 700);
@@ -112,7 +115,7 @@ export default {
       var moddle = new BpmnModdle({ camunda: camundaModdle });
       var vm = this;
       vm.activityList = [];
-      this.moddle = moddle.fromXML(this.definitionInXml, function(
+      this.moddle = moddle.fromXML(this.definitionInXml, function (
         err,
         definitions
       ) {

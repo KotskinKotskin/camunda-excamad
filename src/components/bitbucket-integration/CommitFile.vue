@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-btn :disabled="!isAuthenticated" size="sm" variant="outline-warning" @click="push">Push</b-btn>
-    <br>
+    <br />
     <small>Project - {{projectKey}}, reposity slug - {{repositySlug}}, path to file- {{pathToFile}}</small>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
     };
   },
   computed: {
-    token: function() {
+    token: function () {
       return "Basic " + this.$store.state.auth.token;
     },
     isAuthenticated() {
@@ -44,13 +44,13 @@ export default {
       axios
         .put(
           REVERSPROXYURL +
-            BITBUCKETURL +
-            "/rest/api/1.0/projects/" +
-            this.projectKey +
-            "/repos/" +
-            this.repositySlug +
-            "/browse/" +
-            this.pathToFile,
+          BITBUCKETURL +
+          "/rest/api/1.0/projects/" +
+          this.projectKey +
+          "/repos/" +
+          this.repositySlug +
+          "/browse/" +
+          this.pathToFile,
           bodyFormData,
           { headers: { Authorization: this.token } }
         )
@@ -75,12 +75,12 @@ export default {
       axios
         .post(
           REVERSPROXYURL +
-            BITBUCKETURL +
-            "/rest/api/1.0/projects/" +
-            this.projectKey +
-            "/repos/" +
-            this.repositySlug +
-            "/branches/",
+          BITBUCKETURL +
+          "/rest/api/1.0/projects/" +
+          this.projectKey +
+          "/repos/" +
+          this.repositySlug +
+          "/branches/",
           {
             name: "userdeploy/" + Number(new Date()),
             startPoint: "refs/heads/develop"

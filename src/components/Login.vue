@@ -4,6 +4,7 @@
       <b-nav-form>
         <b-button
           v-b-modal.modal1
+          disabled
           v-if="!isAuthenticated"
           variant="outline-success"
           size="sm"
@@ -16,13 +17,13 @@
           size="sm"
           class="ml-2 my-2 my-sm-0"
         >
-          <img class="face" :src="calculatePhoto(profile.userName)">
+          <img class="face" :src="calculatePhoto(profile.userName)" />
           <small>
             {{profile.userName}}
             <b-badge pill :variant="calculateADPillColor()">A</b-badge>
             <b-badge pill :variant="calculateCAPillColor()">C</b-badge>
           </small>
-          <br>
+          <br />
         </b-button>
       </b-nav-form>
     </b-navbar-nav>
@@ -48,7 +49,7 @@
           placeholder="Password"
         />
 
-        <hr>
+        <hr />
         <b-btn block variant="outline-success" type="submit">Login</b-btn>
 
         <b-alert class="mt-2" variant="danger" :show="(authStatus == 'error') ">Auth error</b-alert>
@@ -105,16 +106,16 @@ export default {
     focusMyElement(e) {
       this.$refs.focusThis.focus();
     },
-    login: function() {
+    login: function () {
       const { userName, password } = this;
       this.$store
         .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
-        .then(() => {});
+        .then(() => { });
       this.$store.dispatch(AUTH_REQUEST, { userName, password }).then(() => {
         this.$refs.myModalRef.hide();
       });
     },
-    logout: function() {
+    logout: function () {
       this.$store.dispatch(AUTH_LOGOUT).then(() => {
         this.$router.push("/");
       });

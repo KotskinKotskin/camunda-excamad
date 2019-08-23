@@ -15,12 +15,26 @@
       v-model="hideParentIncidents"
     >Hide parent incidents</b-form-checkbox>
     <div v-if="incidents.length != 0">
-      <button
-        type="button"
-        class="btn btn-danger mb-2"
-        :disabled="!expertMode"
-        @click="healAndRetry"
-      >Rerun all activities</button>
+      <b-form class="mb-2" inline>
+        <b-form-input
+          v-on:change="countErrorJobs"
+          v-model="activityIdForJobSearch"
+          list="my-list-id"
+        ></b-form-input>
+
+        <datalist id="my-list-id">
+          <option v-for="item in filterFailedActivity">{{ item }}</option>
+        </datalist>
+
+        <b-form-input class="ml-1" v-model="countOfJobs" type="number"></b-form-input>
+        <b-btn class="ml-1" variant="warning" @click="getFistNJobs">Rerun {{countOfJobs}} jobs</b-btn>
+        <b-btn
+          class="ml-1"
+          variant="danger"
+          :disabled="!expertMode"
+          @click="healAndRetry"
+        >Rerun all activities</b-btn>
+      </b-form>
       <small>
         <div class="row">
           <div class="col-md-12">
@@ -67,7 +81,7 @@
                         variant="info"
                         @click="updateSingleJobRetry(item)"
                       >
-                        <font-awesome-icon icon="redo"/>
+                        <font-awesome-icon icon="redo" />
                       </b-btn>
                     </td>
                     <td style="word-break:break-all;">
@@ -78,7 +92,7 @@
                         variant="warning"
                         @click="DeleteProccessInstance(item)"
                       >
-                        <font-awesome-icon icon="trash"/>
+                        <font-awesome-icon icon="trash" />
                       </b-btn>
                     </td>
                   </tr>
@@ -94,7 +108,7 @@
       class="alert alert-primary"
       role="alert"
     >No incidents!</div>
-    <hr>
+    <hr />
   </div>
 </template>
 
@@ -111,6 +125,9 @@ export default {
     return {
       containerClass: "",
       incidents: [],
+      jobsIds: [],
+      countOfJobs: 25,
+      activityIdForJobSearch: null,
       incidentsToShow: [],
       incidentsGlobalRoot: [],
       incidentsNotGlobalRoot: [],
@@ -132,7 +149,7 @@ export default {
   },
   watch: {
     hideParentIncidents(newValue, OldValue) {
-      this.incidentsGlobalRoot = this.incidents.filter(function(obj) {
+      this.incidentsGlobalRoot = this.incidents.filter(function (obj) {
         return obj.globalRoot === true;
       });
       if (newValue == true) {
@@ -145,6 +162,7 @@ export default {
     }
   },
   methods: {
+
     getAllIncidents() {
       api
         .getEntity("incident", "", "sortBy=incidentTimestamp&sortOrder=desc")
@@ -191,7 +209,7 @@ export default {
         this.getAllIncidents();
       }, 5000);
     },
-    convertDateToHumanStyle: function(date) {
+    convertDateToHumanStyle: function (date) {
       return this.$momenttrue(date)
         .startOf("second")
         .fromNow();
@@ -246,16 +264,72 @@ export default {
             type: "error"
           });
         });
+    },
+    getFistNJobs() {
+      if (this.countOfJobs > 100) {
+        this.countOfJobs = 100
+      }
+      this.jobsIds = [];
+      var postBody = {
+        withException: true,
+        noRetriesLeft: true,
+        activityId: this.activityIdForJobSearch
+      };
+      this.$api().post("/job?maxResults=" + this.countOfJobs, postBody).then(response => {
+        if (response.data != null && response.data.length > 0) {
+          response.data.forEach(element => {
+            console.log(element.id);
+            this.jobsIds.push(element.id);
+          });
+          var postBodyJobsId = {
+            jobIds: this.jobsIds,
+            retries: 1
+          }
+          this.$api().post("/job/retries", postBodyJobsId).then(response => {
+
+            this.$notify({
+              group: "foo",
+              title: "Restarted " + this.jobsIds.length + " jobs",
+              type: "success"
+            });
+            this.getAllIncidents();
+          }).catch(error => {
+            this.$notify({
+              group: "foo",
+              title: "Fail",
+              text: error,
+              type: "error"
+            })
+          })
+        }
+      })
+    },
+    countErrorJobs: function (selectedItem) {
+      this.$api().get("job/count?activityId=" + selectedItem).then(response => {
+        this.countOfJobs = response.data.count;
+      })
     }
   },
 
-  mounted: function() {
+  mounted: function () {
     this.getAllIncidents();
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
-    }
+    },
+    filterFailedActivity() {
+      var array = [];
+      this.incidents.forEach(element => {
+        array.push(element.activityId);
+      })
+
+      var uniqueArray = array.filter(function (item, pos) {
+        return array.indexOf(item) == pos;
+      })
+
+      return uniqueArray
+    },
   }
 };
 </script>

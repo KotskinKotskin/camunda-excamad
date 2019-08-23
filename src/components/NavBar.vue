@@ -29,17 +29,6 @@
               <b-nav-item to="/stream">Live</b-nav-item>
 
               <b-nav-item to="/tasklist">Task list</b-nav-item>
-              <b-nav-item-dropdown text="BPMaS" right>
-                <b-dropdown-item to="/bpmasservice/wtf">What is this</b-dropdown-item>
-                <b-dropdown-item
-                  :disabled="!workOnBpmAsSerivce"
-                  to="/bpmasservice/newdiagram/StarterProcess"
-                >New process</b-dropdown-item>
-                <b-dropdown-item
-                  :disabled="!workOnBpmAsSerivce"
-                  to="/bpmasservice/deploytable"
-                >My process</b-dropdown-item>
-              </b-nav-item-dropdown>
               <b-nav-item-dropdown text="Misc" right>
                 <b-dropdown-item to="/deploytable">Deployments</b-dropdown-item>
                 <b-dropdown-item to="/batch">Batches</b-dropdown-item>
@@ -65,16 +54,14 @@
 
               <b-nav-item to="/settings">Settings</b-nav-item>
               <b-nav-item-dropdown text="Systems" right>
+                <b-dropdown-item to="/systems">More</b-dropdown-item>
                 <b-dropdown-item-button
                   @click="userSetBaserUrlFromBadge(item.name)"
                   :key="item.name"
                   v-for="item in list"
                 >
                   <b v-if="item.name == baseurl">></b>
-                  <b-badge
-                    pill
-                    :variant="calculatePillColorForUrl(item.name)"
-                  >{{calculateEnvormentForUrl(item.name)}}</b-badge>
+                  <b-badge pill :variant="calculatePillColorForUrl(item.name)"></b-badge>
                   {{substringUrl(item.name)}}
                 </b-dropdown-item-button>
                 <b-dropdown-divider></b-dropdown-divider>
@@ -88,11 +75,11 @@
                     variant="outline-info"
                   >Expert Mode</b-button>
                 </b-nav-form>
-                <input class="hide" v-on:keyup.right="setVisible">
+                <input class="hide" v-on:keyup.right="setVisible" />
               </b-nav-item-dropdown>
 
               <b-nav-item v-b-tooltip.hover title="FAQ and manual" to="/help">
-                <font-awesome-icon icon="question-circle"/>
+                <font-awesome-icon icon="question-circle" />
               </b-nav-item>
             </b-navbar-nav>
 
@@ -105,11 +92,6 @@
           <small>
             <b-nav-text>
               <b-badge class="ml-3" pill :variant="pillColorStatus">{{pillColorStatus}}</b-badge>
-            </b-nav-text>
-          </small>
-          <small>
-            <b-nav-text>
-              <b-badge class="ml-2" pill :variant="pillColor">{{envortment}}</b-badge>
             </b-nav-text>
           </small>
           <small>

@@ -15,7 +15,7 @@
         />
 
         <b-button @click="moveToken" :disabled="!expertMode" variant="outline-danger">Move</b-button>
-        <br>
+        <br />
       </b-form>
       <small>{{calculateHelp()}}</small>
     </b-card>
@@ -52,9 +52,6 @@ export default {
   computed: {
     profile() {
       return this.$store.getters.getProfile;
-    },
-    isAuthenticated() {
-      return this.$store.getters.isAuthenticated;
     },
     expertMode() {
       return this.$store.state.expertMode;
@@ -109,7 +106,7 @@ export default {
       var moddle = new BpmnModdle({ camunda: camundaModdle });
       var vm = this;
       vm.activityList = [];
-      this.moddle = moddle.fromXML(this.definitionInXml, function(
+      this.moddle = moddle.fromXML(this.definitionInXml, function (
         err,
         definitions
       ) {

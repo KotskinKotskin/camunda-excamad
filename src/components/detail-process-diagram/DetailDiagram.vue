@@ -8,7 +8,7 @@
       variant="outline-info"
       class="mb-2 down"
     >
-      <font-awesome-icon icon="pen-square"/>Edit mode
+      <font-awesome-icon icon="pen-square" />Edit mode
     </b-btn>
     <b-btn
       @click="changeJiraMode"
@@ -16,11 +16,10 @@
       size="sm"
       variant="outline-success"
       class="mb-2 down ml-3"
-      :disabled="!isAuthenticated"
     >
-      <font-awesome-icon icon="file-alt"/>Info from Jira
+      <font-awesome-icon icon="file-alt" />Info from Jira
     </b-btn>
-    <small class="ml-2" v-if="!isAuthenticated">please log in</small>
+
     <diagram
       :key="componentKey"
       :jiraMode="jiraMode"

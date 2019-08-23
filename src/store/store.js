@@ -23,7 +23,7 @@ export default new Vuex.Store({
     serverStatus: true,
     workOnBpmasservice: false,
     envortment: 'UNKNOWN',
-    expertMode: false,
+    expertMode: true,
     taskId: ''
   },
   mutations: {
@@ -40,7 +40,7 @@ export default new Vuex.Store({
       state.serverStatus = status;
     },
     changeExpertMode(state, expertMode) {
-      state.expertMode = expertMode;
+      state.expertMode = true;
     },
     changeTaskId(state, taskId) {
       state.taskId = taskId;
