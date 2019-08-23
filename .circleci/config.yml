@@ -32,16 +32,16 @@ jobs:
 
       - store_artifacts:
           path: dist
-          prefix: dist
-
-            # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job. 
+          prefix:
+            dist
+            # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
           root: workspace
           # Must be relative path from root
           paths:
-            - echo-output    
+            - echo-output
 
   deploy-job:
     executor: my-executor
@@ -50,8 +50,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-       - attach_workspace:
-          # Must be absolute path or relative path from working_directory
+      - attach_workspace:
           at: /tmp/workspace
       - run:
           name: Login to DockerHub
