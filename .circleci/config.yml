@@ -2,19 +2,15 @@ version: 2.1
 
 executors:
   my-executor:
+    docker:
+      - image: circleci/node:8.9.1
     working_directory: /tmp
 
 jobs:
   build-job:
     executor: my-executor
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:8.9.1
-    # circleci branch only master
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
@@ -32,21 +28,15 @@ jobs:
 
       - store_artifacts:
           path: dist
-          prefix:
-            dist
-            # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
+          prefix: dist
+
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
           root: workspace
-          # Must be relative path from root
           paths:
-            - echo-output
+            - app
 
   deploy-job:
     executor: my-executor
-    docker:
-      - image: circleci/openjdk:11.0.1-jdk
     steps:
       - checkout
       - setup_remote_docker
