@@ -1,7 +1,3 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
 jobs:
   build:
@@ -38,9 +34,25 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      # run tests!
-      # - run: yarn test
-      # run build
-      # - run: git config --global user.email "jeffygisgreat@gmail.com"
-      # - run: git config --global user.name "nicejade"
-      # - run: yarn run deploy
+
+      - store_artifacts:
+          path: dist
+          prefix: dist
+#  deploy-job:
+#    docker:
+#     - image: circleci/openjdk:11.0.1-jdk
+#    steps:
+#      -
+#
+#workflows:
+#  version: 2
+#
+#  -deploy:
+#   jobs:
+#     - build-job
+#      - deploy-job:
+#          requires:
+#           - build-job
+#         filters:
+#            branches:
+#              only: master
