@@ -48,7 +48,7 @@ jobs:
           name: docker build
           command: docker build -t excamad:latest .
       - run: ls
-      - run: find / -name dist
+      - run: find / -name distz 
       - run:
           name: docker push
           command: docker push deniskotov/excamad:latest
