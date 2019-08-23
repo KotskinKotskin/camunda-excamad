@@ -38,21 +38,30 @@ jobs:
       - store_artifacts:
           path: dist
           prefix: dist
-#  deploy-job:
-#    docker:
-#     - image: circleci/openjdk:11.0.1-jdk
-#    steps:
-#      -
-#
-#workflows:
-#  version: 2
-#
-#  -deploy:
-#   jobs:
-#     - build-job
-#      - deploy-job:
-#          requires:
-#           - build-job
-#         filters:
-#            branches:
-#              only: master
+  deploy-job:
+    docker:
+      - image: circleci/openjdk:11.0.1-jdk
+    steps:
+      - checkout
+      - run:
+          name: Login to DockerHub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: docker build
+          command: docker build -t excamad:latest .
+      - run:
+          name: docker push
+          command: docker push deniskotov/excamad:latest
+
+workflows:
+  version: 2
+
+  -deploy:
+    jobs:
+      - build-job
+      - deploy-job:
+          requires:
+            - build-job
+          filters:
+            branches:
+              only: master
