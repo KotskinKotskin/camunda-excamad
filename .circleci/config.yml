@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build-job:
     docker:
       # specify the version you desire here
       - image: circleci/node:8.9.1
@@ -55,8 +55,7 @@ jobs:
 
 workflows:
   version: 2
-
-  -deploy:
+  build_and_docker:
     jobs:
       - build-job
       - deploy-job:
