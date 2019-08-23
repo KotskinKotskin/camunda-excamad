@@ -1,20 +1,23 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/app
-
     docker:
-      - image: circleci/openjdk:11.0.1-jdk
-
+      - image: circleci/node:8.11.2
+    parallelism: 1
+    working_directory: ~/app/
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-
-      - run:
-          name: Login to DockerHub
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-
-      - run: docker build -t excamad:latest .
-
-      - run: docker push kotovdenis/excamad:latest
+      - attach_workspace:
+          at: ~/app/
+      - restore_cache:
+          key: v1-yarn-{{ checksum "package.json" }}
+      - run: yarn install
+      - save_cache:
+         key: v1-yarn-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: npm install
+      - run: npm run build
+      - persist_to_workspace:
+          root: .
+          paths: dist
