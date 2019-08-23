@@ -15,6 +15,6 @@ jobs:
           name: Login to DockerHub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-      - run: docker build -t excamad:latest
+      - run: docker build -t excamad:latest .
 
       - run: docker push kotovdenis/excamad:latest
