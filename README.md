@@ -3,7 +3,7 @@
 **Ex**ternal **cam**unda **ad**min portal. Make life in **multi-camunda`s** environment much easy and provide some cool features.
 License : GNU GPLv3.
 
-DEMO: https://cadmin.bpmn2.ru (dont forget about CORS)
+DEMO: http://excamad.bpmn2.ru (dont forget about CORS)
 
 # 0. How to run
 
