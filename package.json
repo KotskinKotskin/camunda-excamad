@@ -5,8 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "postbuild": "node ./postbuild/gendockerfiles/run.js"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@chiaweilee/vue-markdown-loader": "^2.5.0-beta",
