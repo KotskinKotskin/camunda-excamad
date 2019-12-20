@@ -66,6 +66,9 @@ Vue.component('batch-table', BatchTable);
 import Systems from '@/components/systems/Systems.vue';
 Vue.component('systems', Systems);
 
+import TaskQuery from '@/components/tasklist/TaskQuery.vue';
+Vue.component('task-query', TaskQuery);
+
 import Search from '@/components/smart-search/Search.vue';
 Vue.component('search', Search);
 

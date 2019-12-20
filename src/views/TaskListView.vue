@@ -1,14 +1,26 @@
 <template>
   <div class="taskListView1">
-    <div class="bv-example">
-      <b-row>
-        <b-col cols="3">
-          <tasklist :key="componentKeyTasklist"></tasklist>
-        </b-col>
-        <b-col>
-          <task-details :key="componentKeyTaskDetails"></task-details>
-        </b-col>
-      </b-row>
+    <b-alert :show="!isAuthenticated" variant="danger">Please login</b-alert>
+    <b-alert
+      :show="isAuthenticated && !isCamundaAuthenticated"
+      variant="warning"
+    >Your profile didn`t connected to current Camunda. You can see and done only unassigned task.</b-alert>
+    <div class="bv-example" v-if="isAuthenticated">
+      <b-tabs content-class="mt-3">
+        <b-tab title="Task list" active>
+          <b-row>
+            <b-col cols="3">
+              <tasklist :key="componentKeyTasklist"></tasklist>
+            </b-col>
+            <b-col>
+              <task-details :key="componentKeyTaskDetails"></task-details>
+            </b-col>
+          </b-row>
+        </b-tab>
+        <b-tab title="Task query">
+          <task-query></task-query>
+        </b-tab>
+      </b-tabs>
     </div>
   </div>
 </template>

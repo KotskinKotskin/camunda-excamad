@@ -18,6 +18,7 @@
                 <b-dropdown-item to="/embedded">Embed and share</b-dropdown-item>
                 <b-dropdown-item to="/startdefinition">Start processes</b-dropdown-item>
                 <b-dropdown-item to="/complexmigration">Migration</b-dropdown-item>
+                <b-dropdown-item to="/variablebatch">Variables edit</b-dropdown-item>
               </b-nav-item-dropdown>
               <b-nav-item-dropdown text="Decisions">
                 <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
@@ -61,7 +62,10 @@
                   v-for="item in list"
                 >
                   <b v-if="item.name == baseurl">></b>
-                  <b-badge pill :variant="calculatePillColorForUrl(item.name)"></b-badge>
+                  <b-badge
+                    pill
+                    :variant="calculatePillColorForUrl(item.name)"
+                  >{{calculateEnvormentForUrl(item.name)}}</b-badge>
                   {{substringUrl(item.name)}}
                 </b-dropdown-item-button>
                 <b-dropdown-divider></b-dropdown-divider>
@@ -92,6 +96,11 @@
           <small>
             <b-nav-text>
               <b-badge class="ml-3" pill :variant="pillColorStatus">{{pillColorStatus}}</b-badge>
+            </b-nav-text>
+          </small>
+          <small>
+            <b-nav-text>
+              <b-badge class="ml-2" pill :variant="pillColor">{{envortment}}</b-badge>
             </b-nav-text>
           </small>
           <small>

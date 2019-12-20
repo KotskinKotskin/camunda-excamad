@@ -61,7 +61,15 @@ export default {
 
           try {
             this.applicationId = response.data.filter(obj => {
+              
               return obj.name === "applicationId";
+            })[0].value;
+          } catch (error) { }
+
+          try {
+            this.applicationId = response.data.filter(obj => {
+              
+              return obj.name === "applicationIntegrationId";
             })[0].value;
           } catch (error) { }
         });

@@ -32,6 +32,9 @@ import StartDefinitionView from '@/views/StartDefinitionView.vue';
 import ComplexMigrationView from '@/views/ComplexMigrationView.vue';
 import GroupsView from '@/views/GroupsView.vue';
 import UsersView from '@/views/UsersView.vue';
+import SystemsView from '@/views/SystemsView.vue';
+
+import VariableBatchModifyView from '@/views/VariableBatchModifyView.vue';
 
 Vue.use(Router);
 Vue.use(VueSmartRoute);
@@ -52,7 +55,13 @@ const ifAuthenticated = (to, from, next) => {
   next('/login');
 };
 
-export default new Router({
+function hasQueryParams(route) {
+  if (route.query.baseurl) {
+    return true;
+  } else return false;
+}
+
+const router = new Router({
   //mode: "history",
   routes: [
     {
@@ -60,6 +69,12 @@ export default new Router({
       name: 'tasklist',
       component: TaskListView
     },
+    {
+      path: '/variablebatch',
+      name: 'variablebatch',
+      component: VariableBatchModifyView
+    },
+    
     {
       path: '/migration',
       name: 'migration',
@@ -240,7 +255,11 @@ export default new Router({
       name: 'startdefinition',
       component: StartDefinitionView
     },
-
+    {
+      path: '/systems/',
+      name: 'systems',
+      component: SystemsView
+    },
     {
       path: '/groups',
       name: 'groups',
@@ -255,3 +274,15 @@ export default new Router({
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (!hasQueryParams(to) && hasQueryParams(from)) {
+    console.log(to);
+    console.log(from);
+    next({ name: to.name, query: from.query, params: to.params });
+  } else {
+    next();
+  }
+});
+
+export default router;

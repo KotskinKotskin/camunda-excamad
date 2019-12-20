@@ -3,10 +3,10 @@
     <navbar v-on:refresh="refreshRoute" v-if="!dashboard"></navbar>
     <transition name="fade">
       <div id="containerOverRouter" :class="containerClass">
-        <router-view :key="$route.fullPath + key" class="mt-3"/>
+        <router-view :key="$route.fullPath + key" class="mt-3" />
       </div>
     </transition>
-    <notifications group="foo"/>
+    <notifications group="foo" />
     <the-footer class="footer"></the-footer>
   </div>
 </template>
@@ -27,6 +27,23 @@ export default {
       dashboard: false
     };
   },
+  computed: {
+    baseurl() {
+      return this.$store.state.baseurl
+    }
+  },
+  watch: {
+    baseurl(newValue, oldValue) {
+      console.log(newValue);
+      this.$router.push({ query: { baseurl: newValue } })
+    }
+  },
+
+  created() {
+    if (this.$route.query.baseurl) {
+      this.$store.commit("setBaseUrl", this.$route.query.baseurl);
+    }
+  },
   mounted() {
     if (this.$route.query.dashboard == "true") {
       this.dashboard = true;
@@ -37,26 +54,24 @@ export default {
       this.ContainerOrNot();
     }, 50);
 
-    if (this.$route.query.baseurl) {
-      this.$store.commit("setBaseUrl", this.$route.query.baseurl);
-    }
+
 
     if (localStorage.usertoken != null) {
       var usertokenstring = atob(localStorage.usertoken).split(":");
 
       var userName = usertokenstring[0];
       var password = usertokenstring[1];
-      this.$store.dispatch(AUTH_REQUEST, { userName, password }).then(() => {});
+      this.$store.dispatch(AUTH_REQUEST, { userName, password }).then(() => { });
       this.$store
         .dispatch(AUTH_CAMUNDA_REQUEST, { userName, password })
-        .then(() => {});
+        .then(() => { });
     }
   },
   methods: {
     refreshRoute() {
       this.key = this.key + 1;
     },
-    ContainerOrNot: function() {
+    ContainerOrNot: function () {
       this.containerClass = "container content";
       if (this.dashboard == true) {
         this.containerClass = "";

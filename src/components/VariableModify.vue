@@ -46,7 +46,6 @@
             class="mb-3"
           />
           <b-btn
-            :disabled="!expertMode"
             variant="outline-success"
             @click="generateModifications"
           >Replace variable in {{variablesToModify.variableCount}} instances</b-btn>
@@ -63,7 +62,7 @@
             />
           </div>
           <b-btn
-            :disabled="!expertMode"
+           
             variant="outline-warning"
             @click="getInstancesByDefinitions"
           >Find instances</b-btn>
@@ -93,7 +92,6 @@
           <b-form-select v-model="newVariable.variableType" :options="variablesTypes" class="mb-3"/>
 
           <b-btn
-            :disabled="!expertMode"
             variant="outline-warning"
             @click="generateNewVariable"
           >Create variable</b-btn>
@@ -107,9 +105,10 @@
 <script>
 export default {
   name: "VariableModify",
-  props: ["processDefinitionsStringArray"],
   data() {
     return {
+      processDefinitions: [],
+      processDefinitionsStringArray: [],
       processInstancesToModify: [],
       variablesToModify: {
         variableName: "waitingCSSResponseAlertTimer",
@@ -136,7 +135,24 @@ export default {
       ]
     };
   },
+  created() {
+    this.getProcessDefinitionsArray();
+  },
   methods: {
+
+    getProcessDefinitionsArray() {
+            this.$api()
+        .get("/process-definition?sortBy=version&sortOrder=desc")
+        .then(response => {
+          this.processDefinitions = response.data;
+
+          response.data.forEach (element => {
+            this.processDefinitionsStringArray.push(element.id)
+          } )
+          
+        })
+
+    },
     generateModifyAdnSendModify() {
       this.$notify({
         group: "foo",

@@ -65,9 +65,7 @@ export default {
         .getEntity(
           "deployment",
           "",
-          "source=" +
-            this.$store.getters.getProfile.userName +
-            "&sortBy=deploymentTime&&sortOrder=desc&maxResults=50"
+          ""
         )
 
         .then(value => {
