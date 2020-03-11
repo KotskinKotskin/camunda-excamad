@@ -18,7 +18,7 @@
               placeholder="Choose process definition name"
             ></b-form-input>
             <datalist id="my-list-id">
-              <option v-for="procDef in processDefinitionKeyArray">{{ procDef }}</option>
+              <option v-bind:key="procDef" v-for="procDef in processDefinitionKeyArray">{{ procDef }}</option>
             </datalist>
             <label for="nameLike">Task name</label>
             <b-form-input id="nameLike" v-model="nameLike" placeholder="Enter task name"></b-form-input>
@@ -100,7 +100,7 @@
               size="sm"
               variant="outline-primary"
               @click="getTasks"
-            >Complete {{ taskCount <= maxResults ? taskCount : maxResults}} tasks</b-btn>
+            > Complete {{ maxResults ? taskCount : maxResults}} tasks</b-btn>
             <b-btn class="ml-2" size="sm" variant="outline-secondary" @click="clearFilter">Clear</b-btn>
             <b-btn class="ml-2" size="sm" variant="outline-warning" v-b-modal.modal-1>Save as filter</b-btn>
             <b-modal v-on:ok="saveFilter" v-model="showModal" id="modal-1" title="Save filter">
@@ -149,7 +149,7 @@
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
 import VueDatepickerLocal from "vue-datepicker-local";
-import { faMinus, faPlus, faPause } from "@fortawesome/free-solid-svg-icons";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 library.add(faMinus, faPlus);
 
 export default {
@@ -341,7 +341,7 @@ export default {
       this.tasks.forEach(function (obj, index) {
         setTimeout(function () {
           var variables = {};
-          vm.$api().post('/task/' + obj.id + '/submit-form', variables).then(response => {
+          vm.$api().post('/task/' + obj.id + '/submit-form', variables).then(() => {
 
           })
           vm.currentPossition = index;
@@ -359,7 +359,6 @@ export default {
 
     },
     loadFiltersLocalStorage() {
-      console.log("strike created");
       var array = JSON.parse(localStorage.taskFilters);
       array.forEach(element => {
         this.filters.push(element);

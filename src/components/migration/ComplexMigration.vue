@@ -112,7 +112,7 @@ export default {
   methods: {
     HandleClick(payload) {
       if (payload.$type != "bpmn:Participant" && payload.$type != "bpmn:SequenceFlow" && payload.$type != "bpmn:Collaboration") {
-        console.log(payload.$type);
+
         if (this.oldProcessDefinition.activities.indexOf(payload.id) === -1) {
           this.oldProcessDefinition.activities.push(payload.id);
         }
@@ -215,7 +215,7 @@ export default {
       this.migratonBody.migrationPlan = this.migrationPlan;
       this.migratonBody.processInstanceQuery = this.processInstanceQuery;
       this.jsonDataMigrationPlan = this.migratonBody;
-      console.log(migratonBody);
+
     },
     generateAndMigrate() {
       var migrationBody = {

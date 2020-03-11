@@ -52,8 +52,7 @@ const permissions = [
 
 export function CheckPermission(resource) {
   var currentRole = store.state.role;
-  console.log(currentRole);
-  console.log(resource);
+
 
   var permissionByRole = permissions.filter(function(el) {
     return el.role === currentRole;
@@ -65,8 +64,7 @@ export function CheckPermission(resource) {
   if (deny) {
     deny.forEach(item => {
       if (resource == item) {
-        console.log(resource);
-        console.log(item);
+
         return false;
       }
     });
@@ -74,8 +72,7 @@ export function CheckPermission(resource) {
   if (access) {
     access.forEach(item => {
       if (resource == item) {
-        console.log(resource);
-        console.log(item);
+
         return true;
       }
     });

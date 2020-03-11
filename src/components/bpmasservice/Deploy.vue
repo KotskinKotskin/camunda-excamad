@@ -2,7 +2,7 @@
   <div id="deploy">
     <b-btn
       size="sm"
-      :disabled="!isAuthenticated"
+     
       @click="deployXML"
       variant="outline-success"
     >Deploy</b-btn>

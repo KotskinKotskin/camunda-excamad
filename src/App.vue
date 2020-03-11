@@ -33,8 +33,7 @@ export default {
     }
   },
   watch: {
-    baseurl(newValue, oldValue) {
-      console.log(newValue);
+    baseurl(newValue) {
       this.$router.push({ query: { baseurl: newValue } })
     }
   },

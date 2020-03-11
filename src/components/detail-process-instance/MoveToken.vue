@@ -6,13 +6,13 @@
         <b-form-input v-model="selectedFrom" list="my-list-id"></b-form-input>
 
         <datalist id="my-list-id">
-          <option v-for="item in currentActivitySimpleArray">{{ item }}</option>
+          <option v-bind:key="item" v-for="item in currentActivitySimpleArray">{{ item }}</option>
         </datalist>
 
         <b-form-input v-model="selectedTo" list="my-list-id1"></b-form-input>
 
         <datalist id="my-list-id1">
-          <option v-for="item in possibleActivitySimpleArray">{{ item }}</option>
+          <option v-bind:key="item" v-for="item in possibleActivitySimpleArray">{{ item }}</option>
         </datalist>
 
         <b-button @click="moveToken" :disabled="!expertMode" variant="outline-danger">Move</b-button>
@@ -24,13 +24,10 @@
 </template>
 
 <script>
-import * as api from "@/api/api";
+
 import BpmnModdle from "bpmn-moddle";
 import camundaModdle from "camunda-bpmn-moddle/resources/camunda";
-import camundaExtensionModule from "camunda-bpmn-moddle/lib";
-import camundaModdleDescriptor from "camunda-bpmn-moddle/resources/camunda";
-import BpmnViewer from "bpmn-js/lib/NavigatedViewer";
-import BpmnModeler from "bpmn-js/lib/Modeler";
+
 export default {
   name: "MoveToken",
   props: [
@@ -65,11 +62,9 @@ export default {
     setTimeout(() => {
       this.getActivityList();
       this.currentActivity.forEach(element => {
-        console.log(element);
         this.currentActivitySimpleArray.push(element.activityId);
       });
       this.currentJobs.forEach(element => {
-        console.log(element);
         this.currentActivitySimpleArray.push(element.processActivityToShow);
       });
     }, 700);
@@ -151,7 +146,7 @@ export default {
           "/process-instance/" + this.processInstanceId + "/modification",
           moveTokenObj
         )
-        .then(response => {
+        .then(() => {
           this.$notify({
             group: "foo",
             title: " Moved!",

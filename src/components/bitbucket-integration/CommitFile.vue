@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-btn :disabled="!isAuthenticated" size="sm" variant="outline-warning" @click="push">Push</b-btn>
+    <b-btn  size="sm" variant="outline-warning" @click="push">Push</b-btn>
     <br />
     <small>Project - {{projectKey}}, reposity slug - {{repositySlug}}, path to file- {{pathToFile}}</small>
   </div>
@@ -54,7 +54,7 @@ export default {
           bodyFormData,
           { headers: { Authorization: this.token } }
         )
-        .then(response => {
+        .then(() => {
           this.$notify({
             group: "foo",
             title: "File uploaded",

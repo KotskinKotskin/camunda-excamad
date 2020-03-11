@@ -23,7 +23,7 @@
         ></b-form-input>
 
         <datalist id="my-list-id">
-          <option v-for="item in filterFailedActivity">{{ item }}</option>
+          <option v-bind:key="item" v-for="item in filterFailedActivity">{{ item }}</option>
         </datalist>
 
         <b-form-input class="ml-1" v-model="countOfJobs" type="number"></b-form-input>
@@ -148,7 +148,7 @@ export default {
     };
   },
   watch: {
-    hideParentIncidents(newValue, OldValue) {
+    hideParentIncidents(newValue) {
       this.incidentsGlobalRoot = this.incidents.filter(function (obj) {
         return obj.globalRoot === true;
       });
@@ -168,6 +168,7 @@ export default {
         .getEntity("incident", "", "sortBy=incidentTimestamp&sortOrder=desc")
         .then(value => {
           this.incidents = value;
+          var vm = this;
           this.ready = true;
           this.incidents.forEach(incident => {
             if (!incident.incidentMessage) {
@@ -190,7 +191,7 @@ export default {
           retries: this.retries,
           jobQuery: this.jobQuerySelected
         })
-        .then(response => {
+        .then(() => {
           var index = this.incidents.indexOf(item);
           if (index > -1) {
             this.incidents.splice(index, 1);
@@ -278,14 +279,14 @@ export default {
       this.$api().post("/job?maxResults=" + this.countOfJobs, postBody).then(response => {
         if (response.data != null && response.data.length > 0) {
           response.data.forEach(element => {
-            console.log(element.id);
+
             this.jobsIds.push(element.id);
           });
           var postBodyJobsId = {
             jobIds: this.jobsIds,
             retries: 1
           }
-          this.$api().post("/job/retries", postBodyJobsId).then(response => {
+          this.$api().post("/job/retries", postBodyJobsId).then(() => {
 
             this.$notify({
               group: "foo",

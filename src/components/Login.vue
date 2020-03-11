@@ -1,18 +1,18 @@
 <template>
   <div>
-    <b-navbar-nav class="ml-auto">
+    <b-navbar-nav v-show="false" class="ml-auto">
       <b-nav-form>
         <b-button
           v-b-modal.modal1
           disabled
-          v-if="!isAuthenticated"
+       
           variant="outline-success"
           size="sm"
           class="ml-2 my-2 my-sm-0"
         >Login</b-button>
         <b-button
           variant="outline-primary"
-          v-if="isAuthenticated"
+        
           @click="logout"
           size="sm"
           class="ml-2 my-2 my-sm-0"
@@ -103,7 +103,7 @@ export default {
     calculatePhoto(user) {
       return USERPHOTOLOADURL + user + ".png";
     },
-    focusMyElement(e) {
+    focusMyElement() {
       this.$refs.focusThis.focus();
     },
     login: function () {

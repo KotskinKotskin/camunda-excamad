@@ -59,7 +59,6 @@
                 </router-link>
 
                 <hr>
-              </li>
             </b-card>
           </b-col>
           <b-col>
@@ -115,7 +114,7 @@
 </template>
 
 <script>
-import * as api from "@/api/api";
+
 import { USERPHOTOLOADURL } from "@/config/settings";
 export default {
   name: "selectedTask",
@@ -157,7 +156,7 @@ export default {
     }
   },
   watch: {
-    isCamundaAuthenticated(newValue, oldValue) {
+    isCamundaAuthenticated() {
      
       this.checkPossibilityTakeTask();
     }
@@ -202,7 +201,7 @@ export default {
       var comment = {
         message: this.message + userAddon
       }
-      this.$api().post('/task/' + this.taskId + '/comment/create', comment).then(response => {
+      this.$api().post('/task/' + this.taskId + '/comment/create', comment).then(() => {
       
         this.getComments();
       })
@@ -233,7 +232,7 @@ export default {
       else this.canTakeTask = true;
     },
     unclaimTask() {
-      this.$api().post('/task/' + this.taskId + "/unclaim").then(response => {
+      this.$api().post('/task/' + this.taskId + "/unclaim").then(() => {
         this.getTaskDetails();
 
       })
@@ -243,7 +242,7 @@ export default {
       var userId = {
         userId: this.profile.userName
       }
-      this.$api().post('/task/' + this.taskId + "/claim", userId).then(response => { this.getTaskDetails(); })
+      this.$api().post('/task/' + this.taskId + "/claim", userId).then(() => { this.getTaskDetails(); })
 
 
     },

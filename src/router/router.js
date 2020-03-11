@@ -124,8 +124,7 @@ const router = new Router({
       path: '/bpmasservice/newdiagram/:diagramKey',
       name: 'newdiagram',
       props: true,
-      component: NewDiagramView,
-      beforeEnter: ifAuthenticated
+      component: NewDiagramView
     },
 
     {
@@ -136,21 +135,18 @@ const router = new Router({
     {
       path: '/bpmasservice/deploy/',
       name: 'newdiagram',
-      component: DeployView,
-      beforeEnter: ifAuthenticated
+      component: DeployView
     },
     {
       path: '/bpmasservice/deployhelp/:diagramId',
       name: 'deployhelp',
       props: true,
-      component: DeployHelpView,
-      beforeEnter: ifAuthenticated
+      component: DeployHelpView
     },
     {
       path: '/bpmasservice/deploytable/',
       name: 'deploytable',
-      component: DeployTableBPMaSView,
-      beforeEnter: ifAuthenticated
+      component: DeployTableBPMaSView
     },
     {
       path: '/history',
@@ -263,22 +259,18 @@ const router = new Router({
     {
       path: '/groups',
       name: 'groups',
-      component: GroupsView,
-      beforeEnter: ifAuthenticated
+      component: GroupsView
     },
     {
       path: '/users',
       name: 'users',
-      component: UsersView,
-      beforeEnter: ifAuthenticated
+      component: UsersView
     }
   ]
 });
 
 router.beforeEach((to, from, next) => {
   if (!hasQueryParams(to) && hasQueryParams(from)) {
-    console.log(to);
-    console.log(from);
     next({ name: to.name, query: from.query, params: to.params });
   } else {
     next();
