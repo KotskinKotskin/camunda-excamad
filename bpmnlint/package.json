@@ -1,0 +1,106 @@
+{
+  "_from": "bpmnlint@^6.4.0",
+  "_id": "bpmnlint@6.4.0",
+  "_inBundle": false,
+  "_integrity": "sha512-6H8wiZIusZvJX/0/1r8VhxW4cHalpbCswNN5RLPzQ8RvK02Fs1vFzz2KoUj2EkVdvC7P8hqCFLlvmYsw1OILeg==",
+  "_location": "/bpmnlint",
+  "_phantomChildren": {
+    "camelcase": "4.1.0",
+    "decamelize-keys": "1.1.0",
+    "find-up": "2.1.0",
+    "graceful-fs": "4.2.3",
+    "loud-rejection": "1.6.0",
+    "map-obj": "2.0.0",
+    "minimist-options": "3.0.2",
+    "normalize-package-data": "2.5.0",
+    "parse-json": "4.0.0",
+    "path-type": "3.0.0",
+    "pify": "3.0.0",
+    "quick-lru": "1.1.0",
+    "strip-indent": "2.0.0",
+    "yargs-parser": "10.1.0"
+  },
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "bpmnlint@^6.4.0",
+    "name": "bpmnlint",
+    "escapedName": "bpmnlint",
+    "rawSpec": "^6.4.0",
+    "saveSpec": null,
+    "fetchSpec": "^6.4.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/bpmnlint/-/bpmnlint-6.4.0.tgz",
+  "_shasum": "7a58a5e709dd1fa9a833fc9268d7ccc4855df7ce",
+  "_spec": "bpmnlint@^6.4.0",
+  "_where": "D:\\camunda-excamad-master",
+  "author": {
+    "name": "Seif Eddine Ghezala",
+    "email": "siffogh3@gmail.com"
+  },
+  "bin": {
+    "bpmnlint": "bin/bpmnlint.js"
+  },
+  "bugs": {
+    "url": "https://github.com/bpmn-io/bpmnlint/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "bpmn.io contributors",
+      "url": "https://github.com/bpmn-io"
+    }
+  ],
+  "dependencies": {
+    "bpmn-moddle": "^6.0.0",
+    "bpmnlint-utils": "^1.0.1",
+    "chalk": "^2.4.2",
+    "cli-table": "^0.3.1",
+    "meow": "^5.0.0",
+    "pluralize": "^7.0.0"
+  },
+  "deprecated": false,
+  "description": "Validate your BPMN diagrams based on configurable lint rules",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-bpmn-io": "^0.8.2",
+    "esm": "^3.2.25",
+    "execa": "^2.0.3",
+    "install-local": "^1.0.0",
+    "mocha": "^6.2.0",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^14.1.1",
+    "strip-indent": "^2.0.0"
+  },
+  "engines": {
+    "node": ">= 8"
+  },
+  "homepage": "https://github.com/bpmn-io/bpmnlint#readme",
+  "keywords": [
+    "bpmnlint",
+    "bpmn",
+    "linter",
+    "cli",
+    "validation",
+    "rules"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "bpmnlint",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bpmn-io/bpmnlint.git"
+  },
+  "scripts": {
+    "all": "run-s lint test-coverage",
+    "dev": "npm test -- --watch",
+    "lint": "eslint .",
+    "test": "mocha -r esm --exclude 'test/integration/cli/**' 'test/**/*.js'",
+    "test-coverage": "nyc --reporter=lcov --reporter=html npm test"
+  },
+  "version": "6.4.0"
+}
