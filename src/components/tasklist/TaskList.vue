@@ -38,7 +38,7 @@
         v-for="item in tasks.slice(0,25)"
         v-if="item.assignee == null || item.assignee==profile.userName"
         class="flex-column align-items-start"
-      >
+      > 
         <div v-if="item.assignee == null || item.assignee==profile.userName" id="smallTask">
           <div class="d-flex justify-content-between">
             <h6 class="mb-1">{{item.name}}</h6>

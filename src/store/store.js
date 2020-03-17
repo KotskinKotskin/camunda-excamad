@@ -23,12 +23,24 @@ export default new Vuex.Store({
     serverStatus: true,
     workOnBpmasservice: false,
     envortment: 'UNKNOWN',
+    restPasswordEnabled: false,
+    restUsername: null,
+    restPassword: null,
     expertMode: true,
     taskId: ''
   },
   mutations: {
     setBaseUrl(state, url) {
       state.baseurl = url;
+    },
+    setRestPasswordEnabled(state, restPasswordEnabled) {
+      state.restPasswordEnabled = restPasswordEnabled;
+    },
+    setRestsername(state, restUsername) {
+      state.restUsername = restUsername;
+    },
+    setRestpassword(state, restPassword) {
+      state.restPassword = restPassword;
     },
     setBpmasserviceUrl(state, url) {
       state.bpmasserviceUrl = url;

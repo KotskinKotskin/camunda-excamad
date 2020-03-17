@@ -6,7 +6,7 @@ export default () => {
 };
 
 export function createApi() {
-  return axios.create({
+  var api =  axios.create({
     baseURL: store.state.workOnBpmasservice
       ? store.state.bpmasserviceUrl
       : store.state.baseurl,
@@ -16,6 +16,12 @@ export function createApi() {
       "Content-Type": "application/json"
     }
   });
+
+  if (store.state.restPasswordEnabled == true) {
+    var hash = btoa(store.state.restUsername + ":" +store.state.restPassword)
+    api.defaults.headers.common['Authorization'] = hash;
+  }
+  return api 
 }
 
 export async function getEntity(rootEntity, additionalRoute, query) {
