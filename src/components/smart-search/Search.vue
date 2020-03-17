@@ -278,7 +278,7 @@ export default {
 
           var secondSpaceId = suggest.indexOf("#", id + 1);
 
-          var id = suggest.substring(id + 1, secondSpaceId);
+          id = suggest.substring(id + 1, secondSpaceId);
           this.$router.push({
             name: "processdetail",
             params: { processInstanceId: id }

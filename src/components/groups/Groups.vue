@@ -10,9 +10,9 @@
         >{{ row.detailsShowing ? 'Hide' : 'Show'}} users</b-button>
       </template>
 
-      <template slot="row-details" slot-scope="row">
+      <template slot="row-details">
         <b-card>
-          <li v-for="item in singleTonUsers">
+          <li v-bind:key="item" v-for="item in singleTonUsers">
             <b>{{item.id}}</b>
             - {{item.email}}
           </li>

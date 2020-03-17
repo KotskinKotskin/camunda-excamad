@@ -153,7 +153,7 @@ export default {
         });
       }
       if (this.editMode == true) {
-        var dmnViewer = new Modeler({
+         dmnViewer = new Modeler({
           container: "#canvasDes"
         });
         this.globalModeler = dmnViewer;

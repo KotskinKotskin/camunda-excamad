@@ -42,14 +42,10 @@
 import * as api from "@/api/api";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import { AtomSpinner } from "epic-spinners";
 library.add(faPlay, faPause);
 export default {
   name: "DefinitionDiagram",
   props: ["definitionId", "hideSuspend"],
-  components: {
-    AtomSpinner
-  },
   data() {
     return {
       diagramKey: 0,

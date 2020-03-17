@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { Timeline, Graph2d, Network } from "vue2vis";
+import {Network } from "vue2vis";
 import fullscreen from "vue-fullscreen";
 
 export default {
@@ -196,7 +196,7 @@ export default {
         var value = "*" + item.value + "*";
       }
       if (item.value instanceof Object == true) {
-        var value =
+         value =
           "`\n" +
           JSON.stringify(item.value)
             .replace(/,/g, ",\n\n")

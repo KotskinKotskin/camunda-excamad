@@ -106,7 +106,7 @@ import camundaModdleDescriptor from "camunda-bpmn-moddle/resources/camunda";
 import BpmnViewer from "bpmn-js/lib/NavigatedViewer";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { AtomSpinner } from "epic-spinners";
+
 import VueBootstrapTypeahead from "vue-bootstrap-typeahead";
 import { faMinus, faPlus, faPause } from "@fortawesome/free-solid-svg-icons";
 library.add(faMinus, faPlus);
@@ -114,8 +114,7 @@ export default {
   name: "StartDevinition",
   props: ["definitionId"],
   components: {
-    VueBootstrapTypeahead,
-    AtomSpinner
+    VueBootstrapTypeaheada
   },
   data() {
     return {

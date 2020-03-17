@@ -8,8 +8,6 @@
 <script>
 // @ is an alias to /src
 import Incident from "@/components/Incident.vue";
-import store from "@/store/store";
-
 export default {
   name: "incidentView",
   components: {
