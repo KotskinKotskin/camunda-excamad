@@ -64,8 +64,6 @@ export default {
   },
   props: ["processInstanceId"],
   components: {
-    Timeline,
-    Graph2d,
     Network
   },
   mounted() {
