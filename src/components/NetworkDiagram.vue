@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { Timeline, Graph2d, Network } from "vue2vis";
+import {Network } from "vue2vis";
 export default {
   data() {
     return {
@@ -37,8 +37,6 @@ export default {
   },
   props: ["processInstanceId"],
   components: {
-    Timeline,
-    Graph2d,
     Network
   },
   mounted() {
