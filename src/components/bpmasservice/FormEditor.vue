@@ -186,7 +186,7 @@ export default {
               y => y.id === "readonly"
             ).value = newValue.readonly.toString();
           } else {
-            var moddle = new BpmnModdle({ camunda: camundaModdle });
+            moddle = new BpmnModdle({ camunda: camundaModdle });
 
             var readonlyproperty = moddle.create("camunda:Property");
             readonlyproperty["id"] = "readonly";
@@ -199,7 +199,7 @@ export default {
               c => c.id === "required"
             ).value = newValue.required.toString();
           } else {
-            var moddle = new BpmnModdle({ camunda: camundaModdle });
+            moddle = new BpmnModdle({ camunda: camundaModdle });
 
             var requiredproperty = moddle.create("camunda:Property");
 
@@ -236,7 +236,7 @@ export default {
             if (index > -1) {
               currentField.properties.values.splice(index, 1);
             }
-          } catch (error) {}
+          } finally {}
         }
       }
     }
@@ -400,7 +400,7 @@ export default {
         this.readOnly =
           this.selectedField.properties.values.find(y => y.id === "readonly")
             .value == "true";
-      } catch (error) {}
+      } finally {}
 
       try {
         this.required =

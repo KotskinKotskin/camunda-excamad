@@ -44,12 +44,11 @@
 
 
 <script>
-import { Timeline, TimelineItem, TimelineTitle } from "vue-cute-timeline";
+import { Timeline, TimelineItem } from "vue-cute-timeline";
 export default {
   components: {
     Timeline,
-    TimelineItem,
-    TimelineTitle
+    TimelineItem
   },
   name: "Stream",
   props: ["processInstanceId"],

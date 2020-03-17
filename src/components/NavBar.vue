@@ -189,6 +189,7 @@ export default {
       if (this.envortment != 'TEST' && this.envortment != 'PRODUCTION') {
         return 'secondary'
       }
+      else return 'warning'
     },
     pillColorStatus() {
       if (this.serverStatus == true) {
@@ -197,6 +198,7 @@ export default {
       if (this.serverStatus != true) {
         return 'danger'
       }
+      else return 'danger'
     },
     envortmentFromStore() {
       return this.$store.state.envortment

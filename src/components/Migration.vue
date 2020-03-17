@@ -47,14 +47,11 @@ import {
 import {
     faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import VueTagsInput from "@johmun/vue-tags-input";
+
 var _ = require("lodash");
 import * as api from "@/api/api";
 library.add(faSearch);
 export default {
-    components: {
-        VueTagsInput
-    },
     data() {
         return {
             firstResult: 0,
@@ -114,11 +111,6 @@ export default {
     computed: {
         baseurl() {
             return this.$store.state.baseurl;
-        },
-        setMaxItem(count) {
-
-            this.maxResult = count;
-            this.searchAndCount();
         },
         processInstanceQuery: function () {
             return {
