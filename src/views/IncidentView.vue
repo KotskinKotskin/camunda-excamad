@@ -11,8 +11,7 @@ import Incident from "@/components/Incident.vue";
 export default {
   name: "incidentView",
   components: {
-    Incident,
-    store
+    Incident
   },
   data() {
     return {

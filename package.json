@@ -91,7 +91,8 @@
     "rules": {
       "no-unused-vars": "off",
       "no-empty": "off",
-      "no-undef": "off"
+      "no-undef": "off",
+      "vue/no-use-v-if-with-v-for": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint"

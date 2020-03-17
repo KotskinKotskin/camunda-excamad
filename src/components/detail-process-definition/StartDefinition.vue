@@ -114,7 +114,7 @@ export default {
   name: "StartDevinition",
   props: ["definitionId"],
   components: {
-    VueBootstrapTypeaheada
+    VueBootstrapTypeahead
   },
   data() {
     return {
