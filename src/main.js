@@ -22,7 +22,7 @@ import JiraStat from '@/components/jira-integration/JiraStat.vue';
 import DetailProcessStat from '@/components/detail-process-instance/DetailProcessStat.vue';
 import NewDiagram from '@/components/bpmasservice/NewDiagram.vue';
 import PrepareCurrentStateAndDiagram from '@/components/detail-process-instance/PrepareCurrentStateAndDiagram.vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 import VueJsonPretty from 'vue-json-pretty';
 import DetailIncident from '@/components/detail-process-instance/DetailIncident.vue';
 import Notifications from 'vue-notification';
@@ -35,12 +35,14 @@ import DefinitionIncidents from '@/components/detail-process-definition/Definiti
 import VueFormGenerator from 'vue-form-generator';
 
 import StartDefinition from '@/components/detail-process-definition/StartDefinition.vue';
+
 Vue.component('start-definition', StartDefinition);
 
 import TaskDetails from '@/components/tasklist/TaskDetails.vue';
 import VueClipboard from 'vue-clipboard2';
 
 import DefinitionHistoryInstances from '@/components/detail-process-definition/DefinitionHistoryInstances.vue';
+
 Vue.component('definition-history-instances', DefinitionHistoryInstances);
 
 import DefinitionDiagram from '@/components/detail-process-definition/DefinitionDiagram.vue';
@@ -52,27 +54,35 @@ import IncidentsHistory from '@/components/detail-process-instance/IncidentsHist
 Vue.component('incidents-history', IncidentsHistory);
 
 import DetailJobs from '@/components/detail-process-instance/DetailJobs.vue';
+
 Vue.component('detail-jobs', DetailJobs);
 
 import ComplexMigration from '@/components/migration/ComplexMigration.vue';
+
 Vue.component('complex-migration', ComplexMigration);
 
 import VariableSingleEidt from '@/components/VariableSingleEdit.vue';
+
 Vue.component('variable-single-edit', VariableSingleEidt);
 
 import BatchTable from '@/components/batch/BatchTable.vue';
+
 Vue.component('batch-table', BatchTable);
 
 import Systems from '@/components/systems/Systems.vue';
+
 Vue.component('systems', Systems);
 
 import TaskQuery from '@/components/tasklist/TaskQuery.vue';
+
 Vue.component('task-query', TaskQuery);
 
 import Search from '@/components/smart-search/Search.vue';
+
 Vue.component('search', Search);
 
 import DefinitionDetailView from '@/views/DefinitionDetailView.vue';
+
 Vue.component('definition-detail', DefinitionDetailView);
 
 import DeployTableBPMAS from '@/components/bpmasservice/DeployTable.vue';
@@ -91,40 +101,52 @@ import DecisionItem from '@/components/decisions/DecisionItem.vue';
 import VueFriendlyIframe from 'vue-friendly-iframe';
 import vSuggest from 'v-suggest';
 import HistoryDetails from '@/components/detail-process-instance/HistoryDetails.vue';
-import { ClientTable } from 'vue-tables-2';
+import {ClientTable} from 'vue-tables-2';
+
 Vue.use(ClientTable);
 
 import MoveToken from '@/components/detail-process-instance/MoveToken.vue';
+
 Vue.component('move-token', MoveToken);
 
-import { AtomSpinner } from 'epic-spinners';
+import {AtomSpinner} from 'epic-spinners';
+
 Vue.component('atom-spinner', AtomSpinner);
 
 import SendMessage from '@/components/detail-process-instance/SendMessage.vue';
+
 Vue.component('send-message', SendMessage);
 
 import DeployTable from '@/components/misc/DeployTable.vue';
+
 Vue.component('deploy-table', DeployTable);
 
 import Report from '@/components/misc/Report.vue';
+
 Vue.component('report', Report);
 
 import SelectedTask from '@/components/tasklist/SelectedTask.vue';
+
 Vue.component('selectedTask', SelectedTask);
 
 import StartDefinitions from '@/components/StartDefinitions.vue';
+
 Vue.component('start-definitions', StartDefinitions);
 
 import TheFooter from '@/components/footer/TheFooter.vue';
+
 Vue.component('the-footer', TheFooter);
 
 import Help from '@/components/help/Help.vue';
+
 Vue.component('help', Help);
 
 import Groups from '@/components/groups/Groups.vue';
+
 Vue.component('groups', Groups);
 
 import Users from '@/components/groups/Users.vue';
+
 Vue.component('users', Users);
 
 import BootstrapVue from 'bootstrap-vue';
@@ -193,15 +215,33 @@ Vue.use(VueClipboard);
 Vue.prototype.$api = api;
 Vue.prototype.$momenttrue = moment;
 
-var vm = new Vue({
-  router,
-  api,
-  store,
-  render: h => h(App)
+import VueKeycloak from '@dsb-norge/vue-keycloak-js'
+
+Vue.use(VueKeycloak, {
+    init: {
+        // Use 'login-required' to always require authentication
+        // If using 'login-required', there is no need for the router guards in router.js
+        onLoad: 'login-required'
+    },
+    config: {
+        url: '<KEYCLOAK_AUTH_URI>',
+        clientId: '<CLIENT_ID>',
+        credentials:
+            {secret: '<CLIENT_SECRET>'},
+        realm: '<KEYCLOAK_REALM>'
+    }
+});
+
+
+let vm = new Vue({
+    router,
+    api,
+    store,
+    render: h => h(App)
 }).$mount('#app');
 
 global.vm = vm;
 
 export function apii() {
-  return api;
+    return api;
 }

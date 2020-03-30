@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@chiaweilee/vue-markdown-loader": "^2.5.0-beta",
+    "@dsb-norge/vue-keycloak-js": "^1.1.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/vue-fontawesome": "^0.1.9",
@@ -31,6 +32,7 @@
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
     "jquery": "^3.4.1",
+    "keycloak-js": "^9.0.2",
     "lodash": "^4.17.15",
     "mkdirp": "^1.0.3",
     "moment": "^2.24.0",
