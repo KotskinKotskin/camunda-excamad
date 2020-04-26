@@ -22,6 +22,10 @@ b) --prepair camunda--
 - For stand-alone camunda : http://beninkster.com/tomcat-7-and-disabling-cors
 - For embedded camunda: https://forum.camunda.org/t/camunda-cors-filter-in-spring-boot-application/5494
 
+If you are going use docker conteiners add this code to camunda container in /camunda/webapps/engine-rest/WEB-INF/web.xml
+
+" CorsFilter org.apache.catalina.filters.CorsFilter cors.allowed.origins * CorsFilter /*  "
+
 ## OR
 
 ```
