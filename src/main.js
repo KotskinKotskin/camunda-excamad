@@ -212,28 +212,36 @@ Vue.component('variables-modify', VariableModify);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('VueJsonPretty', VueJsonPretty);
 Vue.use(VueClipboard);
-Vue.prototype.$api = api;
-Vue.prototype.$momenttrue = moment;
 
-import VueKeycloak from '@dsb-norge/vue-keycloak-js'
+import VueKeycloakJs from '@dsb-norge/vue-keycloak-js'
+import axios from "axios";
 
-Vue.use(VueKeycloak, {
+Vue.use(VueKeycloakJs, {
     init: {
         // Use 'login-required' to always require authentication
         // If using 'login-required', there is no need for the router guards in router.js
-        onLoad: 'login-required'
+        onLoad: 'check-sso'
     },
     config: {
         url: '<KEYCLOAK_AUTH_URI>',
         clientId: '<CLIENT_ID>',
-        credentials:
-            {secret: '<CLIENT_SECRET>'},
         realm: '<KEYCLOAK_REALM>'
+    },
+    onReady: ()=>{
+        axios.interceptors.request.use(
+            config => {
+                config.headers.Authorization = `Bearer ${Vue.prototype.$keycloak.token}`;
+                return config
+            }, error => {
+                return Promise.reject(error)
+            }
+        );
     }
 });
+Vue.prototype.$api = api;
+Vue.prototype.$momenttrue = moment;
 
-
-let vm = new Vue({
+var vm = new Vue({
     router,
     api,
     store,

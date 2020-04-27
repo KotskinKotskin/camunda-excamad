@@ -40,241 +40,249 @@ Vue.use(Router);
 Vue.use(VueSmartRoute);
 
 const ifNotAuthenticated = (to, from, next) => {
-  if (!store.getters.isAuthenticated) {
-    next();
-    return;
-  }
-  next('/');
+    if (!store.getters.isAuthenticated) {
+        next();
+        return;
+    }
+    next('/');
 };
 
 const ifAuthenticated = (to, from, next) => {
-  if (store.getters.isAuthenticated) {
-    next();
-    return;
-  }
-  next('/login');
+    if (store.getters.isAuthenticated) {
+        next();
+        return;
+    }
+    next('/login');
 };
 
 function hasQueryParams(route) {
-  if (route.query.baseurl) {
-    return true;
-  } else return false;
+    if (route.query.baseurl) {
+        return true;
+    } else return false;
 }
 
 const router = new Router({
-  //mode: "history",
-  routes: [
-    {
-      path: '/tasklist',
-      name: 'tasklist',
-      component: TaskListView
-    },
-    {
-      path: '/variablebatch',
-      name: 'variablebatch',
-      component: VariableBatchModifyView
-    },
-    
-    {
-      path: '/migration',
-      name: 'migration',
-      component: MigrationView,
-      smart: {
-        matcher: {
-          search: [/mig/],
-          title: () => 'Migration'
-        }
-      }
-    },
-    {
-      path: '/decisiondefinitions',
-      name: 'decisiondefinitions',
-      component: DecisionDefinitionsView,
-      smart: {
-        matcher: {
-          search: [/dec/],
-          title: () => 'Decisions'
-        }
-      }
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
-      beforeEnter: ifNotAuthenticated,
-      smart: {
-        matcher: {
-          search: [/log/],
-          title: () => 'Login'
-        }
-      }
-    },
-    {
-      path: '/settings',
-      name: 'settings',
-      component: Baseurl,
-      smart: {
-        matcher: {
-          search: [/(set)/],
-          title: () => 'Settings'
-        }
-      }
-    },
-    {
-      path: '/bpmasservice/newdiagram/:diagramKey',
-      name: 'newdiagram',
-      props: true,
-      component: NewDiagramView
-    },
+    //mode: "history",
+    routes: [
+        {
+            path: '/tasklist',
+            name: 'tasklist',
+            component: TaskListView
+        },
+        {
+            path: '/variablebatch',
+            name: 'variablebatch',
+            component: VariableBatchModifyView
+        },
 
-    {
-      path: '/bpmasservice/wtf',
-      name: 'whatisthis',
-      component: WhatIsThisView
-    },
-    {
-      path: '/bpmasservice/deploy/',
-      name: 'newdiagram',
-      component: DeployView
-    },
-    {
-      path: '/bpmasservice/deployhelp/:diagramId',
-      name: 'deployhelp',
-      props: true,
-      component: DeployHelpView
-    },
-    {
-      path: '/bpmasservice/deploytable/',
-      name: 'deploytable',
-      component: DeployTableBPMaSView
-    },
-    {
-      path: '/history',
-      name: 'history',
-      component: HistoryView,
-      smart: {
-        matcher: {
-          search: [/his/],
-          title: () => 'History'
-        }
-      }
-    },
-    {
-      path: '',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/incident',
-      name: 'incident',
-      component: IncidentView,
-      smart: {
-        matcher: {
-          search: [/inc/],
-          title: () => 'Incidents'
-        }
-      }
-    },
-    {
-      path: '/stream',
-      name: 'stream',
-      component: StreamView
-    },
-    {
-      path: '/help',
-      name: 'help',
-      component: HelpView
-    },
-    {
-      path: '/oldactivity',
-      name: 'oldactivity',
-      component: OldActivityView
-    },
-    {
-      path: '/embedded',
-      name: 'embedded',
-      component: EmbeddedDiagramView
-    },
-    {
-      path: '/batch',
-      name: 'batch',
-      component: BatchView
-    },
-    {
-      path: '/ComplexMigration',
-      name: 'ComplexMigration',
-      component: ComplexMigrationView
-    },
-    {
-      path: '/processdetail/:processInstanceId',
-      name: 'processdetail',
-      props: true,
-      component: DetailProcessView
-    },
-    {
-      path: '/decisiondiagram/:decisionId',
-      name: 'decisiondiagram',
-      props: true,
-      component: DicisionDiagram
-    },
+        {
+            path: '/migration',
+            name: 'migration',
+            component: MigrationView,
+            meta: {
+                requiresAuth: true
+            },
+            smart: {
+                matcher: {
+                    search: [/mig/],
+                    title: () => 'Migration'
+                }
+            }
+        },
+        {
+            path: '/decisiondefinitions',
+            name: 'decisiondefinitions',
+            component: DecisionDefinitionsView,
+            smart: {
+                matcher: {
+                    search: [/dec/],
+                    title: () => 'Decisions'
+                }
+            }
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: LoginView,
+            beforeEnter: ifNotAuthenticated,
+            smart: {
+                matcher: {
+                    search: [/log/],
+                    title: () => 'Login'
+                }
+            }
+        },
+        {
+            path: '/settings',
+            name: 'settings',
+            component: Baseurl,
+            smart: {
+                matcher: {
+                    search: [/(set)/],
+                    title: () => 'Settings'
+                }
+            }
+        },
+        {
+            path: '/bpmasservice/newdiagram/:diagramKey',
+            name: 'newdiagram',
+            props: true,
+            component: NewDiagramView
+        },
 
-    {
-      path: '/diagram/:diagramKey',
-      name: 'diagram',
-      props: true,
-      component: DetailDiagramView
-    },
-    {
-      path: '/definition/:definitionId',
-      name: 'definition',
-      props: true,
-      component: DefinitionDetailView
-    },
-    {
-      path: '/task/:taskId',
-      name: 'task',
-      props: true,
-      component: SelectedTaskView
-    },
-    {
-      path: '/deploytable/',
-      name: 'deploytable',
-      component: DeployTableView
-    },
-    {
-      path: '/report/',
-      name: 'report',
-      component: ReportView
-    },
-    {
-      path: '/startdefinition/',
-      name: 'startdefinition',
-      component: StartDefinitionView
-    },
-    {
-      path: '/systems/',
-      name: 'systems',
-      component: SystemsView
-    },
-    {
-      path: '/groups',
-      name: 'groups',
-      component: GroupsView
-    },
-    {
-      path: '/users',
-      name: 'users',
-      component: UsersView
-    }
-  ]
+        {
+            path: '/bpmasservice/wtf',
+            name: 'whatisthis',
+            component: WhatIsThisView
+        },
+        {
+            path: '/bpmasservice/deploy/',
+            name: 'newdiagram',
+            component: DeployView
+        },
+        {
+            path: '/bpmasservice/deployhelp/:diagramId',
+            name: 'deployhelp',
+            props: true,
+            component: DeployHelpView
+        },
+        {
+            path: '/bpmasservice/deploytable/',
+            name: 'deploytable',
+            component: DeployTableBPMaSView
+        },
+        {
+            path: '/history',
+            name: 'history',
+            component: HistoryView,
+            smart: {
+                matcher: {
+                    search: [/his/],
+                    title: () => 'History'
+                }
+            }
+        },
+        {
+            path: '',
+            name: 'home',
+            component: Home
+        },
+        {
+            path: '/incident',
+            name: 'incident',
+            component: IncidentView,
+            smart: {
+                matcher: {
+                    search: [/inc/],
+                    title: () => 'Incidents'
+                }
+            }
+        },
+        {
+            path: '/stream',
+            name: 'stream',
+            component: StreamView
+        },
+        {
+            path: '/help',
+            name: 'help',
+            component: HelpView
+        },
+        {
+            path: '/oldactivity',
+            name: 'oldactivity',
+            component: OldActivityView
+        },
+        {
+            path: '/embedded',
+            name: 'embedded',
+            component: EmbeddedDiagramView
+        },
+        {
+            path: '/batch',
+            name: 'batch',
+            component: BatchView
+        },
+        {
+            path: '/ComplexMigration',
+            name: 'ComplexMigration',
+            component: ComplexMigrationView
+        },
+        {
+            path: '/processdetail/:processInstanceId',
+            name: 'processdetail',
+            props: true,
+            component: DetailProcessView
+        },
+        {
+            path: '/decisiondiagram/:decisionId',
+            name: 'decisiondiagram',
+            props: true,
+            component: DicisionDiagram
+        },
+
+        {
+            path: '/diagram/:diagramKey',
+            name: 'diagram',
+            props: true,
+            component: DetailDiagramView
+        },
+        {
+            path: '/definition/:definitionId',
+            name: 'definition',
+            props: true,
+            component: DefinitionDetailView
+        },
+        {
+            path: '/task/:taskId',
+            name: 'task',
+            props: true,
+            component: SelectedTaskView
+        },
+        {
+            path: '/deploytable/',
+            name: 'deploytable',
+            component: DeployTableView
+        },
+        {
+            path: '/report/',
+            name: 'report',
+            component: ReportView
+        },
+        {
+            path: '/startdefinition/',
+            name: 'startdefinition',
+            component: StartDefinitionView
+        },
+        {
+            path: '/systems/',
+            name: 'systems',
+            component: SystemsView
+        },
+        {
+            path: '/groups',
+            name: 'groups',
+            component: GroupsView
+        },
+        {
+            path: '/users',
+            name: 'users',
+            component: UsersView
+        }
+    ]
 });
 
 router.beforeEach((to, from, next) => {
-  if (!hasQueryParams(to) && hasQueryParams(from)) {
-    next({ name: to.name, query: from.query, params: to.params });
-  } else {
-    next();
-  }
+    if (!router.app.$keycloak.authenticated) {
+        const loginUrl = router.app.$keycloak.createLoginUrl();
+        window.location.replace(loginUrl)
+    }
+    if (!hasQueryParams(to) && hasQueryParams(from)) {
+        next({name: to.name, query: from.query, params: to.params});
+    } else {
+        next();
+    }
 });
+
 
 export default router;
