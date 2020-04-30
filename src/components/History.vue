@@ -48,19 +48,19 @@
       striped
     >
       <template slot="table-caption">Total {{totalResult}}</template>
-      <template slot="id" slot-scope="data">
+      <template v-slot:cell(id)="data">
         <router-link :to="{name:'processdetail', params:{ processInstanceId: data.item.id}}">
           <b>{{data.item.id.substring(0,5)}}...</b>
         </router-link>
       </template>
-      <template slot="superProcessInstanceId" slot-scope="data">
+      <template v-slot:cell(superProcessInstanceId)="data">
         <router-link
           :to="{name:'processdetail', params:{ processInstanceId: data.item.superProcessInstanceId}}"
         >
           <b>{{ data.item.superProcessInstanceId ? data.item.superProcessInstanceId.substring(0,5)+'...' : ''}}</b>
         </router-link>
       </template>
-      <template slot="processDefinitionKey" slot-scope="data">
+      <template v-slot:cell(processDefinitionKey)="data">
         <router-link
           :to="{name:'definition', params:{ definitionId: data.item.processDefinitionId}}"
         >{{data.item.processDefinitionKey}}</router-link>
@@ -68,12 +68,9 @@
         <small>{{data.item.processDefinitionName}}</small>
       </template>
 
-      <template slot="startTime" slot-scope="data">{{convertDateToHumanStyle(data.item.startTime)}}</template>
-      <template
-        slot="endTime"
-        slot-scope="data"
-      >{{data.item.endTime ? convertDateToHumanStyle(data.item.endTime) : ''}}</template>
-      <template slot="show_details" slot-scope="row">
+      <template v-slot:cell(startTime)="data">{{convertDateToHumanStyle(data.item.startTime)}}</template>
+      <template v-slot:cell(endTime)="data">{{data.item.endTime ? convertDateToHumanStyle(data.item.endTime) : ''}}</template>
+      <template v-slot:cell(show_details)="row">
         <b-button
           variant="link"
           size="sm"
@@ -82,7 +79,7 @@
         >{{ row.detailsShowing ? 'Hide' : 'Show'}} Details</b-button>
       </template>
 
-      <template slot="row-details" slot-scope="row">
+      <template v-slot:cell(row-details)="row">
         <DetailProcessView :processInstanceId="row.item.id"></DetailProcessView>
       </template>
     </b-table>
@@ -115,7 +112,7 @@ export default {
 
       variable: {
         variableName: "businessKey",
-        variableValue: "3-MRXJM9P0"
+        variableValue: "CD-"
       },
       processInstanceForSearch: "376497",
       searchTryed: false,
