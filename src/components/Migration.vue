@@ -17,17 +17,19 @@
     <b-table small :busy="!(ready == true)" bordered striped :filter="filter" :fields="fields" :items="processDefinitions" caption-top>
         <template slot="table-caption">
             Total on server {{totalResult}}
-            <b-pagination-nav align="center" size="sm" base-url="#" :number-of-pages="totalPage" v-model="currentPage" />
+            <div v-if="totalPage>1">
+                <b-pagination-nav align="center" size="sm" base-url="#" number-of-pages="totalPage" v-model="currentPage" />
+            </div>
         </template>
-        <template slot="show_details" slot-scope="row">
+        <template v-slot:cell(show_details)="row">
             <b-button variant="link" size="sm" @click="rowClick(row)" class="mr-2">{{ row.detailsShowing ? 'Less' : 'More'}}</b-button>
         </template>
 
-        <template slot="row-details" slot-scope="row">
+        <template v-slot:row-details="row">
             <definition-detail :definitionId="row.item.id"></definition-detail>
         </template>
 
-        <template slot="key" slot-scope="data">
+        <template v-slot:cell(key)="data">
             <router-link :to="{name:'definition', params:{ definitionId: data.item.id}}">
                 <b>{{data.item.key}}</b>
                 , v{{data.item.version}}
@@ -36,7 +38,9 @@
             <small>{{data.item.deployTimeString}}</small>
         </template>
     </b-table>
-    <b-pagination-nav align="center" size="sm" base-url="#" :number-of-pages="totalPage" v-model="currentPage" />
+    <div v-if="totalPage>1">
+        <b-pagination-nav align="center" size="sm" base-url="#" number-of-pages="totalPage" v-model="currentPage" />
+    </div>
 </div>
 </template>
 
@@ -63,28 +67,31 @@ export default {
             statistics: null,
             tag: "",
             fields: [{
-                key: "key",
-                sortable: true
-            }, "name", {
-                key: "activeCount",
-                label: "Active",
-                sortable: true
-            }, {
-                key: "incidentCount",
-                label: "Incident",
-                sortable: true
-            }, {
-                key: "humanTaskCount",
-                label: "Human task",
-                sortable: true
-            }, /* {
-                key: "endedCount",
-                label: "Finished",
-                sortable: true
-            }, */ {
-                key: "show_details",
-                label: "More"
-            }],
+                    key: "key",
+                    sortable: true
+                }, "name", {
+                    key: "activeCount",
+                    label: "Active",
+                    sortable: true
+                }, {
+                    key: "incidentCount",
+                    label: "Incident",
+                    sortable: true
+                }, {
+                    key: "humanTaskCount",
+                    label: "Human task",
+                    sortable: true
+                },
+                /* {
+                               key: "endedCount",
+                               label: "Finished",
+                               sortable: true
+                           }, */
+                {
+                    key: "show_details",
+                    label: "More"
+                }
+            ],
             migrateAll: false,
             separators: [";", ","],
             tags: [],
