@@ -79,7 +79,7 @@
         >{{ row.detailsShowing ? 'Hide' : 'Show'}} Details</b-button>
       </template>
 
-      <template v-slot:cell(row-details)="row">
+      <template v-slot:row-details="row">
         <DetailProcessView :processInstanceId="row.item.id"></DetailProcessView>
       </template>
     </b-table>
