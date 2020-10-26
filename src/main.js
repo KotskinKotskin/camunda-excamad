@@ -57,6 +57,9 @@ Vue.component('detail-jobs', DetailJobs);
 import ComplexMigration from '@/components/migration/ComplexMigration.vue';
 Vue.component('complex-migration', ComplexMigration);
 
+import BatchModification from '@/components/modification/BatchModification.vue';
+Vue.component('batch-modification', BatchModification);
+
 import VariableSingleEidt from '@/components/VariableSingleEdit.vue';
 Vue.component('variable-single-edit', VariableSingleEidt);
 

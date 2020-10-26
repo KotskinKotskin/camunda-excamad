@@ -19,6 +19,7 @@
                             <b-dropdown-item to="/startdefinition">Start processes</b-dropdown-item>
                             <b-dropdown-item to="/complexmigration">Migration</b-dropdown-item>
                             <b-dropdown-item to="/variablebatch">Variables edit</b-dropdown-item>
+                            <b-dropdown-item to="/modificationbatch">Modification</b-dropdown-item>
                         </b-nav-item-dropdown>
                         <b-nav-item-dropdown text="Decisions">
                             <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
