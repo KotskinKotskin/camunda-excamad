@@ -16,10 +16,14 @@ export function createApi() {
       "Content-Type": "application/json"
     }
   });
+ 
+  if (store.state.restPasswordEnabled == true && store.state.restAuthType == "Basic") {
 
-  if (store.state.restPasswordEnabled == true) {
     var hash = btoa(store.state.restUsername + ":" +store.state.restPassword)
     api.defaults.headers.common['Authorization'] = hash;
+  }
+  if (store.state.restPasswordEnabled == true && store.state.restAuthType == "Bearer") {
+    api.defaults.headers.common['Authorization'] = "Bearer " + store.state.restBearerToken;
   }
   return api 
 }

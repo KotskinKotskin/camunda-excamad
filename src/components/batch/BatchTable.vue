@@ -1,7 +1,7 @@
 <template>
   <div id="BatchTable">
     <b-table :fields="fields" small bordered striped :items="batches" caption-top>
-      <template slot="delete" slot-scope="row">
+      <template v-slot:cell(delete) >
         <b-button
           :disabled="!expertMode"
           variant="outline-danger"
@@ -9,8 +9,9 @@
           @click="deleteBatch(row.item.id)"
           class="mr-2"
         >Delete</b-button>
+        
       </template>
-      <template slot="suspend" slot-scope="row">
+      <template v-slot:cell(suspend) >
         <b-button
           :disabled="!expertMode"
           variant="outline-info"

@@ -18,7 +18,7 @@
                         <div class="row">
                             <div class="col-10">
                                 <div class="input-group mb-3">
-                                    <vue-bootstrap-typeahead style="width: 500px" v-on:keyup.enter="userSetBaseUrl()" v-model="privateurl" @hit="userSetBaseUrl()" :data="possibleUrl" />
+                                    <vue-bootstrap-typeahead :placeholder="privateurl" style="width: 500px" v-on:keyup.enter="userSetBaseUrl()" v-model="privateurl" @hit="userSetBaseUrl()" :data="possibleUrl" />
 
                                     <div class="input-group-append">
 
@@ -43,13 +43,20 @@
                     </b-form-checkbox>
 
                     <div v-if="enableRestPassword == true">
+                        <b-form-select v-model="selectedRestType" :options="restAuthTypes"></b-form-select>
+                        <div v-if="selectedRestType=='Basic'">
+                            <label for="username">Username</label>
+                            <b-form-input id="username" v-model="restUsername" placeholder="Enter username"></b-form-input>
+                            <label for="password">Password</label>
+                            <b-form-input id="password" v-model="restPassword" type="password" placeholder="Enter password"></b-form-input>
+                        </div>
 
-                        <label for="username">Username</label>
-                        <b-form-input id="username" v-model="restUsername" placeholder="Enter username"></b-form-input>
-                        <label for="password">Password</label>
-                        <b-form-input id="password" v-model="restPassword" type="password" placeholder="Enter password"></b-form-input>
-
+                        <div v-if="selectedRestType=='Bearer'">
+                            <label for="restToken">Token</label>
+                            <b-form-input id="restToken" v-model="restBearerToken" placeholder="Enter token"></b-form-input>
+                        </div>
                     </div>
+                    <button type="button" class="btn btn-primary" @click="userSetBaseUrl()">Save</button>
 
                 </form>
 
@@ -97,7 +104,10 @@ export default {
             possibleUrl: [],
             enableRestPassword: false,
             restUsername: null,
-            restPassword: null
+            restPassword: null,
+            restAuthTypes: ["Basic", "Bearer"],
+            selectedRestType: "Basic",
+            restBearerToken: null,
         };
     },
 
@@ -112,6 +122,14 @@ export default {
             }.bind(this),
             5000
         );
+
+        setTimeout(() => {
+            if (this.baseurl) {
+                console.log(this.baseurl)
+                this.privateurl = this.baseurl
+            }
+        }, 300);
+
     },
     watch: {
         role(newValue, oldValue) {
@@ -276,14 +294,34 @@ export default {
                     .then(() => {});
             }
             localStorage.enableRestPassword = this.enableRestPassword;
-             this.$store.commit("setRestPasswordEnabled", this.enableRestPassword);
+            this.$store.commit("setRestPasswordEnabled", this.enableRestPassword);
             if (this.enableRestPassword == true) {
-
-
+                localStorage.restBearerToken = this.restBearerToken;
                 localStorage.restPassword = this.restPassword;
                 localStorage.restUsername = this.restUsername;
+                localStorage.selectedRestType = this.selectedRestType;
                 this.$store.commit("setRestsername", this.restUsername);
                 this.$store.commit("setRestpassword", this.restPassword);
+                this.$store.commit("setRestToken", this.restBearerToken);
+                this.$store.commit("setRestAuthType", this.selectedRestType);
+                this.$store.commit("setSecureDate", new Date());
+
+                var obj = {
+                    url: this.privateurl,
+                    date: new Date(),
+                    type: this.selectedRestType,
+                    login: this.restUsername,
+                    password: this.restPassword,
+                    JWT: this.restBearerToken
+                }
+                this.$store.commit("setMoreJWT", obj)
+            } else {
+                this.$store.commit("removeJWT", this.privateurl)
+                this.$store.commit("setRestsername", null);
+                this.$store.commit("setRestpassword", null);
+                this.$store.commit("setRestToken", null);
+                this.$store.commit("setRestAuthType", null);
+                this.$store.commit("setSecureDate", null);
 
             }
 

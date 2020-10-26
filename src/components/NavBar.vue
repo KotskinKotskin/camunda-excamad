@@ -87,6 +87,17 @@
                     </b-nav-text>
                 </small>
                 <small>
+
+                    <b-nav-text v-if="authType != null || secureDate != null">
+                        <b-badge class="ml-2" pill variant="dark">
+
+                            {{authType}}
+                            {{secureDate}}
+                        </b-badge>
+                    </b-nav-text>
+
+                </small>
+                <small>
                     <b-nav-text v-if="baseurl !=''" class="ml-2">{{baseurl}}</b-nav-text>
                 </small>
 
@@ -177,6 +188,14 @@ export default {
         },
         workOnBpmAsSerivce() {
             return this.$store.state.workOnBpmasservice
+        },
+        authType() {
+            return this.$store.state.restAuthType
+        },
+        secureDate() {
+            if (this.$store.state.secureDate) {
+                return this.$momenttrue(this.$store.state.secureDate).fromNow()
+            } else return null
         },
         pillColor() {
             if (this.envortment == 'PRODUCTION') {

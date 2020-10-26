@@ -26,21 +26,61 @@ export default new Vuex.Store({
     restPasswordEnabled: false,
     restUsername: null,
     restPassword: null,
-    expertMode: true,
-    taskId: ''
+    restBearerToken: null,
+    restAuthType: null,
+    expertMode: false,
+    restAuthArray:  [],
+    taskId: '',
+    secureDate: null,
   },
   mutations: {
     setBaseUrl(state, url) {
       state.baseurl = url;
     },
+    setSecureDate(state ,date ) {
+      state.secureDate = date;
+    },
+    setMoreJWT(state, element) {
+      
+       var obj  = {
+         url: 'http://bpm.tinkoff.ru',
+         date: "",
+         type: "BASIC/JWT",
+         login:  "login",
+         password: "password",
+         JWT: "JWergergT"
+
+
+       }
+      if (state.restAuthArray.find (x =>x.url == element.url)) {
+          state.restAuthArray.splice(state.restAuthArray.map(item  => item.url).indexOf(element.url))
+      } 
+        state.restAuthArray.push(element)
+        state.secureDate = obj.date
+
+      
+      localStorage.setItem("restAuthArray", JSON.stringify(state.restAuthArray))
+    },
+    removeJWT(state, url) {
+
+        state.restAuthArray.splice(state.restAuthArray.map(item  => item.url).indexOf(url))
+        localStorage.setItem("restAuthArray", JSON.stringify(state.restAuthArray))
+    },
     setRestPasswordEnabled(state, restPasswordEnabled) {
       state.restPasswordEnabled = restPasswordEnabled;
+    
     },
     setRestsername(state, restUsername) {
       state.restUsername = restUsername;
     },
     setRestpassword(state, restPassword) {
       state.restPassword = restPassword;
+    },
+    setRestToken(state, restBearerToken) {
+      state.restBearerToken = restBearerToken;
+    },
+    setRestAuthType(state, restAuthType) {
+      state.restAuthType = restAuthType;
     },
     setBpmasserviceUrl(state, url) {
       state.bpmasserviceUrl = url;
@@ -52,7 +92,7 @@ export default new Vuex.Store({
       state.serverStatus = status;
     },
     changeExpertMode(state, expertMode) {
-      state.expertMode = true;
+      state.expertMode = expertMode;
     },
     changeTaskId(state, taskId) {
       state.taskId = taskId;
