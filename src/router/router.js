@@ -35,6 +35,7 @@ import UsersView from '@/views/UsersView.vue';
 import SystemsView from '@/views/SystemsView.vue';
 
 import VariableBatchModifyView from '@/views/VariableBatchModifyView.vue';
+import BatchModificationView from "@/views/BatchModificationView";
 
 Vue.use(Router);
 Vue.use(VueSmartRoute);
@@ -73,6 +74,11 @@ const router = new Router({
       path: '/variablebatch',
       name: 'variablebatch',
       component: VariableBatchModifyView
+    },
+    {
+      path: '/modificationbatch',
+      name: 'modificationbatch',
+      component: BatchModificationView
     },
     
     {
