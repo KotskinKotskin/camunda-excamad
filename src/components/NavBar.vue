@@ -19,6 +19,7 @@
                             <b-dropdown-item to="/startdefinition">Start processes</b-dropdown-item>
                             <b-dropdown-item to="/complexmigration">Migration</b-dropdown-item>
                             <b-dropdown-item to="/variablebatch">Variables edit</b-dropdown-item>
+                            <b-dropdown-item to="/modificationbatch">Modification</b-dropdown-item>
                         </b-nav-item-dropdown>
                         <b-nav-item-dropdown text="Decisions">
                             <b-dropdown-item to="/decisiondefinitions">Stats and definitions</b-dropdown-item>
@@ -84,6 +85,17 @@
                     <b-nav-text>
                         <b-badge class="ml-2" pill :variant="pillColor">{{envortment}}</b-badge>
                     </b-nav-text>
+                </small>
+                <small>
+
+                    <b-nav-text v-if="authType != null || secureDate != null">
+                        <b-badge class="ml-2" pill variant="dark">
+
+                            {{authType}}
+                            {{secureDate}}
+                        </b-badge>
+                    </b-nav-text>
+
                 </small>
                 <small>
                     <b-nav-text v-if="baseurl !=''" class="ml-2">{{baseurl}}</b-nav-text>
@@ -176,6 +188,14 @@ export default {
         },
         workOnBpmAsSerivce() {
             return this.$store.state.workOnBpmasservice
+        },
+        authType() {
+            return this.$store.state.restAuthType
+        },
+        secureDate() {
+            if (this.$store.state.secureDate) {
+                return this.$momenttrue(this.$store.state.secureDate).fromNow()
+            } else return null
         },
         pillColor() {
             if (this.envortment == 'PRODUCTION') {
