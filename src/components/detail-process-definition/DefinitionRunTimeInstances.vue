@@ -18,6 +18,10 @@
         />
       </b-input-group>
       <b-button @click="initialGetProcessInstances" variant="success">Search</b-button>
+      <b-button class="ml-2" v-if="this.selected === 'activityId' && this.variable"
+                @click="downloadBusinessKeys"
+                variant="outline-primary">Get all businessKeys
+      </b-button>
       <b-button @click="clear" variant="link">Clear</b-button>
     </b-form>
     <small>Total: {{runtimeCount}}, Search result: {{searchCount}}</small>
@@ -221,6 +225,31 @@ export default {
     },
     calculateTotalPage() {
       this.totalPage = Math.round(this.runtimeCount / this.maxResult) + 1;
+    },
+    downloadBusinessKeys() {
+      this.$api()
+      .post("/process-instance", {
+        processDefinitionId: this.definitionId,
+        activityIdIn: [this.variable]
+      })
+      .then(response => {
+        const businessKeys = response.data.map(it => it.businessKey).join('\n')
+        const url = window.URL.createObjectURL(new Blob([businessKeys]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${this.variable}-businessKeys`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+      .catch(error => {
+        this.$notify({
+          group: "foo",
+          title: 'Cannot get process business keys for selected activity',
+          text: error,
+          type: "error"
+        });
+      })
     }
   }
 };

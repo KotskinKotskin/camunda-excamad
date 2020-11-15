@@ -1,5 +1,15 @@
 <template>
   <div id="DefinitionsIncidents">
+    <b-form inline>
+      <label class="mr-2">Failed activity</label>
+      <b-input v-model="selectedActivity" class="mb-2 mr-sm-2 mb-sm-0"/>
+      <b-button @click="getDefinitionsIncidents" variant="success">Search</b-button>
+      <b-button class="ml-2" v-if="this.selectedActivity"
+                @click="downloadBusinessKeys"
+                variant="outline-primary">Get businessKeys
+      </b-button>
+      <b-button @click="clear" variant="link">Clear</b-button>
+    </b-form>
     <small>Total {{incidents.length}}</small>
     <table class="table table-striped table-sm">
       <thead>
@@ -34,11 +44,18 @@
 <script>
 export default {
   name: "DefinitionIncidents",
-  props: ["definitionId"],
+  props: ["definitionId", "clickedActivity"],
   data() {
     return {
-      incidents: []
+      incidents: [],
+      selectedActivity: null
     };
+  },
+  watch: {
+    clickedActivity() {
+      this.selectedActivity = this.clickedActivity
+      this.getDefinitionsIncidents()
+    }
   },
   mounted() {
     this.getDefinitionsIncidents();
@@ -46,7 +63,7 @@ export default {
   methods: {
     getDefinitionsIncidents() {
       this.$api()
-        .get("/incident?processDefinitionId=" + this.definitionId)
+        .get(`/incident?processDefinitionId=${this.definitionId}${this.selectedActivity ? `&activityId=${this.selectedActivity}` : ''}`)
         .then(response => {
           this.incidents = response.data;
         });
@@ -60,6 +77,36 @@ export default {
 
       var output = rel + " (" + cal + ") ";
       return output;
+    },
+    downloadBusinessKeys() {
+      this.$api()
+      .post("/process-instance", {
+        processDefinitionId: this.definitionId,
+        activityIdIn: [this.selectedActivity],
+        incidentType: 'failedJob'
+      })
+      .then(response => {
+        const businessKeys = response.data.map(it => it.businessKey).join('\n')
+        const url = window.URL.createObjectURL(new Blob([businessKeys]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${this.selectedActivity}-incidents`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+      .catch(error => {
+        this.$notify({
+          group: "foo",
+          title: 'Cannot get filedJob process business keys for selected activity',
+          text: error,
+          type: "error"
+        });
+      });
+    },
+    clear() {
+      this.selectedActivity = null
+      this.getDefinitionsIncidents()
     }
   }
 };
