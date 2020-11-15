@@ -104,7 +104,7 @@
     </b-card>
     <b-card title="4. Run modification">
       <div class="form-group">
-        <b-btn @click="runModification">Run</b-btn>
+        <b-btn v-bind:disabled="isRunDisabled" @click="runModification">Run</b-btn>
       </div>
     </b-card>
   </div>
@@ -143,7 +143,8 @@ export default {
       onlyIncidents: false,
       byBusinessKey: false,
       businessKeysText: "",
-      request: null
+      request: null,
+      isRunDisabled: false
     }
   },
   mounted() {
@@ -156,6 +157,9 @@ export default {
       this.processDefinition.id = ""
       this.processDefinition.xml = ""
       this.processDefinition.statistics = []
+    },
+    request(newValue, oldValue) {
+      this.isRunDisabled = false
     }
   },
   methods: {
@@ -234,6 +238,7 @@ export default {
           text: "Modification batch created",
           type: "success"
         });
+        this.isRunDisabled = true
       })
       .catch(error => {
         this.$notify({
