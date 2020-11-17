@@ -31,6 +31,12 @@ If you are going use docker conteiners add this code to camunda container in /ca
 ```
      docker run -d -p 80:80 kotovdenis/excamad:latest
 ```
+# 0.1 Default camunda rest endpoint
+
+For embedded camunda - ${baseurl}/rest
+For standalone camunda - ${baserurl}/engine-rest
+
+Excamad work with default rest api, not cockpit api. So you havent auth user in your context.
 
 # 1. Features
 
