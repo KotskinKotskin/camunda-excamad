@@ -21,7 +21,9 @@
           ></definition-runtime-instances>
         </b-tab>
         <b-tab title="Runtime incidents">
-          <definition-incidents :definitionId="definitionId"></definition-incidents>
+          <definition-incidents :definitionId="definitionId"
+                                :clickedActivity="clickedActivity">
+          </definition-incidents>
         </b-tab>
         <b-tab title="History instances">
           <definition-history-instances :definitionId="definitionId"></definition-history-instances>
