@@ -161,6 +161,13 @@ export default {
         .get("/history/process-instance/" + this.processInstanceId)
         .then(response => {
           this.processDefinition = response.data.processDefinitionId;
+        })
+        .catch(() => {
+          this.$api()
+          .get("/process-instance/" + this.processInstanceId)
+          .then(response => {
+            this.processDefinition = response.data.definitionId;
+          })
         });
     },
     calculateWaitAndActivity() {

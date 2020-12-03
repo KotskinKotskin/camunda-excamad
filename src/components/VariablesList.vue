@@ -53,8 +53,7 @@ export default {
       this.variables = [];
       this.$api()
         .get(
-          "/history/variable-instance?processInstanceId=" +
-          this.processInstanceId
+          `/variable-instance?processInstanceIdIn=${this.processInstanceId}`
         )
         .then(response => {
           this.variables = response.data;
