@@ -385,7 +385,7 @@ export default {
           }
           if (activity.activityType == "callActivity") {
             var baseurl =
-              process.env.NODE_ENV === "production" ? "/camunda-excamad/" : "/";
+              process.env.NODE_ENV === "production" ? "/" : "/";
             var url =
               baseurl + "#/processdetail/" + activity.calledProcessInstanceId;
             var htmllink =
