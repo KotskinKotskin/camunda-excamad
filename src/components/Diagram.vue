@@ -80,6 +80,7 @@ import Vue from "vue";
 import axios from "axios";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowsAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
+import _orderBy from "lodash/orderBy";
 library.add(faArrowsAlt);
 library.add(faEdit);
 Vue.use(fullscreen);
@@ -357,7 +358,7 @@ export default {
       this.elementRegistryVue = elementRegistry;
       canvas.zoom("fit-viewport");
 
-      this.activityHistory.forEach(activity => {
+      _orderBy(this.activityHistory, (activity) => activity.activityType !== "subProcess").forEach(activity => {
         try {
           if (!activity.activityId.includes("#multiInstanceBody")) {
             var shape = elementRegistry.get(activity.activityId);
