@@ -372,7 +372,11 @@ export default {
                 html: '<div class="timer"> ' + activity.endTime + "</div"
               });
             }
-            var $overlayHtml = $('<div class="highlight-overlay">').css({
+
+            let $highlightType = activity.activityType === "subProcess" || activity.activityType === "adHocSubProcess"
+                ? 'highlight-overlay-light'
+                : 'highlight-overlay'
+            let $overlayHtml = $('<div class="' + $highlightType + '">').css({
               width: shape.width,
               height: shape.height
             });
@@ -614,12 +618,21 @@ body,
 .buttons a.active {
   opacity: 1;
 }
+
 .highlight-overlay {
   background-color: #15b427; /* color elements as green */
   opacity: 0.5;
   border-radius: 13px;
   pointer-events: none; /* no pointer events, allows clicking through onto the element */
 }
+
+.highlight-overlay-light {
+  background-color: #15b427; /* color border as green */
+  opacity: 0.1;
+  border-radius: 13px;
+  pointer-events: none; /* no pointer events, allows clicking through onto the element */
+}
+
 .highlight-migration-select-overlay {
   background-color: rgb(255, 116, 0); /* color elements as green */
   opacity: 0.5;
