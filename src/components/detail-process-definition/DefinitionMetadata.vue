@@ -17,7 +17,6 @@
           <start-definition class="mb-2 text-left" :definitionId="definitionId"></start-definition>
           <b-btn
             v-b-tooltip.hover
-            :disabled="!expertMode()"
             title="This process definition will be suspended, so that it will not be possible to start new process instances based on this process definition."
             @click="suspendCurrentId()"
             size="sm"
@@ -30,7 +29,6 @@
 
           <b-form-checkbox
             v-b-tooltip.hover
-            :disabled="!expertMode()"
             class="pull-right"
             title="All existing instance will suspend"
             size="sm"
@@ -120,9 +118,6 @@ export default {
             element.historyCount = response.data.count;
           });
       });
-    },
-    expertMode() {
-      return this.$store.state.expertMode;
     },
 
     getVersionsByKey() {

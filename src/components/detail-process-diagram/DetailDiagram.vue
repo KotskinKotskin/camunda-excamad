@@ -2,7 +2,7 @@
   <div>
     <h4>Definition {{diagramKey}}</h4>
     <b-btn
-      @click="changeExpertMode"
+      @click="changeEditMode"
       :pressed="editMode"
       size="sm"
       variant="outline-info"
@@ -61,7 +61,7 @@ export default {
         return this.processDefinitionId;
       } else return null;
     },
-    changeExpertMode() {
+    changeEditMode() {
       this.editMode = !this.editMode;
       this.componentKey = this.componentKey + 1;
     },

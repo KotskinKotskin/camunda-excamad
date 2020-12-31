@@ -119,9 +119,6 @@ export default {
     }, 200);
   },
   computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    },
     baseurl() {
       return this.$store.state.baseurl;
     }

@@ -15,7 +15,7 @@
           <option v-bind:key="item" v-for="item in possibleActivitySimpleArray">{{ item }}</option>
         </datalist>
 
-        <b-button @click="moveToken" :disabled="!expertMode" variant="outline-danger">Move</b-button>
+        <b-button @click="moveToken" variant="outline-danger">Move</b-button>
         <br />
       </b-form>
       <small>{{calculateHelp()}}</small>
@@ -53,9 +53,6 @@ export default {
     },
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
-    },
-    expertMode() {
-      return this.$store.state.expertMode;
     }
   },
   mounted() {

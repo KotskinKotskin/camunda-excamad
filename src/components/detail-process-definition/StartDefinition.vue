@@ -149,9 +149,6 @@ export default {
     }
   },
   methods: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    },
     getStartFormVariables() {
       this.$api().get("/process-definition/" + this.definitionId + "/form-variables").then(response => {
         if (response.data != null) {

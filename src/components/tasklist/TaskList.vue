@@ -24,7 +24,6 @@
         </small>
       </b-card>
       <b-btn
-        :disabled="!expertMode"
         class="mb-2"
         size="sm"
         variant="outline-warning"
@@ -102,9 +101,6 @@ export default {
   computed: {
     taskId() {
       return this.$store.state.taskId;
-    },
-    expertMode() {
-      return this.$store.state.expertMode;
     },
     profile() {
       return this.$store.getters.getProfile;

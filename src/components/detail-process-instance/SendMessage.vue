@@ -8,7 +8,7 @@
           :options="messageList"
           class="mb-2 mr-sm-2 mb-sm-0"
         />
-        <b-button @click="sendMessage" :disabled="!expertMode" variant="outline-danger">Send</b-button>
+        <b-button @click="sendMessage" variant="outline-danger">Send</b-button>
         <br>
       </b-form>
     </b-card>
@@ -35,9 +35,6 @@ export default {
     },
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
-    },
-    expertMode() {
-      return this.$store.state.expertMode;
     }
   },
   mounted() {

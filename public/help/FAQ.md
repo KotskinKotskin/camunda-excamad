@@ -34,12 +34,6 @@ Take REST URL of project (like this _http://bpm-cloud.tinkoff.ru/sme-rko-origina
 
 ---
 
-### Why some buttons is disabled?
-
-You must be _expert_ to enable it.
-
----
-
 ### Why i cannot connect to camunda?
 
 - Wrong url.

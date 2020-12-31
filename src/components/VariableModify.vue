@@ -261,11 +261,6 @@ export default {
           });
         });
     }
-  },
-  computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    }
   }
 };
 </script>

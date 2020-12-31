@@ -19,7 +19,6 @@
       <b-btn
         size="sm"
         v-if="clickedElement !=null"
-        :disabled="!expertMode()"
         :variant="getVariant()"
         @click="suspendCurrentJobDefinition()"
       >
@@ -28,7 +27,6 @@
       </b-btn>
       <b-form-checkbox
         v-b-tooltip.hover
-        :disabled="!expertMode()"
         class="ml-3"
         title="When the value is set to true, all jobs of the job definitions with the given process definition id will be activated or suspended and when the value is set to false, the suspension state of all jobs of the job definitions with the given process definition id will not be updated."
         size="sm"
@@ -64,9 +62,6 @@ export default {
     this.getJobs();
   },
   methods: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    },
     PassDiagramClick(payload) {
       this.clickedElement = payload;
       this.clickedJobDefinition = {};

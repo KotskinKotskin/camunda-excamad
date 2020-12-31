@@ -77,18 +77,13 @@ export default {
       currentProcessActivityToShowArray: []
     };
   },
-  computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    }
-  },
 
   mounted() {
     this.loadData();
   },
   methods: {
     checkButtons: function (index) {
-      if (index == 0 && this.expertMode == true) {
+      if (index == 0) {
         return true;
       } else return false;
     },

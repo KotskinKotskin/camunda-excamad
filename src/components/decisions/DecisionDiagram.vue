@@ -26,7 +26,7 @@
       <hr>
       <deploy
         class="mb-2"
-        v-if="(newSavedXML && wasCommited) || expertMode "
+        v-if="(newSavedXML && wasCommited) || editMode "
         extension="dmn"
         :diagramInXML="newSavedXML"
       ></deploy>
@@ -69,10 +69,6 @@ export default {
       var lastIndex = prjName.lastIndexOf("/");
       prjName = prjName.substring(lastIndex + 1, prjName.length);
       return prjName;
-    },
-    expertMode() {
-      //
-      return this.$store.state.expertMode;
     },
     pathToFile() {
       return this.projectName + "/src/main/resources" + this.decisionMeta.resource.replace("BOOT-INF/classes", "");

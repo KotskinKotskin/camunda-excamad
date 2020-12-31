@@ -5,7 +5,7 @@
 
   ***
 
-* Update decision (**expert mode**). You need access to current project source in stash to use this function.
+* Update decision. You need access to current project source in stash to use this function.
   ![](help/decision_update.gif)
 
   ---

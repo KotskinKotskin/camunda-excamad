@@ -3,7 +3,6 @@
     <b-table :fields="fields" small bordered striped :items="batches" caption-top>
       <template v-slot:cell(delete) >
         <b-button
-          :disabled="!expertMode"
           variant="outline-danger"
           size="sm"
           @click="deleteBatch(row.item.id)"
@@ -13,7 +12,6 @@
       </template>
       <template v-slot:cell(suspend) >
         <b-button
-          :disabled="!expertMode"
           variant="outline-info"
           size="sm"
           @click="suspendBatch(row.item)"
@@ -37,11 +35,6 @@ export default {
         { key: "delete", label: "Delete" },
 
       ]
-    }
-  },
-  computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
     }
   },
   mounted() {

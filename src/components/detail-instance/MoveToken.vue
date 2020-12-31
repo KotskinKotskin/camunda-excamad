@@ -14,7 +14,7 @@
           class="mb-2 mr-sm-2 mb-sm-0"
         />
 
-        <b-button @click="moveToken" :disabled="!expertMode" variant="outline-danger">Move</b-button>
+        <b-button @click="moveToken" variant="outline-danger">Move</b-button>
         <br />
       </b-form>
       <small>{{calculateHelp()}}</small>
@@ -52,9 +52,6 @@ export default {
   computed: {
     profile() {
       return this.$store.getters.getProfile;
-    },
-    expertMode() {
-      return this.$store.state.expertMode;
     }
   },
   mounted() {

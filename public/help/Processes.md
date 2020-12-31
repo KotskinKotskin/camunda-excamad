@@ -5,12 +5,12 @@
 
   ***
 
-- Migrate process instances between process definition verions (**expert mode**)
+- Migrate process instances between process definition versions
   ![](help/migrate.gif)
 
   ***
 
-- Bulk replace and add variables in process instances (**expert mode**)
+- Bulk replace and add variables in process instances
   ![](help/variables.gif)
   ***
 

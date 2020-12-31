@@ -1,6 +1,6 @@
 <template>
   <div id="editVariable">
-    <b-button :disabled="!expertMode" size="lg" variant="link" v-b-modal="'modal'+variableName">
+    <b-button size="lg" variant="link" v-b-modal="'modal'+variableName">
       <font-awesome-icon icon="pen-square"/>
     </b-button>
 
@@ -41,11 +41,6 @@ export default {
   },
   mounted() {
     this.variableNewValue = this.variableOldValue
-  },
-  computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    }
   },
   methods: {
     modifyVariable() {

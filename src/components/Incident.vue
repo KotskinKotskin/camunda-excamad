@@ -31,7 +31,6 @@
         <b-btn
           class="ml-1"
           variant="danger"
-          :disabled="!expertMode"
           @click="healAndRetry"
         >Rerun all activities</b-btn>
       </b-form>
@@ -86,7 +85,6 @@
                     </td>
                     <td style="word-break:break-all;">
                       <b-btn
-                        :disabled="!expertMode"
                         size="sm"
                         class="ml-2"
                         variant="warning"
@@ -316,9 +314,6 @@ export default {
     this.getAllIncidents();
   },
   computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    },
     filterFailedActivity() {
       var array = [];
       this.incidents.forEach(element => {

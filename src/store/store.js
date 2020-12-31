@@ -28,7 +28,6 @@ export default new Vuex.Store({
     restPassword: null,
     restBearerToken: null,
     restAuthType: null,
-    expertMode: false,
     restAuthArray:  [],
     taskId: '',
     secureDate: null,
@@ -90,9 +89,6 @@ export default new Vuex.Store({
     },
     changeServerStatus(state, status) {
       state.serverStatus = status;
-    },
-    changeExpertMode(state, expertMode) {
-      state.expertMode = expertMode;
     },
     changeTaskId(state, taskId) {
       state.taskId = taskId;

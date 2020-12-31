@@ -1,16 +1,16 @@
 ### Process instance page used to
 
-- Terminate instance (**expert mode**)
+- Terminate instance
   ![](help/terminate.gif)
 
 ---
 
-- Suspend\unsuspend instance (**expert mode**)
+- Suspend\unsuspend instance
   ![](help/suspend_instance.gif)
 
 ---
 
-- Skip current task (**expert mode**)
+- Skip current task
   ![](help/skip_task.gif)
 
 ---
@@ -25,17 +25,17 @@
 
 ---
 
-- Move token (**expert mode**)
+- Move token
   ![](help/move_token.gif)
 
 ---
 
-- Send message (**expert mode**)
+- Send message
   ![](help/send_message.gif)
 
 ---
 
-- Execute jobs (**expert mode**)
+- Execute jobs
   ![](help/execute_jobs.gif)
 
 ---

@@ -10,12 +10,12 @@
 
 ---
 
-- Suspend\unsuspend defintion (**expert mode**)
+- Suspend\unsuspend definition
   ![](help/suspend_defintion.gif)
 
 ---
 
-- Suspend\unsuspend job (**expert mode**)
+- Suspend\unsuspend job
   ![](help/suspend_job.gif)
 
 ---

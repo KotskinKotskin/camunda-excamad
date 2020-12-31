@@ -59,9 +59,6 @@
                             </b-dropdown-item-button>
                             <b-dropdown-divider></b-dropdown-divider>
                             <b-dropdown-item-button @click="clear()">Clear</b-dropdown-item-button>
-                            <b-nav-form>
-                                <b-button v-show="secretButtonPressed" :pressed.sync="expertCurrent" size="sm" @click="commitExpertMode" variant="outline-info">Expert Mode</b-button>
-                            </b-nav-form>
                             <input class="hide" v-on:keyup.right="setVisible" />
                         </b-nav-item-dropdown>
 
@@ -148,12 +145,8 @@ export default {
             substringForTest: TESTSUBSTRING,
             statusDate: '',
             envortment: '',
-            expertCurrent: '',
             secretButtonPressed: false
         }
-    },
-    created() {
-        this.$store.commit('changeExpertMode', localStorage.expertMode1 == 'true')
     },
     mounted() {
         if (localStorage.lastUrl) {
@@ -219,9 +212,6 @@ export default {
         envortmentFromStore() {
             return this.$store.state.envortment
         },
-        expertModeFromStore() {
-            return this.$store.state.expertMode
-        },
         isAuthenticated() {
             return this.$store.getters.isAuthenticated
         },
@@ -230,7 +220,6 @@ export default {
         }
     },
     watch: {
-        expertCurrent(newExpertCurrent) {},
         baseurl() {
             this.getList()
         }
@@ -360,19 +349,6 @@ export default {
                     })
                     .then(() => {})
             }
-        },
-        commitExpertMode() {
-            this.$notify({
-                group: 'foo',
-                title: 'Expert mode on',
-                text: 'Right now ' + this.expertCurrent,
-                type: 'info'
-            })
-            setTimeout(() => {
-                localStorage.expertMode1 = this.expertCurrent
-                this.$store.commit('changeExpertMode', this.expertCurrent)
-            }, 100)
-            //
         },
         setVisible() {
             this.secretButtonPressed = true

@@ -115,10 +115,10 @@ Excamad is servless app - all api calls made from your browser. You need host pr
 
 # 3. Install
 
-    npm insall
+    npm install
     -
     npm run build  // produce files in dist/
     OR
     npm run serve  // start develop server
 
-You need write global variables in **seetings.js** and **camundasUrl.js**. Don`t foget turn on "Expert mode" in "Systems" to enable danger commands.
+You need write global variables in **settings.js** and **camundasUrl.js**.

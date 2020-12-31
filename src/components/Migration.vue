@@ -123,9 +123,6 @@ export default {
             return {
                 processDefinitionId: this.processDefinitionFrom
             };
-        },
-        expertMode() {
-            return this.$store.state.expertMode;
         }
     },
     watch: {

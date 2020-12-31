@@ -8,7 +8,6 @@
               v-b-tooltip.hover
               title="Terminate instance"
               @click="deleteInstance"
-              :disabled="!expertMode()"
               variant="danger"
               size="sm"
             >X</b-btn>
@@ -22,7 +21,6 @@
           <b-btn
             class="mt-3"
             v-b-tooltip.hover
-            :disabled="!expertMode()"
             title="Suspending a process instance means that the execution is stopped, so the token state will not change. However, actions that do not change token state, like setting or removing variables, etc. will still succeed.
 
 Tasks belonging to this process instance will also be suspended. This means that any actions influencing the tasks' lifecycles will fail"
@@ -164,9 +162,6 @@ export default {
           });
           this.getProcessDetail();
         });
-    },
-    expertMode() {
-      return this.$store.state.expertMode;
     },
     getProcessDetail() {
       this.$api()

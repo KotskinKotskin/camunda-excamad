@@ -159,7 +159,7 @@ export default {
       });
     },
 
-    changeExpertMode() {
+    changeEditMode() {
       this.wasBuiled = false;
       this.editMode = !this.editMode;
       this.componentKey = this.componentKey + 1;

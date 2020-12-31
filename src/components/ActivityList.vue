@@ -41,7 +41,6 @@
             v-model="historyitem.isSelectedFrom"
             v-if="processInstanceItem.isActive && historyitem.endTime ==null "
             type="checkbox"
-            :disabled="!expertMode"
             @click="onClickSetActivityToMigrate(historyitem)"
           >
         </div>
@@ -80,14 +79,12 @@
           <input
             v-model="historyitem.isSelectedTo"
             type="checkbox"
-            :disabled="!expertMode"
             v-if="processInstanceItem.isActive"
             @click="onClickSetActivityToMigrate(historyitem)"
           >
           <small>
             <b-btn
               size="sm"
-              :disabled="!expertMode"
               @click="moveTokenOnActivity"
               variant="secondary"
               v-if="historyitem.isSelectedTo && selectedActivityTo==historyitem.activityId "
@@ -131,11 +128,6 @@ export default {
       selectedActivityFrom: "",
       selectedActivityTo: ""
     };
-  },
-  computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    }
   },
   mounted() {
     setTimeout(() => {
