@@ -1,0 +1,111 @@
+{
+  "name": "ex-cam-ad",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@chiaweilee/vue-markdown-loader": "^2.5.0-beta",
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/vue-fontawesome": "^0.1.9",
+    "@johmun/vue-tags-input": "^2.1.0",
+    "axios": "^0.21.1",
+    "babel-eslint": "^10.1.0",
+    "bootstrap-vue": "^2.12.0",
+    "bpmn-js": "^6.4.2",
+    "bpmn-js-bpmnlint": "^0.15.0",
+    "bpmn-js-properties-panel": "^0.33.2",
+    "bpmn-moddle": "^6.0.5",
+    "bpmnlint": "^6.4.0",
+    "bpmnlint-loader": "^0.1.4",
+    "camunda-bpm-sdk-js": "^7.7.4-SNAPSHOT",
+    "camunda-bpmn-moddle": "^4.4.0",
+    "camunda-dmn-moddle": "^1.0.0",
+    "dmn-js": "^8.2.0",
+    "dmn-moddle": "^9.0.0",
+    "epic-spinners": "^1.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "jquery": "^3.5.0",
+    "lodash": "^4.17.15",
+    "mkdirp": "^1.0.4",
+    "moment": "^2.24.0",
+    "string-to-stream": "^3.0.1",
+    "v-suggest": "^2.2.0",
+    "vfg-field-array": "0.0.3",
+    "vue": "^2.6.11",
+    "vue-bootstrap-datetimepicker": "^5.0.1",
+    "vue-bootstrap-typeahead": "^0.2.6",
+    "vue-clipboard2": "^0.3.1",
+    "vue-cute-timeline": "^1.2.8",
+    "vue-datepicker-local": "^1.0.19",
+    "vue-form-generator": "^2.3.4",
+    "vue-friendly-iframe": "^0.17.0",
+    "vue-fullscreen": "^2.1.6",
+    "vue-google-charts": "^0.3.2",
+    "vue-json-edit": "^1.4.3",
+    "vue-json-editor": "^1.4.0",
+    "vue-json-pretty": "^1.6.3",
+    "vue-markdown": "^2.2.4",
+    "vue-moment": "^4.1.0",
+    "vue-notification": "^1.3.20",
+    "vue-progressbar": "^0.7.5",
+    "vue-router": "^3.1.6",
+    "vue-scrollto": "^2.18.1",
+    "vue-shortkey": "^3.1.7",
+    "vue-simple-suggest": "^1.10.1",
+    "vue-smart-route": "^0.3.2",
+    "vue-tables-2": "^2.0.21",
+    "vue-top-progress": "^0.7.0",
+    "vue2vis": "0.0.18",
+    "vuex": "^3.2.0",
+    "vuex-persistedstate": "^3.0.1",
+    "wrench": "^1.5.9"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "^7.8.7",
+    "@vue/cli-plugin-babel": "^4.3.1",
+    "@vue/cli-plugin-eslint": "^4.3.1",
+    "@vue/cli-service": "^4.3.1",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "node-sass": "^4.14.0",
+    "sass-loader": "^8.0.2",
+    "vue-cli-plugin-bootstrap-vue": "^0.6.0",
+    "vue-markdown-loader": "^2.4.1",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-unused-vars": "off",
+      "no-empty": "off",
+      "no-undef": "off",
+      "vue/no-use-v-if-with-v-for": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
