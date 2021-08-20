@@ -37,6 +37,10 @@
                         </small>
                         </b-form-group>
                     </div>
+      
+                    <b-form-checkbox id="process-definition-couters-loading-checkbox" v-model="metadataCountersEnabled">
+                        Enable process definition counters loading
+                    </b-form-checkbox>
 
                     <b-form-checkbox id="checkbox-1" v-model="enableRestPassword">
                         Enable rest authentication
@@ -108,6 +112,7 @@ export default {
             restAuthTypes: ["Basic", "Bearer"],
             selectedRestType: "Basic",
             restBearerToken: null,
+            metadataCountersEnabled: localStorage.getItem("metadataCountersEnabled") != "false"
         };
     },
 
@@ -324,7 +329,8 @@ export default {
                 this.$store.commit("setSecureDate", null);
 
             }
-
+            localStorage.setItem("metadataCountersEnabled", this.metadataCountersEnabled);
+            this.$store.commit("metadataCountersEnabled", this.metadataCountersEnabled);
         },
         setBaseUrl() {
             this.$store.commit("setBaseUrl", this.privateurl);

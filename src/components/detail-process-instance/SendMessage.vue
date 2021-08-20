@@ -61,18 +61,45 @@ export default {
       ) {
         definitions.rootElements.forEach(element => {
           if (element.$type == "bpmn:Process" && element.isExecutable == true) {
-            element.flowElements.forEach(flowelement => {
-              if (
-                flowelement.$type &&
-                flowelement.messageRef &&
-                flowelement.messageRef.name
-              ) {
-                vm.messageList.push(flowelement.messageRef.name);
-              }
-            });
+            addEventsFromElement(element);
           }
         });
       });
+
+      function addEventsFromElement(flowElement) {
+        flowElement.flowElements.forEach(flowelement => {
+          if (flowelement.$type === "bpmn:SubProcess") {
+            addEventsFromElement(flowelement);
+          }
+
+          const newEvents = getAssignedEventsNames(flowelement)
+              .filter(event => !!event)
+              .filter(event => vm.messageList.indexOf(event) === -1);
+
+          if (newEvents.length) {
+            vm.messageList.push(...newEvents);
+          }
+        });
+      }
+
+      function getAssignedEventsNames(flowelement) {
+        if (flowelement.$type &&
+            flowelement.messageRef &&
+            flowelement.messageRef.name) {
+          return [flowelement.messageRef.name];
+        }
+
+        if (flowelement.$type === "bpmn:BoundaryEvent" ||
+            flowelement.$type === "bpmn:StartEvent") {
+          return flowelement.eventDefinitions
+              && flowelement.eventDefinitions.map(event =>
+              event.messageRef &&
+              event.messageRef.name
+          ) || [];
+        }
+
+        return [];
+      }
     },
     sendMessage() {
       var sendObj = {

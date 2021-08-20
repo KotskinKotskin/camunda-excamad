@@ -17,6 +17,7 @@
           <start-definition class="mb-2 text-left" :definitionId="definitionId"></start-definition>
           <b-btn
             v-b-tooltip.hover
+
             title="This process definition will be suspended, so that it will not be possible to start new process instances based on this process definition."
             @click="suspendCurrentId()"
             size="sm"
@@ -119,7 +120,6 @@ export default {
           });
       });
     },
-
     getVersionsByKey() {
       this.$api()
         .get("/process-definition?key=" + this.definitionMetadata.key)
@@ -145,6 +145,10 @@ export default {
           this.$set(this.definitionMetadata, "totalHistoryCount", 0);
           this.$set(this.definitionMetadata, "currentHistoryCount", 0);
           this.$set(this.definitionMetadata, "incidentsCount", null);
+          if (localStorage.getItem("metadataCountersEnabled") === "false") {
+            console.log("metadataCountersEnabled in localStorage is 'false', don't fetch metadata counts");
+            return;
+          }
           this.$api()
             .get("/deployment/" + this.definitionMetadata.deploymentId)
             .then(response => {

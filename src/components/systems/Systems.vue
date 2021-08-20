@@ -16,7 +16,7 @@
       small
       :items="items"
     >
-      <template slot="favorite" slot-scope="row">
+      <template #cell(favorite)="row">
         <b-button :pressed="row.value" size="sm" active variant="light" @click="setFavorite(row)">
           <font-awesome-icon icon="star" />
         </b-button>

@@ -26,9 +26,10 @@
     </b-form>
     <small>Total: {{runtimeCount}}, Search result: {{searchCount}}</small>
 
-    <table class="table table-striped table-sm">
+    <table class="table table-striped table-sm indexed">
       <thead>
         <tr>
+          <th>#</th>
           <th>Suspended</th>
           <th>Id</th>
           <th>Business key</th>
@@ -36,8 +37,9 @@
       </thead>
       <tbody>
         <tr :key="item.id" v-for="item in processInstances">
+          <td></td>
           <td>{{item.suspended}}</td>
-          <router-link :to="{name:'processdetail', params:{ processInstanceId: item.id}}">
+          <router-link :to="{name:'processdetail', params:{ processInstanceId: item.id}, query: {baseurl}}">
             <b>{{item.id}}</b>
           </router-link>
           <td>{{item.businessKey}}</td>
@@ -251,9 +253,22 @@ export default {
         });
       })
     }
+  },
+  computed: {
+    baseurl() {
+      return this.$store.state.baseurl;
+    }
   }
 };
 </script>
 
 <style>
+.indexed {
+  counter-reset: serial-number; /* Set the serial number counter to 0 */
+}
+
+.indexed td:first-child:before {
+  counter-increment: serial-number; /* Increment the serial number counter */
+  content: counter(serial-number); /* Display the counter */
+}
 </style>

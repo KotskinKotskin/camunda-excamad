@@ -13,7 +13,7 @@
             >X</b-btn>
             {{processDetail.id}}
             <router-link
-              :to="{name:'definition', params:{ definitionId: definitionDetail.id}}"
+              :to="{name:'definition', params:{ definitionId: definitionDetail.id}, query: {baseurl}}"
             >{{ definitionDetail.key }}({{definitionDetail.version}})</router-link>
           </h3>
         </b-col>
@@ -248,6 +248,11 @@ export default {
       });
     }
     this.getProcessDetail();
+  },
+  computed: {
+    baseurl() {
+      return this.$store.state.baseurl;
+    }
   }
 };
 </script>

@@ -49,20 +49,20 @@
     >
       <template slot="table-caption">Total {{totalResult}}</template>
       <template v-slot:cell(id)="data">
-        <router-link :to="{name:'processdetail', params:{ processInstanceId: data.item.id}}">
+        <router-link :to="{name:'processdetail', params:{ processInstanceId: data.item.id}, query: {baseurl}}">
           <b>{{data.item.id.substring(0,5)}}...</b>
         </router-link>
       </template>
       <template v-slot:cell(superProcessInstanceId)="data">
         <router-link
-          :to="{name:'processdetail', params:{ processInstanceId: data.item.superProcessInstanceId}}"
+          :to="{name:'processdetail', params:{ processInstanceId: data.item.superProcessInstanceId}, query: {baseurl}}"
         >
           <b>{{ data.item.superProcessInstanceId ? data.item.superProcessInstanceId.substring(0,5)+'...' : ''}}</b>
         </router-link>
       </template>
       <template v-slot:cell(processDefinitionKey)="data">
         <router-link
-          :to="{name:'definition', params:{ definitionId: data.item.processDefinitionId}}"
+          :to="{name:'definition', params:{ definitionId: data.item.processDefinitionId}, query: {baseurl}}"
         >{{data.item.processDefinitionKey}}</router-link>
         <br>
         <small>{{data.item.processDefinitionName}}</small>
@@ -210,6 +210,11 @@ export default {
     search() {
       this.getProcessInstanceHistoryByVariable();
       this.getProcessInstanceHistoryByVariableCount();
+    }
+  },
+  computed: {
+    baseurl() {
+      return this.$store.state.baseurl;
     }
   }
 };

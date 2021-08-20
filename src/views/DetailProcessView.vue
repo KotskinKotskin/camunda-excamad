@@ -44,6 +44,7 @@
 
       <detailprocessstat :processInstanceId="processInstanceId"></detailprocessstat>
       <currentstate class="mt-5" :processInstanceId="processInstanceId"></currentstate>
+      <external-task class="mt-5" :processInstanceId="processInstanceId"> </external-task> 
       <decision-details class="mt-5" :processInstanceId="processInstanceId"></decision-details>
 
       <variable-list class="mt-5" :processInstanceId="processInstanceId"></variable-list>
@@ -62,12 +63,14 @@ import { SERVERVIRTALPATHPROD } from "@/config/settings";
 
 library.add(faShare);
 import Stream from "@/components/Stream.vue";
+import ExternalTask from '../components/detail-process-instance/ExternalTask.vue';
 
 export default {
   name: "DetailProcessView",
   props: ["processInstanceId"],
   components: {
-    Stream
+    Stream,
+    ExternalTask
   },
   mounted() {
     var hostname = window.location.hostname;

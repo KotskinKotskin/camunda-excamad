@@ -20,7 +20,7 @@ export function createApi() {
   if (store.state.restPasswordEnabled == true && store.state.restAuthType == "Basic") {
 
     var hash = btoa(store.state.restUsername + ":" +store.state.restPassword)
-    api.defaults.headers.common['Authorization'] = "Basic " + hash;
+    api.defaults.headers.common['Authorization'] = hash;
   }
   if (store.state.restPasswordEnabled == true && store.state.restAuthType == "Bearer") {
     api.defaults.headers.common['Authorization'] = "Bearer " + store.state.restBearerToken;

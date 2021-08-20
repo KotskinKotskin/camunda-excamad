@@ -21,7 +21,7 @@
                   <p class="card-text">{{item.processDefinitionId}}</p>
 
                   <router-link
-                    :to="{name:'processdetail', params:{ processInstanceId: item.processInstanceId}}"
+                    :to="{name:'processdetail', params:{ processInstanceId: item.processInstanceId}, query: {baseurl}}"
                   >
                     <p class="card-text">
                       <b>{{item.processInstanceId}}</b>
@@ -148,6 +148,11 @@ export default {
 
       var output = rel + " (" + cal + ") ";
       return output;
+    }
+  },
+  computed: {
+    baseurl() {
+      return this.$store.state.baseurl;
     }
   }
 };

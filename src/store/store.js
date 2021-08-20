@@ -28,13 +28,16 @@ export default new Vuex.Store({
     restPassword: null,
     restBearerToken: null,
     restAuthType: null,
+    expertMode: false,
     restAuthArray:  [],
     taskId: '',
     secureDate: null,
+    baseurlSetted: false
   },
   mutations: {
     setBaseUrl(state, url) {
       state.baseurl = url;
+      state.baseurlSetted = true;
     },
     setSecureDate(state ,date ) {
       state.secureDate = date;
@@ -42,7 +45,7 @@ export default new Vuex.Store({
     setMoreJWT(state, element) {
       
        var obj  = {
-         url: 'http://bpm.blabla.ru',
+         url: 'http://bpm.tinkoff.ru',
          date: "",
          type: "BASIC/JWT",
          login:  "login",
@@ -89,6 +92,9 @@ export default new Vuex.Store({
     },
     changeServerStatus(state, status) {
       state.serverStatus = status;
+    },
+    changeExpertMode(state, expertMode) {
+      state.expertMode = expertMode;
     },
     changeTaskId(state, taskId) {
       state.taskId = taskId;

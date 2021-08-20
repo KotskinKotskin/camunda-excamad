@@ -11,9 +11,10 @@
       <b-button @click="clear" variant="link">Clear</b-button>
     </b-form>
     <small>Total {{incidents.length}}</small>
-    <table class="table table-striped table-sm">
+    <table class="table table-striped table-sm indexed">
       <thead>
         <tr>
+          <th>#</th>
           <th>Id</th>
           <th>Start time</th>
           <th>Failed activity</th>
@@ -23,6 +24,7 @@
       </thead>
       <tbody>
         <tr :key="item.id" v-for="item in incidents">
+          <td></td>
           <td>{{item.id}}</td>
           <td>{{convertDateToHumanStyle(item.incidentTimestamp)}}</td>
 
@@ -30,7 +32,7 @@
           <td>{{item.incidentMessage}}</td>
           <td>
             <router-link
-              :to="{name:'processdetail', params:{ processInstanceId: item.processInstanceId}}"
+              :to="{name:'processdetail', params:{ processInstanceId: item.processInstanceId}, query: {baseurl}}"
             >
               <b>{{item.processInstanceId}}</b>
             </router-link>
@@ -108,9 +110,23 @@ export default {
       this.selectedActivity = null
       this.getDefinitionsIncidents()
     }
+  },
+  computed: {
+    baseurl() {
+      return this.$store.state.baseurl;
+    }
   }
+
 };
 </script>
 
 <style>
+.indexed {
+  counter-reset: serial-number; /* Set the serial number counter to 0 */
+}
+
+.indexed td:first-child:before {
+  counter-increment: serial-number; /* Increment the serial number counter */
+  content: counter(serial-number); /* Display the counter */
+}
 </style>

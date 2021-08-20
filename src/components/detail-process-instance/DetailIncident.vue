@@ -91,10 +91,10 @@ export default {
       }, 500);
     },
     getStacktraceUrl: function(item) {
-      var str = this.$store.state.baseurl.slice(0, -6);
+      var str = this.$store.state.baseurl;
       var stacktrackeurl =
         str +
-        "/api/engine/engine/default/job/" +
+        "job/" +
         item.configuration +
         "/stacktrace";
       return stacktrackeurl;
