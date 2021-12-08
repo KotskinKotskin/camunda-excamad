@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 
-FROM nginx as production-build
+FROM nginxinc/nginx-unprivileged as production-build
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 COPY ./.nginx/nginx.conf /etc/nginx/nginx.conf
