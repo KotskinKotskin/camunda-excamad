@@ -20,4 +20,4 @@ COPY ./.nginx/nginx.conf /etc/nginx/nginx.conf
 # Copy from the stahg 1
 COPY --from=builder /vue-ui/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080

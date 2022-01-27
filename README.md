@@ -29,7 +29,7 @@ If you are going use docker conteiners add this code to camunda container in /ca
 ## OR
 
 ```
-     docker run -d -p 80:80 kotovdenis/excamad:latest
+     docker run -d -p 8080:8080 kotovdenis/excamad:latest
 ```
 # 0.1 Default camunda rest endpoint
 
