@@ -90,7 +90,8 @@ export default {
         }
 
         if (flowelement.$type === "bpmn:BoundaryEvent" ||
-            flowelement.$type === "bpmn:StartEvent") {
+            flowelement.$type === "bpmn:StartEvent"||
+            flowelement.$type === "bpmn:IntermediateCatchEvent") {
           return flowelement.eventDefinitions
               && flowelement.eventDefinitions.map(event =>
               event.messageRef &&
