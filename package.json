@@ -33,7 +33,7 @@
     "jquery": "^3.5.0",
     "lodash": "^4.17.15",
     "mkdirp": "^1.0.4",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "string-to-stream": "^3.0.1",
     "v-suggest": "^2.2.0",
     "vfg-field-array": "0.0.3",
