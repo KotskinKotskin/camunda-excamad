@@ -47,13 +47,19 @@ jobs:
       - run:
           name: docker build
           command: docker build -t kotovdenis/excamad:latest .
-
       - run:
-          name: docker push
+          name: docker push latest
           command: docker push kotovdenis/excamad:latest
+      - run:
+          name: docker change tag
+          command: docker tag kotovdenis/excamad:latest kotovdenis/excamad:<< pipeline.number >>
+      - run:
+          name: docker push with new tag
+          command: docker push kotovdenis/excamad:<< pipeline.number >>
 
 workflows:
   version: 2
   build_and_docker:
     jobs:
       - deploy-job
+ 
