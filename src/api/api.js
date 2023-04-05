@@ -10,7 +10,7 @@ export function createApi() {
     baseURL: store.state.workOnBpmasservice
       ? store.state.bpmasserviceUrl
       : store.state.baseurl,
-    withCredentials: true,
+    withCredentials: false,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
