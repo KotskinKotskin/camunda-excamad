@@ -17,12 +17,12 @@ a) ---make excamad---
 - npm run serve (start dev server) OR
 - npm run build (produce html,js,css in to /dist/)
 
-b) --prepair camunda--
+b) --prepare camunda--
 
 - For stand-alone camunda : http://beninkster.com/tomcat-7-and-disabling-cors
 - For embedded camunda: https://forum.camunda.org/t/camunda-cors-filter-in-spring-boot-application/5494
 
-If you are going use docker conteiners add this code to camunda container in /camunda/webapps/engine-rest/WEB-INF/web.xml
+If you are going use docker containers add this code to camunda container in /camunda/webapps/engine-rest/WEB-INF/web.xml
 
 " CorsFilter org.apache.catalina.filters.CorsFilter cors.allowed.origins * CorsFilter /*  "
 
@@ -98,7 +98,7 @@ Organize camunda as provider of BPMN processes.
 
 ## Multi-camunda`s
 
-Easy switch server and envorments.
+Easy switch server and environments.
 
 ## Login
 
@@ -106,7 +106,7 @@ Ready login provider for basic auth and passthrough to Jira and Bitbucket.
 
 # 2. Access to server
 
-Excamad is servless app - all api calls made from your browser. You need host produced files (/dist) on some web-server. And you need enable CORS on your`s camunda.
+Excamad is serverless app - all api calls made from your browser. You need host produced files (/dist) on some web-server. And you need enable CORS on your`s camunda.
 
 - For stand-alone camunda : http://beninkster.com/tomcat-7-and-disabling-cors
 - For embedded camunda: https://forum.camunda.org/t/camunda-cors-filter-in-spring-boot-application/5494
