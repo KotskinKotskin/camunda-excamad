@@ -72,16 +72,18 @@ Provide facebook-like feed about activities in system.
 
 Simple forms and form generator. You need extend your Camunda rest api with method **/taskfields**
 
-    //example
-        @Path("/")
-    public ctaskfieldslass TaskFieldsService {
+```java
+//example
+@Path("/")
+public ctaskfieldslass TaskFieldsService {
 
-
-        @GET
-     @Produces(MediaType.APPLICATION_JSON)
-        @Path("{taskId}")
-        public String getFormFieldList(@Context HttpHeaders httpHeaders,
-        @PathParam("taskId") String taskId) {
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{taskId}")
+    public String getFormFieldList(
+        @Context HttpHeaders httpHeaders,
+        @PathParam("taskId") String taskId
+    ) {
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         FormService formService = processEngine.getFormService();
         TaskFormData taskFormData = formService.getTaskFormData(taskId);
@@ -90,8 +92,8 @@ Simple forms and form generator. You need extend your Camunda rest api with meth
         String json = JSON(formFieldList).toString();
         return json;
     }
-
 }
+```
 
 ## Business process as service
 
