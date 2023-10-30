@@ -19,7 +19,7 @@ a) ---make excamad---
 
 b) --prepare camunda--
 
-- For stand-alone camunda : http://beninkster.com/tomcat-7-and-disabling-cors
+- For stand-alone camunda: http://beninkster.com/tomcat-7-and-disabling-cors
 - For embedded camunda: https://forum.camunda.org/t/camunda-cors-filter-in-spring-boot-application/5494
 
 If you are going use docker containers add this code to camunda container in /camunda/webapps/engine-rest/WEB-INF/web.xml
@@ -34,8 +34,8 @@ docker run -d -p 8080:8080 kotovdenis/excamad:latest
 
 # 0.1 Default camunda rest endpoint
 
-For embedded camunda - ${baseurl}/rest
-For standalone camunda - ${baserurl}/engine-rest
+- For embedded camunda: `${baseurl}/rest`
+- For standalone camunda: `${baserurl}/engine-rest`
 
 Excamad work with default rest api, not cockpit api. So you havent auth user in your context.
 
