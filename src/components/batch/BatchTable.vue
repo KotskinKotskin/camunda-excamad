@@ -6,7 +6,7 @@
 
         </template>
         <template v-slot:cell(suspend)="data">
-            <b-button variant="outline-info" size="sm" @click="suspendBatch(data.item.id)" class="mr-2">Suspend</b-button>
+            <b-button variant="outline-info" size="sm" @click="suspendBatch(data.item)" class="mr-2">Suspend</b-button>
         </template>
     </b-table>
 </div>
