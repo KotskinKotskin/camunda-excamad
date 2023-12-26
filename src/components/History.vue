@@ -112,7 +112,7 @@ export default {
 
       variable: {
         variableName: "businessKey",
-        variableValue: "CD-"
+        variableValue: "CCR-"
       },
       processInstanceForSearch: "376497",
       searchTryed: false,
