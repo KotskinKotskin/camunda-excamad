@@ -76,25 +76,22 @@ export default {
                 })
                 .then(() => {});
         }
-        setTimeout(() => {
-            if (this.baseurl != null) {
 
-                if (localStorage.restAuthArray) {
-                    var array = JSON.parse(localStorage.restAuthArray)
-                    var url = array.find(x => x.url == this.baseurl)
-                    if (url) {
-               
-                        this.$store.commit("setRestsername", url.login);
-                        this.$store.commit("setRestpassword", url.password);
-                        this.$store.commit("setRestToken", url.JWT);
-                        this.$store.commit("setRestAuthType", url.type);
-                         this.$store.commit("setRestPasswordEnabled", true);
-                        this.$store.commit("setSecureDate", url.date)
-                    }
-                }
-            }
-        }, 300);
+      if (this.baseurl != null) {
+        if (localStorage.restAuthArray) {
+          const array = JSON.parse(localStorage.restAuthArray)
+          const url = array.find(x => x.url === this.baseurl)
 
+          if (url) {
+            this.$store.commit("setRestsername", url.login);
+            this.$store.commit("setRestpassword", url.password);
+            this.$store.commit("setRestToken", url.JWT);
+            this.$store.commit("setRestAuthType", url.type);
+            this.$store.commit("setRestPasswordEnabled", true);
+            this.$store.commit("setSecureDate", url.date)
+          }
+        }
+      }
     },
     methods: {
         refreshRoute() {
