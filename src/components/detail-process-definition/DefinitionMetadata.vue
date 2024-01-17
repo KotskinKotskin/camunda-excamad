@@ -103,21 +103,17 @@ export default {
   methods: {
     getVersionStats() {
       this.versions.forEach(element => {
-        this.$api()
-          .post("/process-instance/count", {
+        Promise.all([
+          this.$api().post("/process-instance/count", {
             processDefinitionId: element.id
-          })
-          .then(response => {
-            element.runtimeCount = response.data.count;
-          });
-
-        this.$api()
-          .get(
+          }),
+          this.$api().get(
             "/history/process-instance/count?processDefinitionId=" + element.id
           )
-          .then(response => {
-            element.historyCount = response.data.count;
-          });
+        ]).then(([runtime, history]) => {
+          element.runtimeCount = runtime.data.count;
+          element.historyCount = history.data.count;
+        });
       });
     },
     getVersionsByKey() {
@@ -145,61 +141,52 @@ export default {
           this.$set(this.definitionMetadata, "totalHistoryCount", 0);
           this.$set(this.definitionMetadata, "currentHistoryCount", 0);
           this.$set(this.definitionMetadata, "incidentsCount", null);
+
           if (localStorage.getItem("metadataCountersEnabled") === "false") {
             console.log("metadataCountersEnabled in localStorage is 'false', don't fetch metadata counts");
             return;
           }
-          this.$api()
-            .get("/deployment/" + this.definitionMetadata.deploymentId)
-            .then(response => {
-              this.definitionMetadata.deployTime = this.convertDateToHumanStyle(
-                response.data.deploymentTime
-              );
-            });
 
-          this.$api()
-            .post("/process-instance/count", {
+          const promises = [
+            this.$api().get("/deployment/" + this.definitionMetadata.deploymentId),
+            this.$api().post("/process-instance/count", {
               processDefinitionKey: this.definitionMetadata.key,
               withoutTenantId: true
+            }),
+            this.$api().post("/process-instance/count", { processDefinitionId: this.definitionMetadata.id }),
+            this.$api().get("/history/process-instance/count?processDefinitionId=" + this.definitionMetadata.id),
+            this.$api().get("/history/process-instance/count?processDefinitionKey=" + this.definitionMetadata.key),
+            this.$api().get("/incident/count?processDefinitionId=" + this.definitionMetadata.id)
+          ];
+
+          Promise.all(promises).then(responses => {
+            // get - /deployment/
+            this.definitionMetadata.deployTime = this.convertDateToHumanStyle(responses[0].data.deploymentTime);
+
+            // post - /process-instance/count
+            this.definitionMetadata.totalCount = responses[1].data.count;
+
+            // post - /process-instance/count
+            this.definitionMetadata.currentCount = responses[2].data.count;
+
+            // get - /history/process-instance/count?processDefinitionId=
+            this.definitionMetadata.currentHistoryCount = responses[3].data.count;
+
+            // get - /history/process-instance/count?processDefinitionKey=
+            this.definitionMetadata.totalHistoryCount = responses[4].data.count;
+
+            // get - /incident/count?processDefinitionId=
+            this.definitionMetadata.incidentsCount = responses[5].data.count;
+
+            this.ready = true;
+          }).catch(error => {
+            this.$notify({
+              group: "foo",
+              title: "Fail",
+              text: error,
+              type: "error"
             })
-            .then(response => {
-              this.definitionMetadata.totalCount = response.data.count;
-            });
-
-          this.$api()
-            .post("/process-instance/count", {
-              processDefinitionId: this.definitionMetadata.id
-            })
-            .then(response => {
-              this.definitionMetadata.currentCount = response.data.count;
-            });
-
-          this.$api()
-            .get(
-              "/history/process-instance/count?processDefinitionId=" +
-                this.definitionMetadata.id
-            )
-            .then(response => {
-              this.definitionMetadata.currentHistoryCount = response.data.count;
-            });
-          this.$api()
-            .get(
-              "/history/process-instance/count?processDefinitionKey=" +
-                this.definitionMetadata.key
-            )
-            .then(response => {
-              this.definitionMetadata.totalHistoryCount = response.data.count;
-            });
-
-          this.$api()
-            .get(
-              "/incident/count?processDefinitionId=" +
-                this.definitionMetadata.id
-            )
-            .then(response => {
-              this.definitionMetadata.incidentsCount = response.data.count;
-              this.ready = true;
-            });
+          });
         });
     },
 
