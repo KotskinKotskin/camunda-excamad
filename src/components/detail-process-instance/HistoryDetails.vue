@@ -41,7 +41,7 @@ export default {
         groupBy: "activityInstanceId",
         sortable: [
           "time",
-          " variableName",
+          "variableName",
           "value",
           "activityInstanceId",
           "revision"
@@ -63,7 +63,7 @@ export default {
     getHistoryDetails() {
       this.$api()
         .get(
-          "/history/detail?historicVariableUpdates=true&sortBy=time&sortOrder=desc&processInstanceId=" +
+          "/history/detail?historicVariableUpdates=true&deserializeValues=false&sortBy=time&sortOrder=desc&processInstanceId=" +
           this.processInstanceId
         )
         .then(response => {
