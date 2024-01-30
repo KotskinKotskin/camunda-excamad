@@ -5,6 +5,9 @@
         <template slot="actions" slot-scope="{ row }">
             <b-btn size="sm" @click="retryExtTask(row.processInstanceId, row.id)">
                 <font-awesome-icon icon="redo" />Retry</b-btn>
+            <b-btn v-if="row.lockExpirationTime !== null" size="sm" class="ml-2" @click="unlockExtTask(row.id)">
+                Unlock
+            </b-btn>
         </template>
 
     </v-client-table>
@@ -70,6 +73,22 @@ export default {
                 this.$notify({
                     group: "foo",
                     title: "Retries NOT setuped",
+                    text: error,
+                    type: "error"
+                });
+            })
+        },
+        unlockExtTask(extId) {
+            this.$api().post(`/external-task/${extId}/unlock`).then(response => {
+                this.$notify({
+                    group: "foo",
+                    title: "Task unlocked",
+                    type: "success"
+                });
+            }).catch(error => {
+                this.$notify({
+                    group: "foo",
+                    title: "Task NOT unlocked",
                     text: error,
                     type: "error"
                 });
