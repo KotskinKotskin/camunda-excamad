@@ -5,7 +5,9 @@
         <template slot="actions" slot-scope="{ row }">
             <b-btn size="sm" @click="retryExtTask(row.processInstanceId, row.id)">
                 <font-awesome-icon icon="redo" />Retry</b-btn>
-            <b-btn size="sm" class="ml-2" @click="unlockExtTask(row.id)">Unlock</b-btn>
+            <b-btn v-if="row.lockExpirationTime !== null" size="sm" class="ml-2" @click="unlockExtTask(row.id)">
+                Unlock
+            </b-btn>
         </template>
 
     </v-client-table>
