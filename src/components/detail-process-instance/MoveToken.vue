@@ -19,6 +19,9 @@
         <br />
       </b-form>
       <small>{{calculateHelp()}}</small>
+      <div style="padding-left: 200px">
+        <b-form-checkbox v-model="skipIoMappings">Skip IO Mappings</b-form-checkbox>
+      </div>
     </b-card>
   </div>
 </template>
@@ -44,6 +47,7 @@ export default {
       selectedActivity: "",
       selectedFrom: "",
       selectedTo: "",
+      skipIoMappings: true,
       activityList: []
     };
   },
@@ -104,19 +108,35 @@ export default {
     },
 
     readModel() {
-      var moddle = new BpmnModdle({ camunda: camundaModdle });
-      var vm = this;
+      const moddle = new BpmnModdle({ camunda: camundaModdle });
+      const vm = this;
       vm.activityList = [];
-      this.moddle = moddle.fromXML(this.definitionInXml, function (
-        err,
-        definitions
-      ) {
+
+      const subtaskTags = [
+          "bpmn:IntermediateThrowEvent",
+          "bpmn:IntermediateCatchEvent",
+          "bpmn:ServiceTask",
+          "bpmn:ParallelGateway",
+          "bpmn:ExclusiveGateway",
+      ];
+
+      moddle.fromXML(this.definitionInXml, (err, definitions) => {
         definitions.rootElements.forEach(element => {
           if (element.$type == "bpmn:Process" && element.isExecutable == true) {
             element.flowElements.forEach(flowelement => {
+
               if (flowelement.$type != "bpmn:SequenceFlow") {
                 vm.activityList.push(flowelement);
                 vm.possibleActivitySimpleArray.push(flowelement.id);
+              }
+
+              if (flowelement.$type === "bpmn:SubProcess") {
+                flowelement.flowElements.forEach(subflowelement => {
+                  if (subtaskTags.includes(subflowelement.$type)) {
+                    vm.activityList.push(subflowelement);
+                    vm.possibleActivitySimpleArray.push(subflowelement.id);
+                  }
+                });
               }
             });
           }
@@ -126,7 +146,7 @@ export default {
     moveToken() {
       var moveTokenObj = {
         skipCustomListeners: true,
-        skipIoMappings: true,
+        skipIoMappings: this.skipIoMappings,
         instructions: [
           {
             type: "cancel",

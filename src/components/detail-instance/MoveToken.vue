@@ -18,6 +18,9 @@
         <br />
       </b-form>
       <small>{{calculateHelp()}}</small>
+      <div style="padding-left: 200px">
+        <b-form-checkbox v-model="skipIoMappings">Skip IO Mappings</b-form-checkbox>
+      </div>
     </b-card>
   </div>
 </template>
@@ -46,6 +49,7 @@ export default {
       selectedActivity: "",
       selectedFrom: "",
       selectedTo: "",
+      skipIoMappings: true,
       activityList: []
     };
   },
@@ -103,6 +107,15 @@ export default {
       var moddle = new BpmnModdle({ camunda: camundaModdle });
       var vm = this;
       vm.activityList = [];
+
+      const subtaskTags = [
+        "bpmn:IntermediateThrowEvent",
+        "bpmn:IntermediateCatchEvent",
+        "bpmn:ServiceTask",
+        "bpmn:ParallelGateway",
+        "bpmn:ExclusiveGateway",
+      ];
+
       this.moddle = moddle.fromXML(this.definitionInXml, function (
         err,
         definitions
@@ -114,6 +127,15 @@ export default {
                 vm.activityList.push(flowelement);
                 vm.possibleActivitySimpleArray.push(flowelement.id);
               }
+
+              if (flowelement.$type === "bpmn:SubProcess") {
+                flowelement.flowElements.forEach(subflowelement => {
+                  if (subtaskTags.includes(subflowelement.$type)) {
+                    vm.activityList.push(subflowelement);
+                    vm.possibleActivitySimpleArray.push(subflowelement.id);
+                  }
+                });
+              }
             });
           }
         });
@@ -122,7 +144,7 @@ export default {
     moveToken() {
       var moveTokenObj = {
         skipCustomListeners: true,
-        skipIoMappings: true,
+        skipIoMappings: this.skipIoMappings,
         instructions: [
           {
             type: "cancel",
