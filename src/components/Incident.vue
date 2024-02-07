@@ -179,27 +179,61 @@ export default {
           this.incidentsToShow = this.incidents;
         });
     },
-    updateSingleJobRetry(item) {
-      this.jobQuerySelected.processInstanceId = [];
-      this.jobQuerySelected.activityId = [];
-      this.jobQuerySelected.processInstanceId = item.processInstanceId;
-      this.jobQuerySelected.activityId = item.activityId;
-      this.$api()
-        .post("/job/retries", {
-          retries: this.retries,
-          jobQuery: this.jobQuerySelected
-        })
-        .then(() => {
-          var index = this.incidents.indexOf(item);
-          if (index > -1) {
-            this.incidents.splice(index, 1);
-          }
-          this.$notify({
-            group: "foo",
-            title: "Rerun started",
-            type: "info"
-          });
+    async loadExternalTaskJobs(processInstanceId) {
+      return this.$api()
+          .get("/external-task?processInstanceId=" + processInstanceId);
+    },
+    async updateSingleJobRetry(item) {
+      if (item.incidentType === "failedExternalTask") {
+        const externalTaskJobs = (await this.loadExternalTaskJobs(item.processInstanceId)).data;
+        const externalJob = externalTaskJobs.find(externalJob => externalJob.processInstanceId === item.processInstanceId);
+
+        const notifyError = (error) => this.$notify({
+          group: "foo",
+          title: "Retries NOT setuped",
+          text: error,
+          type: "error"
         });
+
+        if (externalJob) {
+          const putObj = {
+            retries: 1,
+            processInstanceIds: [item.processInstanceId],
+            externalTaskIds: [externalJob.id]
+          }
+          this.$api().put("/external-task/retries", putObj).then(response => {
+
+            this.$notify({
+              group: "foo",
+              title: " Retries setuped",
+              type: "success"
+            });
+          }).catch(error => notifyError(error))
+        } else {
+          notifyError('External task not found');
+        }
+      } else {
+        this.jobQuerySelected.processInstanceId = [];
+        this.jobQuerySelected.activityId = [];
+        this.jobQuerySelected.processInstanceId = item.processInstanceId;
+        this.jobQuerySelected.activityId = item.activityId;
+        this.$api()
+          .post("/job/retries", {
+            retries: this.retries,
+            jobQuery: this.jobQuerySelected
+          })
+          .then(() => {
+            var index = this.incidents.indexOf(item);
+            if (index > -1) {
+              this.incidents.splice(index, 1);
+            }
+            this.$notify({
+              group: "foo",
+              title: "Rerun started",
+              type: "info"
+            });
+          });
+      }
     },
     healAndRetry() {
       this.retryAllIncidents();
