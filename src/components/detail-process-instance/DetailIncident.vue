@@ -10,7 +10,7 @@
         : {{item.incidentMessage}}.
         <br>
         <a :href="getStacktraceUrl(item)" target="_black">Stacktrace.</a>
-        <b-btn size="xl" class="ml-2" variant="secondary" @click="updateSingleJobRetry(item)">
+        <b-btn size="xl" class="ml-2" variant="secondary" @click="retryClicked(item)">
           <font-awesome-icon icon="redo"/>
         </b-btn>
       </li>
@@ -59,6 +59,14 @@ export default {
 
       var output = rel + " (" + cal + ") ";
       return output;
+    },
+
+    retryClicked(item) {
+      if (item.incidentType === "failedExternalTask") {
+        this.$emit('retryExternalTask', item.processInstanceId);
+      } else {
+        this.updateSingleJobRetry(item);
+      }
     },
     updateSingleJobRetry(item) {
       this.jobQuerySelected.processInstanceId = [];
