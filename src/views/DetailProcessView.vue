@@ -40,11 +40,15 @@
           <font-awesome-icon icon="share"/>
         </b-btn>
       </p>
-      <detail-incident :processInstanceId="processInstanceId"></detail-incident>
+      <detail-incident :processInstanceId="processInstanceId" @retryExternalTask="retryExternalTask"></detail-incident>
 
       <detailprocessstat :processInstanceId="processInstanceId"></detailprocessstat>
       <currentstate class="mt-5" :processInstanceId="processInstanceId"></currentstate>
-      <external-task class="mt-5" :processInstanceId="processInstanceId"> </external-task> 
+      <external-task class="mt-5"
+                     :processInstanceId="processInstanceId"
+                     :externalTaskJobs="externalTaskJobs"
+                     @retryClicked="retryExternalTask"
+      > </external-task>
       <decision-details class="mt-5" :processInstanceId="processInstanceId"></decision-details>
 
       <variable-list class="mt-5" :processInstanceId="processInstanceId"></variable-list>
@@ -78,11 +82,13 @@ export default {
     var pathname = this.$route.path;
     var query = "?baseurl=" + this.$store.state.baseurl;
     this.message = "http://" + hostname + hash + pathname + query;
+    this.loadExternalTaskJobs();
   },
   data() {
     return {
       message: "Copy These Text",
-      copied: false
+      copied: false,
+      externalTaskJobs: []
     };
   },
   methods: {
@@ -93,6 +99,41 @@ export default {
         title: "Coped!",
         type: "success"
       });
+    },
+    retryExternalTask(processInstanceId) {
+      const externalJob = this.externalTaskJobs.find(externalJob => externalJob.processInstanceId === processInstanceId);
+
+      const notifyError = (error) => this.$notify({
+        group: "foo",
+        title: "Retries NOT setuped",
+        text: error,
+        type: "error"
+      });
+
+      if (externalJob) {
+        const putObj = {
+          retries: 1,
+          processInstanceIds: [processInstanceId],
+          externalTaskIds: [externalJob.id]
+        }
+        this.$api().put("/external-task/retries", putObj).then(response => {
+
+          this.$notify({
+            group: "foo",
+            title: " Retries setuped",
+            type: "success"
+          });
+        }).catch(error => notifyError(error))
+      } else {
+        notifyError('External task not found');
+      }
+    },
+    loadExternalTaskJobs() {
+      this.$api()
+          .get("/external-task?processInstanceId=" + this.processInstanceId)
+          .then(response => {
+            this.externalTaskJobs = response.data;
+          });
     },
     onError: function() {
       alert("sorry");

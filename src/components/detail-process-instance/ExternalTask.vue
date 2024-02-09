@@ -3,13 +3,12 @@
     <h2> External task </h2>
     <v-client-table :data="externalTaskJobs" :columns="columns" :options="options">
         <template slot="actions" slot-scope="{ row }">
-            <b-btn size="sm" @click="retryExtTask(row.processInstanceId, row.id)">
+            <b-btn size="sm" @click="notifyParent(row.processInstanceId)">
                 <font-awesome-icon icon="redo" />Retry</b-btn>
             <b-btn v-if="row.lockExpirationTime !== null" size="sm" class="ml-2" @click="unlockExtTask(row.id)">
                 Unlock
             </b-btn>
         </template>
-
     </v-client-table>
 </div>
 </template>
@@ -17,10 +16,9 @@
 <script>
 export default {
     name: "ExternalTask",
-    props: ["processInstanceId"],
+    props: ["processInstanceId", "externalTaskJobs"],
     data() {
         return {
-            externalTaskJobs: [],
             columns: [
                 "activityId",
                 "errorMessage",
@@ -93,11 +91,12 @@ export default {
                     type: "error"
                 });
             })
-        }
+        },
+      notifyParent(processInstanceId) {
+        this.$emit('retryClicked', processInstanceId);
+      }
     },
-    mounted() {
-        this.getExternalTask();
-    }
+    mounted() {}
 
 }
 </script>

@@ -41,13 +41,10 @@
               <table class="table table-striped table-hover table-sm">
                 <thead>
                   <tr>
-                    <th>Failed activity</th>
-                    <th>Error text</th>
-                    <th>Root</th>
-                    <th>Cause</th>
-                    <th>Time</th>
-                    <th>Definition</th>
-                    <th>Instance</th>
+                    <th v-for="header in headers" :key="header.text" @click="headerClicked(header.value)" class="sortable-header">
+                      {{ header.text }}
+                      <span>{{ getSortArrow(header.value) }}</span>
+                    </th>
                     <th>Fix</th>
                     <th>Delete instance</th>
                   </tr>
@@ -121,6 +118,15 @@ library.add(faRedo);
 export default {
   data() {
     return {
+      headers: [
+        { text: 'Failed activity', value: 'FailedActivity' },
+        { text: 'Error text', value: 'ErrorText' },
+        { text: 'Root', value: 'Root' },
+        { text: 'Cause', value: 'Cause' },
+        { text: 'Time', value: 'Time' },
+        { text: 'Definition', value: 'Definition' },
+        { text: 'Instance', value: 'Instance' }
+      ],
       containerClass: "",
       incidents: [],
       jobsIds: [],
@@ -130,6 +136,10 @@ export default {
       incidentsGlobalRoot: [],
       incidentsNotGlobalRoot: [],
       hideParentIncidents: false,
+      sort: {
+        header: '',
+        direction: ''
+      },
       ready: null,
       retries: 3,
       jobQuery: {
@@ -160,7 +170,52 @@ export default {
     }
   },
   methods: {
+    getSortArrow(header) {
+      if (header === this.sort.header) {
+        return this.sort.direction === "asc" ? "↑" : "↓";
+      } else {
+        return '';
+      }
+    },
+    headerClicked(header) {
+      if (this.sort.header === header) {
+        this.sort.direction = this.sort.direction === "asc" ? "desc" : "asc";
+      } else {
+        this.sort.header = header;
+        this.sort.direction = "desc";
+      }
 
+      this.sortIncidents();
+    },
+    sortIncidents() {
+      const propMapping = new Map([
+        ["FailedActivity", "activityId"],
+        ["ErrorText", "incidentMessage"],
+        ["Root", "rootCauseIncidentId"],
+        ["Cause", "causeIncidentId"],
+        ["Time", "incidentTimestamp"],
+        ["Definition", "processDefinitionId"],
+        ["Instance", "processInstanceId"]
+      ]);
+
+      const sortKey = propMapping.get(this.sort.header);
+
+      if (!sortKey) {
+        this.$notify({
+          group: "foo",
+          title: "Error occurred",
+          text: `Unknown sort key: ${this.sort.header}`,
+          type: "error"
+        })
+        return;
+      }
+
+      this.incidentsToShow.sort((a, b) => {
+        const aValue = a[sortKey] || "";
+        const bValue = b[sortKey] || "";
+        return this.sort.direction === "asc" ? bValue.localeCompare(aValue) : aValue.localeCompare(bValue) ;
+      });
+    },
     getAllIncidents() {
       api
         .getEntity("incident", "", "sortBy=incidentTimestamp&sortOrder=desc")
@@ -179,27 +234,61 @@ export default {
           this.incidentsToShow = this.incidents;
         });
     },
-    updateSingleJobRetry(item) {
-      this.jobQuerySelected.processInstanceId = [];
-      this.jobQuerySelected.activityId = [];
-      this.jobQuerySelected.processInstanceId = item.processInstanceId;
-      this.jobQuerySelected.activityId = item.activityId;
-      this.$api()
-        .post("/job/retries", {
-          retries: this.retries,
-          jobQuery: this.jobQuerySelected
-        })
-        .then(() => {
-          var index = this.incidents.indexOf(item);
-          if (index > -1) {
-            this.incidents.splice(index, 1);
-          }
-          this.$notify({
-            group: "foo",
-            title: "Rerun started",
-            type: "info"
-          });
+    async loadExternalTaskJobs(processInstanceId) {
+      return this.$api()
+          .get("/external-task?processInstanceId=" + processInstanceId);
+    },
+    async updateSingleJobRetry(item) {
+      if (item.incidentType === "failedExternalTask") {
+        const externalTaskJobs = (await this.loadExternalTaskJobs(item.processInstanceId)).data;
+        const externalJob = externalTaskJobs.find(externalJob => externalJob.processInstanceId === item.processInstanceId);
+
+        const notifyError = (error) => this.$notify({
+          group: "foo",
+          title: "Retries NOT setuped",
+          text: error,
+          type: "error"
         });
+
+        if (externalJob) {
+          const putObj = {
+            retries: 1,
+            processInstanceIds: [item.processInstanceId],
+            externalTaskIds: [externalJob.id]
+          }
+          this.$api().put("/external-task/retries", putObj).then(response => {
+
+            this.$notify({
+              group: "foo",
+              title: " Retries setuped",
+              type: "success"
+            });
+          }).catch(error => notifyError(error))
+        } else {
+          notifyError('External task not found');
+        }
+      } else {
+        this.jobQuerySelected.processInstanceId = [];
+        this.jobQuerySelected.activityId = [];
+        this.jobQuerySelected.processInstanceId = item.processInstanceId;
+        this.jobQuerySelected.activityId = item.activityId;
+        this.$api()
+          .post("/job/retries", {
+            retries: this.retries,
+            jobQuery: this.jobQuerySelected
+          })
+          .then(() => {
+            var index = this.incidents.indexOf(item);
+            if (index > -1) {
+              this.incidents.splice(index, 1);
+            }
+            this.$notify({
+              group: "foo",
+              title: "Rerun started",
+              type: "info"
+            });
+          });
+      }
     },
     healAndRetry() {
       this.retryAllIncidents();
@@ -334,5 +423,8 @@ export default {
 .router-link-exact-active {
   font-style: bold;
   font-size: 24px;
+}
+.sortable-header {
+  cursor: pointer;
 }
 </style>
