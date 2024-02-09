@@ -427,6 +427,17 @@ export default {
                 "</div"
             });
           }
+
+          if (item.isToken) {
+            overlays.add(item.processActivityToShow, {
+              position: {
+                bottom: item.activityHimanaizedCreateDate ? -20 : 0,
+                left: 0
+              },
+              html: '<div class="diagram-note">Check now</div>'
+            });
+          }
+
           if (item.count) {
             overlays.add(item.processActivityToShow, {
               position: {

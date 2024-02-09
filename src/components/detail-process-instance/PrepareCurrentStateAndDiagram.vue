@@ -225,6 +225,14 @@ export default {
                 obj["processActivityToShow"] = element.activityId;
                 obj["isJob"] = true;
                 obj["activityHimanaizedCreateDate"] = "check now";
+
+                for (const activity of element.childActivityInstances) {
+                  vm.currentProcessActivityToShowArray.push({
+                    processActivityToShow: activity.activityId,
+                    isToken: true,
+                  });
+                }
+
                 vm.currentProcessActivityToShowArray.push(obj);
               });
               value.childTransitionInstances.forEach(element => {
@@ -232,6 +240,14 @@ export default {
                 obj["processActivityToShow"] = element.activityId;
                 obj["isJob"] = true;
                 obj["activityHimanaizedCreateDate"] = "check now";
+
+                for (const activity of element.childActivityInstances) {
+                  vm.currentProcessActivityToShowArray.push({
+                    processActivityToShow: activity.activityId,
+                    isToken: true,
+                  });
+                }
+
                 vm.currentProcessActivityToShowArray.push(obj);
               });
             });
