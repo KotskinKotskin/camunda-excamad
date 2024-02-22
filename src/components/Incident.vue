@@ -210,13 +210,13 @@ export default {
         const lowerCaseText = filter.value.toLowerCase();
         switch (filter.type) {
           case FieldName.FailedActivity:
-            return incidents.filter(incident => incident.activityId ? incident.activityId.toLowerCase().startsWith(lowerCaseText) : false);
+            return incidents.filter(incident => incident.activityId ? incident.activityId.toLowerCase().includes(lowerCaseText) : false);
           case FieldName.ErrorText:
-            return incidents.filter(incident => incident.incidentMessage ? incident.incidentMessage.toLowerCase().startsWith(lowerCaseText) : false);
+            return incidents.filter(incident => incident.incidentMessage ? incident.incidentMessage.toLowerCase().includes(lowerCaseText) : false);
           case FieldName.Root:
-            return incidents.filter(incident => incident.rootCauseIncidentId ? incident.rootCauseIncidentId.toLowerCase().startsWith(lowerCaseText) : false);
+            return incidents.filter(incident => incident.rootCauseIncidentId ? incident.rootCauseIncidentId.toLowerCase().includes(lowerCaseText) : false);
           case FieldName.Cause:
-            return incidents.filter(incident => incident.causeIncidentId ? incident.causeIncidentId.toLowerCase().startsWith(lowerCaseText) : false);
+            return incidents.filter(incident => incident.causeIncidentId ? incident.causeIncidentId.toLowerCase().includes(lowerCaseText) : false);
         }
       }
 
