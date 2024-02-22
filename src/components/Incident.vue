@@ -41,12 +41,19 @@
               <table class="table table-striped table-hover table-sm">
                 <thead>
                   <tr>
-                    <th v-for="header in headers" :key="header.text" @click="headerClicked(header.value)" class="sortable-header">
-                      {{ header.text }}
-                      <span>{{ getSortArrow(header.value) }}</span>
+                    <th v-for="header in headers" :key="header.text" class="sortable-header table-header">
+                      <div>
+                        <div @click="headerClicked(header.value)">
+                          {{ header.text }}
+                          <span>{{ getSortArrow(header.value) }}</span>
+                        </div>
+                        <div v-if="header.hasFilter">
+                          <input type="text" @keyup.enter="updateFilter(header.value, $event.target.value)">
+                        </div>
+                      </div>
                     </th>
-                    <th>Fix</th>
-                    <th>Delete instance</th>
+                    <th class="table-header">Fix</th>
+                    <th class="table-header">Delete instance</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -115,17 +122,35 @@ import * as api from "@/api/api";
 library.add(faTrash);
 library.add(faRedo);
 
+const FieldName = {
+  FailedActivity: 'FailedActivity',
+  ErrorText: 'ErrorText',
+  Root: 'Root',
+  Cause: 'Cause',
+  Time: 'Time',
+  Definition: 'Definition',
+  Instance: 'Instance'
+};
+
 export default {
   data() {
     return {
       headers: [
-        { text: 'Failed activity', value: 'FailedActivity' },
-        { text: 'Error text', value: 'ErrorText' },
-        { text: 'Root', value: 'Root' },
-        { text: 'Cause', value: 'Cause' },
-        { text: 'Time', value: 'Time' },
-        { text: 'Definition', value: 'Definition' },
-        { text: 'Instance', value: 'Instance' }
+        { text: 'Failed activity', value: FieldName.FailedActivity, hasFilter: true },
+        { text: 'Error text', value: FieldName.ErrorText, hasFilter: true },
+        { text: 'Root', value: FieldName.Root, hasFilter: true },
+        { text: 'Cause', value: FieldName.Cause, hasFilter: true },
+        { text: 'Time', value: FieldName.Time, hasFilter: false },
+        { text: 'Definition', value: FieldName.Definition, hasFilter: true },
+        { text: 'Instance', value: FieldName.Instance, hasFilter: true }
+      ],
+      filters: [
+        { type: FieldName.FailedActivity, value: null },
+        { type: FieldName.ErrorText, value: null },
+        { type: FieldName.Root, value: null },
+        { type: FieldName.Cause, value: null },
+        { type: FieldName.Definition, value: null },
+        { type: FieldName.Instance, value: null }
       ],
       containerClass: "",
       incidents: [],
@@ -170,6 +195,37 @@ export default {
     }
   },
   methods: {
+    updateFilter(headerType, text) {
+      const filter = this.filters.find(filter => filter.type === headerType);
+      filter.value = text;
+      this.filter();
+    },
+    filter() {
+      let incidents = [...this.incidents];
+      const applyFilter = (filter, incidents) => {
+        if (!filter.value) {
+          return incidents;
+        }
+
+        const lowerCaseText = filter.value.toLowerCase();
+        switch (filter.type) {
+          case FieldName.FailedActivity:
+            return incidents.filter(incident => incident.activityId ? incident.activityId.toLowerCase().startsWith(lowerCaseText) : false);
+          case FieldName.ErrorText:
+            return incidents.filter(incident => incident.incidentMessage ? incident.incidentMessage.toLowerCase().startsWith(lowerCaseText) : false);
+          case FieldName.Root:
+            return incidents.filter(incident => incident.rootCauseIncidentId ? incident.rootCauseIncidentId.toLowerCase().startsWith(lowerCaseText) : false);
+          case FieldName.Cause:
+            return incidents.filter(incident => incident.causeIncidentId ? incident.causeIncidentId.toLowerCase().startsWith(lowerCaseText) : false);
+        }
+      }
+
+      this.filters.forEach(filter => {
+        incidents = applyFilter(filter, incidents);
+      });
+
+      this.incidentsToShow = incidents;
+    },
     getSortArrow(header) {
       if (header === this.sort.header) {
         return this.sort.direction === "asc" ? "↑" : "↓";
@@ -189,13 +245,13 @@ export default {
     },
     sortIncidents() {
       const propMapping = new Map([
-        ["FailedActivity", "activityId"],
-        ["ErrorText", "incidentMessage"],
-        ["Root", "rootCauseIncidentId"],
-        ["Cause", "causeIncidentId"],
-        ["Time", "incidentTimestamp"],
-        ["Definition", "processDefinitionId"],
-        ["Instance", "processInstanceId"]
+        [FieldName.FailedActivity, "activityId"],
+        [FieldName.ErrorText, "incidentMessage"],
+        [FieldName.Root, "rootCauseIncidentId"],
+        [FieldName.Cause, "causeIncidentId"],
+        [FieldName.Time, "incidentTimestamp"],
+        [FieldName.Definition, "processDefinitionId"],
+        [FieldName.Instance, "processInstanceId"]
       ]);
 
       const sortKey = propMapping.get(this.sort.header);
@@ -366,7 +422,6 @@ export default {
       this.$api().post("/job?maxResults=" + this.countOfJobs, postBody).then(response => {
         if (response.data != null && response.data.length > 0) {
           response.data.forEach(element => {
-
             this.jobsIds.push(element.id);
           });
           var postBodyJobsId = {
@@ -426,5 +481,8 @@ export default {
 }
 .sortable-header {
   cursor: pointer;
+}
+.table thead th.table-header {
+  vertical-align: top;
 }
 </style>
