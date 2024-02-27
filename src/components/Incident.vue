@@ -115,8 +115,8 @@
 </template>
 
 <script>
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTrash, faRedo } from "@fortawesome/free-solid-svg-icons";
+import {library} from "@fortawesome/fontawesome-svg-core";
+import {faRedo, faTrash} from "@fortawesome/free-solid-svg-icons";
 import * as api from "@/api/api";
 
 library.add(faTrash);
@@ -130,6 +130,10 @@ const FieldName = {
   Time: 'Time',
   Definition: 'Definition',
   Instance: 'Instance'
+};
+
+const IncidentType = {
+  FailedExternalTask: 'failedExternalTask'
 };
 
 export default {
@@ -217,6 +221,10 @@ export default {
             return incidents.filter(incident => incident.rootCauseIncidentId ? incident.rootCauseIncidentId.toLowerCase().includes(lowerCaseText) : false);
           case FieldName.Cause:
             return incidents.filter(incident => incident.causeIncidentId ? incident.causeIncidentId.toLowerCase().includes(lowerCaseText) : false);
+          case FieldName.Definition:
+            return incidents.filter(incident => incident.jobDefinitionId ? incident.jobDefinitionId.toLowerCase().includes(lowerCaseText) : false);
+          case FieldName.Instance:
+            return incidents.filter(incident => incident.processInstanceId ? incident.processInstanceId.toLowerCase().includes(lowerCaseText) : false);
         }
       }
 
@@ -290,60 +298,75 @@ export default {
           this.incidentsToShow = this.incidents;
         });
     },
-    async loadExternalTaskJobs(processInstanceId) {
-      return this.$api()
-          .get("/external-task?processInstanceId=" + processInstanceId);
+    notifyError(title, error) {
+      this.$notify({
+        group: "foo",
+        title: title,
+        text: error,
+        type: "error"
+      });
     },
-    async updateSingleJobRetry(item) {
-      if (item.incidentType === "failedExternalTask") {
-        const externalTaskJobs = (await this.loadExternalTaskJobs(item.processInstanceId)).data;
-        const externalJob = externalTaskJobs.find(externalJob => externalJob.processInstanceId === item.processInstanceId);
+    notifySuccess(message) {
+      this.$notify({
+        group: "foo",
+        title: message,
+        type: "success"
+      });
+    },
+    notifyInfo(message) {
+      this.$notify({
+        group: "foo",
+        title: message,
+        type: "info"
+      });
+    },
+    async loadExternalTaskJobs(processInstanceId) {
+      return this.$api().get("/external-task?processInstanceId=" + processInstanceId);
+    },
+    async getExternalJobByProcessInstanceId(processInstanceId) {
+      return (await this.loadExternalTaskJobs(processInstanceId)).data
+          .find(externalJob => externalJob.processInstanceId === processInstanceId);
+    },
+    async retryExternalTask(processInstanceId) {
+       const externalJobId = (await this.getExternalJobByProcessInstanceId(processInstanceId))?.id;
 
-        const notifyError = (error) => this.$notify({
-          group: "foo",
-          title: "Retries NOT setuped",
-          text: error,
-          type: "error"
-        });
-
-        if (externalJob) {
-          const putObj = {
-            retries: 1,
-            processInstanceIds: [item.processInstanceId],
-            externalTaskIds: [externalJob.id]
-          }
-          this.$api().put("/external-task/retries", putObj).then(response => {
-
-            this.$notify({
-              group: "foo",
-              title: " Retries setuped",
-              type: "success"
-            });
-          }).catch(error => notifyError(error))
-        } else {
-          notifyError('External task not found');
+      if (externalJobId) {
+        const putObj = {
+          retries: 1,
+          processInstanceIds: [processInstanceId],
+          externalTaskIds: [externalJobId]
         }
+
+        this.$api().put("/external-task/retries", putObj)
+            .then(() => this.notifySuccess('External task retries setuped'))
+            .catch(error => this.notifyError('External task retries failed', error));
       } else {
-        this.jobQuerySelected.processInstanceId = [];
-        this.jobQuerySelected.activityId = [];
-        this.jobQuerySelected.processInstanceId = item.processInstanceId;
-        this.jobQuerySelected.activityId = item.activityId;
-        this.$api()
+        this.notifyError('External task not found');
+      }
+    },
+    retryJob(item) {
+      this.jobQuerySelected.processInstanceId = [];
+      this.jobQuerySelected.activityId = [];
+      this.jobQuerySelected.processInstanceId = item.processInstanceId;
+      this.jobQuerySelected.activityId = item.activityId;
+      this.$api()
           .post("/job/retries", {
             retries: this.retries,
             jobQuery: this.jobQuerySelected
           })
           .then(() => {
-            var index = this.incidents.indexOf(item);
+            const index = this.incidents.indexOf(item);
             if (index > -1) {
               this.incidents.splice(index, 1);
             }
-            this.$notify({
-              group: "foo",
-              title: "Rerun started",
-              type: "info"
-            });
+            this.notifyInfo("Rerun started");
           });
+    },
+    async updateSingleJobRetry(item) {
+      if (item.incidentType === IncidentType.FailedExternalTask) {
+        await this.retryExternalTask(item.processInstanceId);
+      } else {
+        this.retryJob(item);
       }
     },
     healAndRetry() {
@@ -359,6 +382,20 @@ export default {
         .fromNow();
     },
     retryAllIncidents() {
+      this.$api()
+          .put("/external-task/retries", {
+            retries: 1,
+            externalTaskQuery: {
+              withRetriesLeft: 0,
+              executable: false,
+              withException: true,
+              noRetriesLeft: true,
+              active: false
+            }
+          })
+          .then(() => this.notifySuccess("Restarted all external tasks"))
+          .catch(error => this.notifyError('Failed external task retries', error));
+
       this.$api()
         .post("/job/retries/", {
           retries: this.retries,
@@ -409,48 +446,57 @@ export default {
           });
         });
     },
-    getFistNJobs() {
+    async getFistNJobs() {
       if (this.countOfJobs > 100) {
-        this.countOfJobs = 100
+        this.countOfJobs = 100;
       }
-      this.jobsIds = [];
-      var postBody = {
-        withException: true,
-        noRetriesLeft: true,
-        activityId: this.activityIdForJobSearch
-      };
-      this.$api().post("/job?maxResults=" + this.countOfJobs, postBody).then(response => {
-        if (response.data != null && response.data.length > 0) {
-          response.data.forEach(element => {
-            this.jobsIds.push(element.id);
-          });
-          var postBodyJobsId = {
-            jobIds: this.jobsIds,
-            retries: 1
-          }
-          this.$api().post("/job/retries", postBodyJobsId).then(() => {
 
-            this.$notify({
-              group: "foo",
-              title: "Restarted " + this.jobsIds.length + " jobs",
-              type: "success"
-            });
-            this.getAllIncidents();
-          }).catch(error => {
-            this.$notify({
-              group: "foo",
-              title: "Fail",
-              text: error,
-              type: "error"
-            })
-          })
+      this.jobsIds = [];
+      const externalTaskProcessInstanceIds = [];
+
+      const incidents = this.incidents.filter(incident => incident.activityId === this.activityIdForJobSearch)
+          .slice(0, this.countOfJobs);
+
+      for (const incident of incidents) {
+        if (incident.incidentType === IncidentType.FailedExternalTask) {
+          externalTaskProcessInstanceIds.push(incident.processInstanceId)
+        } else {
+          this.jobsIds.push(incident.id);
         }
-      })
+      }
+
+      if (this.jobsIds.length > 0) {
+        this.$api()
+            .post("/job/retries", {
+              retries: 1,
+              jobIds: this.jobsIds
+            })
+            .then(() => this.notifySuccess("Restarted " + this.jobsIds.length + " jobs"))
+            .catch(error => this.notifyError('Failed job retries', error));
+      }
+
+      if (externalTaskProcessInstanceIds.length > 0) {
+        this.$api()
+            .put("/external-task/retries", {
+              retries: 1,
+              externalTaskQuery: {
+                activityId: this.activityIdForJobSearch,
+                processInstanceIdIn: externalTaskProcessInstanceIds
+              }
+            })
+            .then(() => this.notifySuccess("Restarted " + externalTaskProcessInstanceIds.length + " external tasks"))
+            .catch(error => this.notifyError('Failed external task retries', error));
+      }
+
+      this.getAllIncidents();
     },
     countErrorJobs: function (selectedItem) {
-      this.$api().get("job/count?activityId=" + selectedItem).then(response => {
-        this.countOfJobs = response.data.count;
-      })
+      this.countOfJobs = this.incidents.reduce((acc, item) => {
+        if (item.activityId === selectedItem) {
+          acc++;
+        }
+        return acc;
+      }, 0);
     }
   },
 
