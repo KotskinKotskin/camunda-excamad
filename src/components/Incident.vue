@@ -35,8 +35,8 @@
         >Rerun all activities</b-btn>
       </b-form>
       <div class="d-flex justify-content-end">
-        <b-btn size="sm" variant="link" @click="resetFilters">Reset filters</b-btn>
-        <b-btn size="sm" variant="link" @click="resetSorting">Reset sorting</b-btn>
+        <b-btn size="sm" variant="link" @click="resetFilters">Clear filters</b-btn>
+        <b-btn size="sm" variant="link" @click="resetSorting">Clear sorting</b-btn>
       </div>
       <small>
         <div class="row">
