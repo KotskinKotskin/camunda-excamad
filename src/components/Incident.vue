@@ -17,7 +17,7 @@
     <div v-if="incidents.length != 0">
       <b-form class="mb-2" inline>
         <b-form-input
-          v-on:change="countErrorJobs"
+          v-on:change="activityChanged"
           v-model="activityIdForJobSearch"
           list="my-list-id"
         ></b-form-input>
@@ -34,6 +34,10 @@
           @click="healAndRetry"
         >Rerun all activities</b-btn>
       </b-form>
+      <div class="d-flex justify-content-end">
+        <b-btn size="sm" variant="link" @click="resetFilters">Reset filters</b-btn>
+        <b-btn size="sm" variant="link" @click="resetSorting">Reset sorting</b-btn>
+      </div>
       <small>
         <div class="row">
           <div class="col-md-12">
@@ -48,7 +52,7 @@
                           <span>{{ getSortArrow(header.value) }}</span>
                         </div>
                         <div v-if="header.hasFilter">
-                          <input type="text" @keyup.enter="updateFilter(header.value, $event.target.value)">
+                          <input type="text" ref="filter" @keyup="headerFilterKeyUp(header.value, $event.target.value)">
                         </div>
                       </div>
                     </th>
@@ -118,6 +122,7 @@
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {faRedo, faTrash} from "@fortawesome/free-solid-svg-icons";
 import * as api from "@/api/api";
+import {debounce} from "lodash";
 
 library.add(faTrash);
 library.add(faRedo);
@@ -156,10 +161,11 @@ export default {
         { type: FieldName.Definition, value: null },
         { type: FieldName.Instance, value: null }
       ],
+      selectedActivity: null,
       containerClass: "",
       incidents: [],
       jobsIds: [],
-      countOfJobs: 25,
+      countOfJobs: 0,
       activityIdForJobSearch: null,
       incidentsToShow: [],
       incidentsGlobalRoot: [],
@@ -181,8 +187,12 @@ export default {
       jobQuerySelected: {
         processInstanceId: [],
         activityId: []
-      }
+      },
+      debouncedUpdateFilter: null
     };
+  },
+  created() {
+    this.debouncedUpdateFilter = debounce(this.updateFilter, 500)
   },
   watch: {
     hideParentIncidents(newValue) {
@@ -194,18 +204,36 @@ export default {
       }
 
       if (newValue == false) {
-        this.incidentsToShow = this.incidents;
+        this.incidentsToShow = [...this.incidents];
       }
     }
   },
   methods: {
+    resetSorting() {
+      this.sort.header = '';
+      this.sort.direction = '';
+      this.incidentsToShow = this.selectedActivity ?
+          [...this.incidents.filter(incident => incident.activityId === this.selectedActivity)] :
+          [...this.incidents];
+    },
+    resetFilters() {
+      this.$refs.filter.forEach(element => {
+        element.value = "";
+      });
+      this.filters.forEach(filter => {
+        filter.value = "";
+      });
+      this.filter();
+    },
+    headerFilterKeyUp(headerType, text) {
+      this.debouncedUpdateFilter(headerType, text);
+    },
     updateFilter(headerType, text) {
       const filter = this.filters.find(filter => filter.type === headerType);
       filter.value = text;
       this.filter();
     },
     filter() {
-      let incidents = [...this.incidents];
       const applyFilter = (filter, incidents) => {
         if (!filter.value) {
           return incidents;
@@ -222,17 +250,20 @@ export default {
           case FieldName.Cause:
             return incidents.filter(incident => incident.causeIncidentId ? incident.causeIncidentId.toLowerCase().includes(lowerCaseText) : false);
           case FieldName.Definition:
-            return incidents.filter(incident => incident.jobDefinitionId ? incident.jobDefinitionId.toLowerCase().includes(lowerCaseText) : false);
+            return incidents.filter(incident => incident.processDefinitionId ? incident.processDefinitionId.toLowerCase().includes(lowerCaseText) : false);
           case FieldName.Instance:
             return incidents.filter(incident => incident.processInstanceId ? incident.processInstanceId.toLowerCase().includes(lowerCaseText) : false);
         }
       }
+
+      let incidents = this.selectedActivity ? [...this.incidents.filter(incident => incident.activityId === this.selectedActivity)] : [...this.incidents];
 
       this.filters.forEach(filter => {
         incidents = applyFilter(filter, incidents);
       });
 
       this.incidentsToShow = incidents;
+      this.countOfJobs = this.selectedActivity ? this.incidentsToShow.length : 0;
     },
     getSortArrow(header) {
       if (header === this.sort.header) {
@@ -295,7 +326,7 @@ export default {
               this.incidentsToShow.push(incident);
             }
           });
-          this.incidentsToShow = this.incidents;
+          this.incidentsToShow = [...this.incidents];
         });
     },
     notifyError(title, error) {
@@ -447,15 +478,10 @@ export default {
         });
     },
     async getFistNJobs() {
-      if (this.countOfJobs > 100) {
-        this.countOfJobs = 100;
-      }
-
       this.jobsIds = [];
       const externalTaskProcessInstanceIds = [];
 
-      const incidents = this.incidents.filter(incident => incident.activityId === this.activityIdForJobSearch)
-          .slice(0, this.countOfJobs);
+      const incidents = this.incidentsToShow.slice(0, this.countOfJobs);
 
       for (const incident of incidents) {
         if (incident.incidentType === IncidentType.FailedExternalTask) {
@@ -490,14 +516,16 @@ export default {
 
       this.getAllIncidents();
     },
-    countErrorJobs: function (selectedItem) {
-      this.countOfJobs = this.incidents.reduce((acc, item) => {
-        if (item.activityId === selectedItem) {
-          acc++;
-        }
-        return acc;
-      }, 0);
-    }
+    activityChanged(selectedItem) {
+      this.selectedActivity = selectedItem;
+      this.$refs.filter.forEach(element => {
+        element.value = "";
+      });
+      this.filters.forEach(filter => {
+        filter.value = "";
+      });
+      this.filter();
+    },
   },
 
   mounted: function () {
