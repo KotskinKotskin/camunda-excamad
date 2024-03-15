@@ -1,6 +1,9 @@
 <template>
   <div id="variableList">
-    <h2>Instance variables (max 150)</h2>
+    <div style="display: flex">
+      <h2>Instance variables (max 150)</h2>
+      <variable-single-add :process-instance-id="processInstanceId"></variable-single-add>
+    </div>
     <small>
       <b-card no-body>
         <b-tabs pills card vertical>
@@ -10,14 +13,23 @@
             :title="calculateName(item)"
             active
           >
-            <variable-single-edit
-              v-if="item.type != 'Object'"
-              :variableOldValue="item.value"
-              :variableType="item.type"
-              :variableName="item.name"
-              :processInstanceId="processInstanceId"
-            ></variable-single-edit>
-            <vue-json-pretty :data="item"></vue-json-pretty>
+            <div style="display: flex; justify-content: space-between;">
+              <vue-json-pretty :data="item"></vue-json-pretty>
+              <div style="display: flex; align-items: flex-start;">
+                <variable-single-edit
+                    v-if="item.type != 'Object'"
+                    :variableOldValue="item.value"
+                    :variableType="item.type"
+                    :variableName="item.name"
+                    :processInstanceId="processInstanceId"
+                ></variable-single-edit>
+                <variable-single-delete
+                    :variable-name="item.name"
+                    :processInstanceId="processInstanceId"
+                    :variable-value="item.value"
+                ></variable-single-delete>
+              </div>
+            </div>
           </b-tab>
         </b-tabs>
         <audit-reader v-if="applicationId" :applicationId="applicationId"></audit-reader>
