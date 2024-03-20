@@ -132,38 +132,29 @@ export default {
           }, 400);
         });
     },
-    loadData() {
-      setTimeout(() => {
-        this.getProcessDefinitionById();
-      }, 200);
-      setTimeout(() => {
-        this.findCurrentActivity();
-      }, 400);
-      setTimeout(() => {
-        this.calculateWaitAndActivity();
-      }, 600);
-      setTimeout(() => {
-        this.readyToShowDiagram = true;
-      }, 800);
+    async loadData() {
+      await this.getProcessDefinitionById();
+      await Promise.allSettled([
+        this.loadCurrentActivity(),
+        this.loadProcessActivityToShow(),
+        this.loadIncidents()
+      ]);
+      this.calculateWaitAndActivity();
+      this.readyToShowDiagram = true;
     },
     convertDateToHumanStyle: function (date) {
       return this.$momenttrue(date)
         .startOf("second")
         .fromNow();
     },
-    getProcessDefinitionById() {
-      this.$api()
-        .get("/history/process-instance/" + this.processInstanceId)
-        .then(response => {
-          this.processDefinition = response.data.processDefinitionId;
-        })
-        .catch(() => {
-          this.$api()
-          .get("/process-instance/" + this.processInstanceId)
-          .then(response => {
-            this.processDefinition = response.data.definitionId;
-          })
-        });
+    async getProcessDefinitionById() {
+      try {
+        const response = await this.$api().get("/history/process-instance/" + this.processInstanceId);
+        this.processDefinition = response.data.processDefinitionId;
+      } catch (error) {
+        const fallbackResponse = await this.$api().get("/process-instance/" + this.processInstanceId);
+        this.processDefinition = fallbackResponse.data.definitionId;
+      }
     },
     calculateWaitAndActivity() {
       // this.currentProcessActivityToShowArray = [];
@@ -196,76 +187,61 @@ export default {
 
       this.currentProcessActivityToShowArray = newArr;
     },
-    findCurrentActivity: async function () {
-      var vm = this;
-      return new Promise(function (resolve, reject) {
-        //blabla
-        {
-          vm.$api()
-            .get(
-              "/history/activity-instance?unfinished=true&&processInstanceId=" +
-              vm.processInstanceId
-            )
-            .then(response => {
-              vm.currentActivity = response.data;
-            })
-            .catch(error => {
-              reject(error);
-            });
+    async loadCurrentActivity() {
+      const response = await this.$api.get(
+          "/history/activity-instance?unfinished=true&&processInstanceId=" +
+          this.processInstanceId
+      );
+      this.currentActivity = response.data;
+    },
+    async loadProcessActivityToShow() {
+      const value = await api.getEntity(
+          `process-instance/${this.processInstanceId}`,
+          "activity-instances",
+          ""
+      );
 
-          api
-            .getEntity(
-              "process-instance/" + vm.processInstanceId,
-              "activity-instances",
-              ""
-            )
-            .then(value => {
-              value.childActivityInstances.forEach(element => {
-                var obj = {};
-                obj["processActivityToShow"] = element.activityId;
-                obj["isJob"] = true;
-                obj["activityHimanaizedCreateDate"] = "check now";
+      value.childActivityInstances.forEach(element => {
+        const obj = {
+          processActivityToShow: element.activityId,
+          isJob: true,
+          activityHumanizedCreateDate: "check now",
+        };
 
-                for (const activity of element.childActivityInstances) {
-                  vm.currentProcessActivityToShowArray.push({
-                    processActivityToShow: activity.activityId,
-                    isToken: true,
-                  });
-                }
+        element.childActivityInstances.forEach(activity => {
+          this.currentProcessActivityToShowArray.push({
+            processActivityToShow: activity.activityId,
+            isToken: true,
+          });
+        });
 
-                vm.currentProcessActivityToShowArray.push(obj);
-              });
-              value.childTransitionInstances.forEach(element => {
-                var obj = {};
-                obj["processActivityToShow"] = element.activityId;
-                obj["isJob"] = true;
-                obj["activityHimanaizedCreateDate"] = "check now";
-
-                for (const activity of element.childActivityInstances) {
-                  vm.currentProcessActivityToShowArray.push({
-                    processActivityToShow: activity.activityId,
-                    isToken: true,
-                  });
-                }
-
-                vm.currentProcessActivityToShowArray.push(obj);
-              });
-            });
-
-          api
-            .getEntity(
-              "incident",
-              "",
-              "sortBy=incidentTimestamp&sortOrder=desc&&processInstanceId=" +
-              vm.processInstanceId
-            )
-            .then(value => {
-              vm.incidents = value;
-              resolve();
-            });
-        }
+        this.currentProcessActivityToShowArray.push(obj);
       });
-    }
+
+      value.childTransitionInstances.forEach(element => {
+        const obj = {
+          processActivityToShow: element.activityId,
+          isJob: true,
+          activityHumanizedCreateDate: "check now",
+        };
+
+        element.childActivityInstances.forEach(activity => {
+          this.currentProcessActivityToShowArray.push({
+            processActivityToShow: activity.activityId,
+            isToken: true,
+          });
+        });
+
+        this.currentProcessActivityToShowArray.push(obj);
+      });
+    },
+    async loadIncidents() {
+      this.incidents = await api.getEntity(
+          "incident",
+          "",
+          `sortBy=incidentTimestamp&sortOrder=desc&processInstanceId=${this.processInstanceId}`
+      );
+    },
   }
 };
 </script>
