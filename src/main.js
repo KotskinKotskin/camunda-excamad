@@ -64,6 +64,12 @@ Vue.component('batch-modification', BatchModification);
 import VariableSingleEidt from '@/components/VariableSingleEdit.vue';
 Vue.component('variable-single-edit', VariableSingleEidt);
 
+import VariableSingleAdd from '@/components/VariableSingleAdd.vue';
+Vue.component('variable-single-add', VariableSingleAdd);
+
+import VariableSingleDelete from '@/components/VariableSingleDelete.vue';
+Vue.component('variable-single-delete', VariableSingleDelete);
+
 import BatchTable from '@/components/batch/BatchTable.vue';
 Vue.component('batch-table', BatchTable);
 
