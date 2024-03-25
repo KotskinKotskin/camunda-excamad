@@ -350,43 +350,67 @@ export default {
         });
       }
     },
-    drawOverlays: function (bpmnViewer) {
-      var canvas = bpmnViewer.get("canvas"),
-        overlays = bpmnViewer.get("overlays");
+    addTimeOverlay(overlay, id, time) {
+      const humanStyleTime = this.convertDateToHumanStyle(time);
+      overlay.add(id, {
+        position: {
+          bottom: -20,
+          left: 0
+        },
+        html: '<div class="timer"> ' + humanStyleTime + "</div>"
+      });
+    },
+    addCounterOverlay(overlay, shape, id, counter) {
+      overlay.add(id, {
+        position: {
+          bottom: 15,
+          left: shape.width + 5
+        },
+        html: '<div class="counter"> ' + counter+ "</div>"
+      });
+    },
+    addHighlightOverlay(overlay, shape, id, isLight) {
+      let $highlightType = isLight ? 'highlight-overlay-light' : 'highlight-overlay';
 
-      var elementRegistry = bpmnViewer.get("elementRegistry");
+      let $overlayHtml = $('<div class="' + $highlightType + '">').css({
+        width: shape.width,
+        height: shape.height
+      });
+      overlay.add(id, {
+        position: {
+          top: 0,
+          left: 0
+        },
+        html: $overlayHtml
+      });
+    },
+    drawOverlays: function (bpmnViewer) {
+      const canvas = bpmnViewer.get("canvas");
+      const overlays = bpmnViewer.get("overlays");
+
+      const elementRegistry = bpmnViewer.get("elementRegistry");
       this.elementRegistryVue = elementRegistry;
       canvas.zoom("fit-viewport");
 
+      const activityWithEndTimeMap = new Map();
+      const activityToHighlight = {};
       _orderBy(this.activityHistory, (activity) => activity.activityType !== "subProcess").forEach(activity => {
         try {
           if (!activity.activityId.includes("#multiInstanceBody")) {
-            var shape = elementRegistry.get(activity.activityId);
             if (activity.endTime) {
-              activity.endTime = this.convertDateToHumanStyle(activity.endTime);
-              overlays.add(activity.activityId, {
-                position: {
-                  bottom: -20,
-                  left: 0
-                },
-                html: '<div class="timer"> ' + activity.endTime + "</div"
-              });
+              const existingActivityEndTime = activityWithEndTimeMap.get(activity.activityId);
+              if (!existingActivityEndTime || new Date(existingActivityEndTime) <= new Date(activity.endTime)) {
+                activityWithEndTimeMap.set(activity.activityId, activity.endTime);
+              }
             }
 
-            let $highlightType = activity.activityType === "subProcess" || activity.activityType === "adHocSubProcess"
-                ? 'highlight-overlay-light'
-                : 'highlight-overlay'
-            let $overlayHtml = $('<div class="' + $highlightType + '">').css({
-              width: shape.width,
-              height: shape.height
-            });
-            overlays.add(activity.activityId, {
-              position: {
-                top: 0,
-                left: 0
-              },
-              html: $overlayHtml
-            });
+            const existingActivity = activityToHighlight[activity.activityId];
+            if (existingActivity) {
+              activityToHighlight[activity.activityId].counter += 1;
+            } else {
+              const isLight = activity.activityType === "subProcess" || activity.activityType === "adHocSubProcess";
+              activityToHighlight[activity.activityId] = { counter: 1, isLight: isLight };
+            }
           }
           if (activity.activityType == "callActivity") {
             var baseurl =
@@ -410,8 +434,18 @@ export default {
         }
         catch (error) {
         }
-
       });
+
+      activityWithEndTimeMap.forEach((endTime, activityId) => this.addTimeOverlay(overlays, activityId, endTime));
+
+      for (const [activityId, activityData] of Object.entries(activityToHighlight)) {
+        const shape = elementRegistry.get(activityId);
+
+        this.addHighlightOverlay(overlays, shape, activityId, activityData.isLight);
+        if (activityData.counter > 1) {
+          this.addCounterOverlay(overlays, shape, activityId, activityData.counter);
+        }
+      }
 
       if (this.processActivityToShowArray != null) {
         this.processActivityToShowArray.forEach(item => {
@@ -526,6 +560,18 @@ body,
   padding: 0;
   margin: 0;
 }
+
+.counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .timer {
   font-size: 8px;
   z-index: 1999;
