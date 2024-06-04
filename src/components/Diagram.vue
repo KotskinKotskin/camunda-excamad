@@ -436,14 +436,20 @@ export default {
         }
       });
 
-      activityWithEndTimeMap.forEach((endTime, activityId) => this.addTimeOverlay(overlays, activityId, endTime));
+      activityWithEndTimeMap.forEach((endTime, activityId) => {
+        if (elementRegistry.get(activityId)) {
+          this.addTimeOverlay(overlays, activityId, endTime)
+        }
+      });
 
       for (const [activityId, activityData] of Object.entries(activityToHighlight)) {
         const shape = elementRegistry.get(activityId);
 
-        this.addHighlightOverlay(overlays, shape, activityId, activityData.isLight);
-        if (activityData.counter > 1) {
-          this.addCounterOverlay(overlays, shape, activityId, activityData.counter);
+        if (shape) {
+          this.addHighlightOverlay(overlays, shape, activityId, activityData.isLight);
+          if (activityData.counter > 1) {
+            this.addCounterOverlay(overlays, shape, activityId, activityData.counter);
+          }
         }
       }
 
