@@ -1,3 +1,7 @@
+# Warning 
+Starting from 01.11.2024 EXCAMAD became a part of https://stormbpmn.com/ and became closed source software. We made a huge redesign, remove old dependencies, rewrite everything from vue2 to vue3, add securty and more more stuff. If you want to use excamad\stormbpmn.com on commercial base, contact us https://stormbpmn.com/contact-sales.  All previous code still covered by GNU GPLv3, but there will no more updates in open source. 
+
+
 # Excamad
 
 **Ex**ternal **cam**unda **ad**min portal. Make life in **multi-camunda`s** environment much easy and provide some cool features.
