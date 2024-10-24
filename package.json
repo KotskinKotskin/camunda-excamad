@@ -37,7 +37,7 @@
     "string-to-stream": "^3.0.1",
     "v-suggest": "^2.2.0",
     "vfg-field-array": "0.0.3",
-    "vue": "^2.6.11",
+    "vue": "^3.0.0",
     "vue-bootstrap-datetimepicker": "^5.0.1",
     "vue-bootstrap-typeahead": "^0.2.6",
     "vue-clipboard2": "^0.3.1",
